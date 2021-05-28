@@ -13,15 +13,9 @@ client/build/
 logging/*
 dbs/*
 
-!/loggin/
-!/dbs/
-
 .idea/
 public/files/categories/img/*
-!/public/files/categories/img/
 public/files/tasks/img/*
-!/public/files/tasks/img/
 public/files/tasks/taskFiles/*
-!/public/files/tasks/tmp/
 public/files/tasks/tmp/*
 
