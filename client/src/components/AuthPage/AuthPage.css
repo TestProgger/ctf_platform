@@ -1,0 +1,24 @@
+.auth_page__container{
+    position: absolute;
+    right: 0%;
+    height: 100%;
+    width: 30%;
+    border-color: #1BBF00;
+    border-style: solid;
+    border-width:  0 0 0 2px ;
+    background-color: rgba(0, 0, 0, 0.9);
+}
+
+.auth_page__buttons{
+    font-family: "ChakraPetch-Bold";
+    position: absolute;
+    bottom: 2%;
+    display: flex;
+    justify-content: center;
+}
+
+.auth_page__app_shadow{
+    background: rgba(0 , 0 , 0 , 0.1) ;
+    backdrop-filter: blur(8px);
+    height: 100vh;
+  }

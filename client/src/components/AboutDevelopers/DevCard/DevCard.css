@@ -1,0 +1,49 @@
+.about_devs__card{
+    border: 2px solid #1BBF00;
+    border-radius: 20px;
+    width: 18rem !important;
+    height: 24rem;
+    margin: 20px 20px 20px 20px;
+    background-color: rgba(0, 0, 0, 0.9);
+    opacity: 0.8;
+}
+
+
+.about_devs__card__title{
+    font-family: "ChakraPetch-Bold" , sans-serif;
+    padding: 10px;
+}
+
+.underline_dashed{
+    border-bottom: 2px dashed #1BBF00;
+    padding-bottom: 3px;
+}
+
+/* .about_devs__card__position p{
+    border-bottom: 2px dashed #1BBF00;
+    padding-bottom: 3px;
+} */
+
+.about_devs__card__description{
+    font-family: "ChakraPetch-Bold" , sans-serif;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    margin-bottom: 10px;
+    /* padding :  0 10px 0 10px; */
+    /* font-size: 16px; */
+}
+
+.about_devs__card__description p{
+    text-align: justify;
+}
+
+
+.about_devs__card__socials{
+    padding-bottom: 10px;
+    position: relative;
+    bottom: 0px;
+}
+.card__icon img{
+    width: 32px;
+    height: auto;
+}

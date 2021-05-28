@@ -1,0 +1,13 @@
+.about_devs__container{
+    margin-top: 2%;
+    text-align: center;
+}
+
+.about_devs__title .title{
+    font-family: "ChakraPetch-Bold";
+    font-style: normal;
+    font-weight: bold;
+    font-size: 48px;
+    line-height: 125px;
+}
+

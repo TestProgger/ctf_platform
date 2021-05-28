@@ -1,0 +1,13 @@
+@font-face {
+    font-family: "Consolas";
+    src: url("./static/fonts/Consolas.ttf");
+}
+@font-face {
+    font-family: "ChakraPetch-Bold";
+    src: url("./static/fonts/ChakraPetch-Bold.ttf");
+}
+
+/* body{
+    background: #000 url('./static/images/background.png') repeat !important;
+} */
+

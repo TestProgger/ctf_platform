@@ -1,0 +1,59 @@
+
+.sign_in__container{
+    margin-top: 25%;
+    display: flex;
+    flex-direction: column;
+    /* height: 100%; */
+    justify-content: center;
+    align-items: center;
+}
+
+.sign_in__button_block{
+    font-family: "ChakraPetch-Bold";
+    margin-top: 20px;
+    width: 100%;
+}
+.sing_in__button{
+    background: #1BBF00;
+    border-radius: 57px;
+    border-style: none;
+    color: rgba(0, 0, 0, 1) !important;
+    font-size: 130%;
+    width: 120px;
+    height: 40px;
+    margin-left: 5%;
+}
+
+.form_input {
+    width: 90%;
+    padding: 0 0 10px 0;
+    border: none;
+    border-bottom: 1px solid #1BBF00; 
+    font-family: "ChakraPetch-Bold";
+    background-color: transparent; 
+    outline: none;
+    transition: 0.3s;
+}
+
+.sign_in__form{
+    width: 100%;
+    margin-top: 5%;
+}
+.sign_in__form div{
+    text-align: center;
+}
+.sign_in__form label{
+    margin-left: 5%;
+}
+
+.sign_in__title{
+    width: 100%;
+}
+.sign_in__title p{
+    font-family: "ChakraPetch-Bold";
+    font-style: normal;
+    font-weight: bold;
+    font-size: 64px;
+    line-height: 83px;
+    margin-left: 5%;
+}

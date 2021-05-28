@@ -1,0 +1,12 @@
+.tasks__container{
+    width: 95%;
+    /*height: 100%;*/
+    background-color: rgba(0 , 0 , 0 , 0.9);
+    border-radius: 47px;
+    border: 2px solid #1BBF00;
+
+    margin-top: 2.5%;
+    margin-bottom: 100px;
+    margin-right: auto;
+    margin-left: auto;
+}

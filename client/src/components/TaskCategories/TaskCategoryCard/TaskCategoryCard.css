@@ -1,0 +1,35 @@
+.task_catgory_card{
+    border: 2px solid #1BBF00;
+    border-radius: 20px;
+    width: 75%;
+    height: 17rem;
+    margin: 20px 50px 20px 50px;
+    background-color: rgba(0, 0, 0, 0.9);
+    opacity: 0.8;
+    transition: all 0.3s ease-out;
+}
+
+.task_catgory_card:hover{
+    transform: scale(1.1);
+}
+
+.task_category_card_title{
+    margin-top: 10px;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.task_category_card_image{
+    text-align: center;
+    margin-bottom: 20%;
+}
+
+.task_category_card_image img{
+    /* width: 150px; */
+    height : 110px;
+}
+
+.task_category_card_description p{
+    text-align: center;
+    padding: 0 10px 0 10px;
+}

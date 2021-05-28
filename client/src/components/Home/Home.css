@@ -1,0 +1,29 @@
+.home__container{
+    width: 100%;
+}
+
+/*.home__app_shadow{*/
+/*    background: rgba(0 , 0 , 0 , 0.1) ;*/
+/*    backdrop-filter: blur(8px);*/
+/*    height: 90vh;*/
+/*  }*/
+
+.home__logo{
+    width: 100%;
+    text-align: center;
+}
+
+.home__logo img.home__earthmap{
+    width: 85%;
+    position: absolute;
+    z-index: 1;
+    left:8%;
+}
+
+.home__logo img.home__title{
+    position: relative;
+    z-index: 2;
+    width: 45%;
+    margin-top: 10%;
+    /* margin-left: 0%; */
+}
