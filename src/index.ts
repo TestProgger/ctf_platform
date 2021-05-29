@@ -25,9 +25,6 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use( Logger() );
 
-app.set("view engine" , "pug");
-app.set('views','./views');
-
 app.use("/public" , express.static("public") );
 
 app.use('/api', apiRouter);

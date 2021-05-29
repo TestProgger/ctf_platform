@@ -25,7 +25,6 @@ const getFormatedTime = () => {
 export const Logger = () =>  ( request : Request , response : Response,
     next : NextFunction ) =>
 {
-
     if( !fs.existsSync( LoggerDir ) ){fs.mkdirSync( LoggerDir );}
 
     const formatedTime : { time : string , date : string } = getFormatedTime();
@@ -36,7 +35,8 @@ export const Logger = () =>  ( request : Request , response : Response,
     const path : string =  request.path;
     const protocol : string =  request.protocol;
     const grageBookNumber : string = request.body?.authData?.gradeBookNumber;
+    const  xAuthHeader: string = request.headers["x-auth-token"] as string;
 
-    fs.appendFile( logFileName , JSON.stringify( { timeStamp , method  , ip , path , protocol , gradeBookNumber: grageBookNumber } ) + "\n" , (err) => err ? console.log( err ) : null );
+    fs.appendFile( logFileName , JSON.stringify( { timeStamp , method  , ip , path , protocol , gradeBookNumber: grageBookNumber , xAuthHeader } ) + "\n" , (err) => err ? console.log( err ) : null );
     next();
 }

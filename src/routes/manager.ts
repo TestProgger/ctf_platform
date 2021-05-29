@@ -1,4 +1,4 @@
-import express, {RouterOptions , Request , Response, Router, response, NextFunction, request} from 'express';
+import express, { Request , Response, Router, response, NextFunction} from 'express';
 import { UserDB , TaskDB , UserTaskPassedDB , TaskCategoryDB } from '../models';
 import {v4 as uuidv4 , v5 as uuidv5} from 'uuid'
 import { generateToken } from './api';
@@ -46,12 +46,30 @@ const ADMIN_KEY_STORE : Map<string  , ServerSideKeyStore> = new Map<string , Ser
 
 function checkAdminAuthMiddleware( request : Request  , response : Response , next : NextFunction )
 {
-    const loginData = request.body
+    const authData : AdminKeyStore= JSON.parse( Buffer.from( request.headers["x-auth-token"]  as string, "base64" ).toString("utf-8")  );
+    const serverSideAuthData : ServerSideKeyStore = ADMIN_KEY_STORE.get( AMDIN_LOGIN ) ;
+
+    if( serverSideAuthData !== undefined )
+    {
+        const signUUID : string  =  uuidv5( serverSideAuthData.randomBytes , serverSideAuthData.uuid );
+
+        if( serverSideAuthData.token === authData?.token &&
+            serverSideAuthData.uuid === authData?.uuid &&
+            signUUID === authData?.signUUID
+        ){
+            next();
+        }
+        else{
+            response.send( JSON.stringify({ token : null , uuid : null , signUUID : null}) );
+        }
+    }
+    else
+    {
+        response.send( JSON.stringify({ token : null , uuid : null , signUUID : null}) );
+    }
 
 
-
-    next();
-
+    console.log( authData );
 
 }
 
@@ -78,29 +96,6 @@ managerRouter.post( "/" , (request : Request , response : Response) => {
     }
 } );
 
-managerRouter.post("/checkAdminAuthData" , ( request : Request , response : Response ) => {
-    const adminAuthData : AdminKeyStore = request.body?.authData;
-    const serverSideAdminAuthData : ServerSideKeyStore = ADMIN_KEY_STORE.get( AMDIN_LOGIN ) ;
-    if( serverSideAdminAuthData !== undefined )
-    {
-        const signUUID : string  =  uuidv5( serverSideAdminAuthData.randomBytes , serverSideAdminAuthData.uuid );
-        if( serverSideAdminAuthData.token === adminAuthData?.token &&
-            serverSideAdminAuthData.uuid === adminAuthData?.uuid &&
-            signUUID === adminAuthData?.signUUID
-        ){
-            response.send( JSON.stringify( adminAuthData ) );
-
-        }
-        else{
-            response.send( JSON.stringify({ token : null , uuid : null , signUUID : null}) );
-        }
-    }
-    else
-    {
-        response.send( JSON.stringify({ token : null , uuid : null , signUUID : null}) );
-    }
-});
-
 const taskCategoryStorageConfig = multer.diskStorage({
     destination : ( req , file , cb ) => {
         cb(null , "./public/files/categories/img")
@@ -123,7 +118,7 @@ interface MulterFileInterface{
 
 }
 
-managerRouter.post("/addTaskCategory"  ,taskCategoryUploader.fields([ { name : "titleImage" , maxCount : 1} ]), (request : Request , response : Response) => {
+managerRouter.post("/addTaskCategory"  , checkAdminAuthMiddleware , taskCategoryUploader.fields([ { name : "titleImage" , maxCount : 1} ]), (request : Request , response : Response) => {
     const {title, description, shortName} = request.body;
 
     // @ts-ignore
@@ -162,7 +157,7 @@ interface MulterFileInterface{
 
 }
 
-managerRouter.post("/addTask" , taskUploader.fields([ { name : "titleImage" , maxCount : 1} , {name : "taskFile" , maxCount:1} ]) , ( request : Request , response : Response ) => {
+managerRouter.post("/addTask" , checkAdminAuthMiddleware  ,taskUploader.fields([ { name : "titleImage" , maxCount : 1} , {name : "taskFile" , maxCount:1} ]) , ( request : Request , response : Response ) => {
     if( request.files.length !== 0 ) {
         // @ts-ignore
         const titleImage : MulterFileInterface = request.files?.titleImage[0];
@@ -198,14 +193,14 @@ managerRouter.post("/addTask" , taskUploader.fields([ { name : "titleImage" , ma
     }
 })
 
-managerRouter.get("/getTaskCategories" , (request : Request  , response: Response) => {
+managerRouter.get("/getTaskCategories" , checkAdminAuthMiddleware ,  (request : Request  , response: Response) => {
     TaskCategoryDB.findAll( {attributes : ["uid" , "title"] })
         .then( result => {
             response.send( JSON.stringify(result) );
         });
 })
 
-managerRouter.get("/getTopUsers/:size" , (request : Request , respose : Response) => {
+managerRouter.get("/getTopUsers/:size" , checkAdminAuthMiddleware , (request : Request , respose : Response) => {
      const size =  +request.params?.size || 10;
      UserDB.findAll()
          .then(  async( result)  => {
@@ -225,7 +220,7 @@ managerRouter.get("/getTopUsers/:size" , (request : Request , respose : Response
          .catch(err => response.send(err));
 })
 
-
-
-
+managerRouter.post( "/test" , checkAdminAuthMiddleware , ( req , res ) => {
+    res.send("dedwed");
+} );
 export default managerRouter;
