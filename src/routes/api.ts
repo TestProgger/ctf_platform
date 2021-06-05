@@ -4,7 +4,6 @@ import { UserDB , TaskDB , UserTaskPassedDB , TaskCategoryDB } from '../models';
 import {v4 as uuidv4 , v5 as uuidv5} from 'uuid';
 
 import crypto  from 'crypto';
-import {Model} from "sequelize";
 
 export interface RequestRegisterType{
     firstName  : string,
@@ -105,28 +104,28 @@ export function generateToken( length : number = 128 ) : string
 
 export function checkAuthMiddleware( request : Request , response : Response , next : NextFunction):void
 {
-    // console.log( request.body?.authData , TEMPORARY_KEY_STORAGE );
 
-    const userData : SessionUserAuthData = request.body?.authData;
-    if( !userData ){ response.send({ authorized : false , error : "Unauthorized" });return; }
-    if( TEMPORARY_KEY_STORAGE.has( userData.gradeBookNumber ) )
-    {
-        const tmp : SessionUserAuthData = TEMPORARY_KEY_STORAGE.get(userData.gradeBookNumber);
-        console.log(tmp);
-        if( tmp.token === userData.token && tmp.uuid === userData.uuid  )
+    const authData : SessionUserAuthData = JSON.parse( Buffer.from( request.headers["x-auth-token"]  as string, "base64" ).toString("utf-8")  );
+    if( authData?.gradeBookNumber ){
+        const serverSideAuthData : SessionUserAuthData = TEMPORARY_KEY_STORAGE.get( authData.gradeBookNumber );
+
+        if( serverSideAuthData )
         {
-            next()
+            if( serverSideAuthData.token === authData?.token &&
+                serverSideAuthData.uuid === authData?.uuid
+            ){
+                next();
+            }
+            else{
+                response.send( JSON.stringify({ token : null , uuid : null , gradeBookNumber : null }) );
+            }
         }
         else
         {
-            response.send( { authorized : false , error : "Unauthorized" } );
+            response.send( JSON.stringify({ token : null , uuid : null , gradeBookNumber : null }) );
         }
-        // tmp == userData ?  : response.send( { authorized : false , error : "Unauthorized" } );
-
-    }else
-    {
-        response.send( { authorized : false , error : "Unauthorized" } );
     }
+
 }
 
 export const TEMPORARY_KEY_STORAGE : Map<string, SessionUserAuthData> = new Map<string, SessionUserAuthData>();
@@ -263,6 +262,34 @@ apiRouter.post( "/login/checkAuthData" , ( request : Request , response:Response
 
 } )
 
+apiRouter.post("/taskCategories/:category" , checkAuthMiddleware , (request : Request , response:Response) => {
+    try {
+        TaskCategoryDB.findOne(
+            {
+                where : { shortName : request.params.category }
+            }
+        )
+            .then( data => {
+                if( data?.uid ){
+                    TaskDB.findAll(
+                        {
+                            where : { categoryId : data.uid },
+                            attributes : ['uid' , 'title' , "categoryId" , "description" , "filePath" , "titleImage" , "score"]
+
+                        }
+                    ).then( rows => {
+                        response.send( rows );
+                    } ).catch( _ => response.send({  }));
+                }else{ response.send( {  } ); }
+            });
+    }catch (ex)
+    {
+        console.log(ex);
+        response.send( {  } );
+    }
+});
+
+
 apiRouter.post("/taskCategories" , checkAuthMiddleware  ,  ( request : Request , response : Response ) => {
     try {
         TaskCategoryDB.findAll()
@@ -277,39 +304,6 @@ apiRouter.post("/taskCategories" , checkAuthMiddleware  ,  ( request : Request ,
     }
 
 } );
-
-apiRouter.post("/taskCategories/:category" , checkAuthMiddleware , (request : Request , response:Response) => {
-    try {
-        TaskCategoryDB.findOne(
-            {
-                where : { shortName : request.params.category }
-            }
-        )
-            .then( data => {
-                TaskDB.findAll(
-                    {
-                        where : { categoryId : data.uid }
-                    }
-                ).then( rows => {
-                    const data = rows.map((item) =>{
-                        return {
-                            uid : item.uid,
-                            title : item.title,
-                            description : item.description,
-                            score : item.score,
-                            filePath : item.filePath,
-                        }
-                    } )
-                    response.send( rows );
-                } ).catch( _ => response.send({  }));
-            });
-    }catch (ex)
-    {
-        console.log(ex);
-        response.send( {  } );
-    }
-});
-
 
 apiRouter.post("/task/checkAnswer" , checkAuthMiddleware , (request:Request , resoponse:Response) => {
     const taskAnswer : TaskAnswerInterface = request.body;

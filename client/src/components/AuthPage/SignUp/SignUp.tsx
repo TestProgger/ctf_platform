@@ -6,7 +6,7 @@ interface IProps{
     signUpHandler : Function
 }
 
-function SignUp({ signUpHandler } : IProps){
+export const SignUp = ({ signUpHandler } : IProps) => {
 
     const [ firstName , setFirtsName ] = useState<string>('');
     const [ lastName , setLastName ] = useState<string>(''); 
@@ -71,7 +71,7 @@ function SignUp({ signUpHandler } : IProps){
             </div>
 
             <div className = "sign_up__form">
-                <label  className="form-label">Grade Book number</label>
+                <label  className="form-label">Confirm Password</label>
                 <div className="">
                     <input type="text" className="form_input"
                             placeholder="******"
@@ -85,7 +85,7 @@ function SignUp({ signUpHandler } : IProps){
             
 
             <div className = "sign_up__button_block">
-                <button onClick = {() => signUpHandler(password , gradeBookNumber)}  className = "sign_up__button"> Sign Up </button>
+                <button onClick = {() => signUpHandler({ firstName , lastName , gradeBookNumber  , password , confirmPassword } )}  className = "sign_up__button"> Sign Up </button>
             </div>
 
         </div> 
@@ -93,5 +93,3 @@ function SignUp({ signUpHandler } : IProps){
     
         );
 }
-
-export default SignUp;

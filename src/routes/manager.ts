@@ -27,18 +27,9 @@ interface ServerSideKeyStore {
 const AMDIN_LOGIN = "qwerty123qwerty321";
 const ADMIN_PASSWORD = "2186621&text=pug";
 
-// const UPLOAD_DIR = "files/category"
-
 
 const TASK_UPLOAD_DIR = "/public/tasks/";
 const CATEGORY_UPLOAD_DIR = "/public/categories/";
-
-
-
-// if( !fs.existsSync(UPLOAD_DIR) )
-// {
-//     fs.mkdirSync(UPLOAD_DIR, {recursive : true});
-// }
 
 
 
@@ -220,7 +211,5 @@ managerRouter.get("/getTopUsers/:size" , checkAdminAuthMiddleware , (request : R
          .catch(err => response.send(err));
 })
 
-managerRouter.post( "/test" , checkAdminAuthMiddleware , ( req , res ) => {
-    res.send("dedwed");
-} );
+
 export default managerRouter;

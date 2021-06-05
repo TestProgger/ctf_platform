@@ -10,3 +10,20 @@
     margin-right: auto;
     margin-left: auto;
 }
+
+.task_list{
+    margin-left: 10vh;
+}
+
+.task{
+
+    font-family: "ChakraPetch-Bold";
+    font-size: 24px;
+    transition: 1s ease-in-out;
+}
+
+.task:hover{
+    cursor: default;
+    border-bottom: 2px solid #1BBF00; 
+    width: 95%;
+}

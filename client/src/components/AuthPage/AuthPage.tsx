@@ -3,6 +3,7 @@ import React, { useState , useContext} from 'react';
 import SignIn from './SignIn';
 import SignUp from './SignUp';
 
+
 import './AuthPage.css';
 
 
@@ -10,6 +11,15 @@ import { apiEndpoint, useAuth } from '../../hooks/useAuth';
 import { useHistory } from 'react-router-dom';
 
 import { AuthContext , AuthContextInterface } from '../../context/AuthContext';
+interface RegisterDataInterface{
+    firstName : string,
+    lastName : string ,
+    gradeBookNumber : string ,
+    password : string,
+    confirmPassword : string 
+}
+
+
 
 
 function AuthPage(){
@@ -32,7 +42,23 @@ function AuthPage(){
     }
 
 
-    const signUpHandler = (  ) => {  return 0;}
+    const signUpHandler = ( registerData : RegisterDataInterface  ) => {  
+        fetch( `${apiEndpoint}/register` , {
+            method : 'POST',
+            body : JSON.stringify( registerData ),
+            headers : {
+                'Content-Type': 'application/json'
+            }
+        } ).then( response => response.json() )
+        .then( data => {
+            if( data?.success ){
+                alert( "Вы успешно зарегестрированы. Можете авторизоваться" );
+            }else{
+                alert( "Ошибка : " + data.errorText );
+            }
+        })
+        .catch( console.log);
+    }
 
 
 

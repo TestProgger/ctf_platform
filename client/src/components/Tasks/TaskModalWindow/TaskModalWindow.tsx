@@ -1,24 +1,43 @@
 import React  from "react";
-
 import './TaskModalWindow.css';
 
-export const TaskModalWindow = (  ) =>{
+interface TaskInterface{
+    uid : string
+    title : string
+    description : string
+    score : number
+    filePath : string
+    titleImage : string
+    categoryId : string
+    
+}
+
+interface IProps{
+    showModalWindow : Function
+    isShown  : boolean
+    data : TaskInterface
+}
+
+export const TaskModalWindow = ( { showModalWindow , isShown , data } : IProps ) =>{
+    const taskFilesEndpoint = "http://127.0.0.1:5000";
+    
     return (
-        <div id="myModal" className="modal">
-            <div className="modal-content">
-                <div className="modal-header">
-                    <span className="close">&times;</span>
-                    <h2>Header</h2>
+        <div className="modal" style = { isShown ? {display : "flex"} : {display : "none"} }>
+            <div className="modal_wrapper">
+                <div className="modal_header">
+                    <span className="closeBtn" onClick={() => showModalWindow(false)}>&times;</span>
+                     { data?.title ? <h3>{data?.title}</h3> : <h3>&nbsp;</h3> } 
                 </div>
-                <div className="modal-body">
-                    <p>Какой-то текст в теле модального окна</p>
-                    <p>Ещё другой текст...</p>
+                <div className="modal_body">
+                    <img src={ taskFilesEndpoint +  data?.titleImage } alt="" />
+
+                    <p>{ data?.description }</p>
                 </div>
-                <div className="modal-footer">
-                    <h3>Footer</h3>
+                <div className="modal_footer">
+                    <h3>Task File : </h3>
+                    <a href={ taskFilesEndpoint +  data?.filePath} download>{ data?.filePath.split("/").pop() }</a>
                 </div>
             </div>
-
         </div>
     );
 }

@@ -1,60 +1,66 @@
+
+.closeBtn{
+  cursor: pointer;
+  float: right;
+  font-size:20px;
+  color: white;
+}
+
 .modal {
-    display: block; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
-    padding-top: 100px; /* Location of the box */
-    left: 0;
+    background: rgba(0,0,0, 0.2);
+    display: none;
+    justify-content: center;
     top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgb(0,0,0); /* Fallback color */
-    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-    font-family: "ChakraPetch-Bold" , sans-serif;
+    bottom: 0;
+    left: 0;
+    position: fixed;
+    right: 0;
+    perspective: 500px;
+    
 }
 
+.modal .modal_wrapper {
+    width: 60%;
+    max-width: 1200px;
+    top: 15%;
+    background: rgba(0, 0, 0, 1);
 
-.modal-content {
-    position: relative;
-    background-color: rgb(0,0,0);
-    margin: auto;
-    padding: 0;
-    border: 3px solid #1BBF00;
-    width: 50%;
-    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
-    border-radius: 20px;
-    -webkit-animation-name: animatetop;
-    -webkit-animation-duration: 0.4s;
-    animation-name: animatetop;
-    animation-duration: 0.4s
+    border : 2px solid #1BBF00; 
+    border-radius: 5px;
+    
+    position: absolute;
+    text-align: left;
+    box-shadow: 0px 0px 13px 0px rgba(0,0,0,0.4);
+    animation-name:modalopen;
+    animation-duration:.8s;
+    transform: rotateX(0deg);
 }
 
-
-@-webkit-keyframes animatetop {
-    from {top:-300px; opacity:0}
-    to {top:0; opacity:1}
+.modal_header, .modal_body, .modal_footer {
+    padding: 5px 15px;
 }
 
-@keyframes animatetop {
-    from {top:-300px; opacity:0}
-    to {top:0; opacity:1}
-}
-
-
-.close {
-    color: white;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-    color: #000;
-    text-decoration: none;
-    cursor: pointer;
-}
-
-.modal-footer{
+.modal_header, .modal_footer , .modal_body {
     text-align: center;
+}
+
+.modal_body {
+    background: rgba(0, 0, 0, 1);
+}
+
+@keyframes modalopen{
+  from {
+    opacity: 0; 
+    top: 5%;
+    transform: rotateX(15deg);
+   }
+  to {
+    opacity: 1; 
+    top: 15%; 
+    transform: rotateX(0deg);
+    }
+}
+
+.modal_footer , .modal_body{
+    border-top: 2px solid #1BBF00 ;
 }
