@@ -27,3 +27,9 @@
     border-bottom: 2px solid #1BBF00; 
     width: 95%;
 }
+
+.task__app_shadow{
+    background: rgba(0 , 0 , 0 , 0.1) ;
+    backdrop-filter: blur(8px);
+    height: 90vh;
+ }

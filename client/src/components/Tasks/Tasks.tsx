@@ -33,12 +33,37 @@ function Tasks( { ...props }){
         setModalWindowIsShown(true);
     }
 
+    const checkAnswer = (answer : string  , uid : string ) => {
+
+        http.post( apiEndpoint + "/task/checkTaskAnswer" , { answer  , uid } )
+        .then( ( response : any)   =>  {
+
+            if( response?.data )
+            {
+                if( response.data?.success )
+                {
+                    setTimeout( () => {
+                        setModalWindowIsShown(false)
+                    } , 1500 )
+                    
+                }else
+                {
+                    alert( "Error" )
+                }
+            }
+
+
+        })
+        .catch( console.log ); 
+
+    }
+
     useEffect(() => {
         const startFetching = async () => {
             http.post( apiEndpoint + `/taskCategories/${category}` , { category }  , {
                 "Content-Type" : "application/json"
             } ).then( ( response : any ) => {
-                    setTaskList( response.data );
+                setTaskList( response?.data?.length ? response.data : [] )    
             } ); 
         }
         startFetching();
@@ -47,18 +72,20 @@ function Tasks( { ...props }){
 
     return (
         <Fragment>
-            <div className="tasks__container">
+            <div className="task__app_shadow">
+                <div className="tasks__container">
 
-                <ol className="list-group list-group-flush task_list mt-5 mb-5">
-                    {
-                        taskList.map( ( item , ind)  => {
-                            return ( <li className="task mb-2" onClick={() => openModalWindow(ind , item.uid)} key = {item.uid}> { item.title } </li> )
-                        } )
-                    }
+                    <ol className="list-group list-group-flush task_list mt-5 mb-5">
+                        {
+                            taskList.map( ( item , ind)  => {
+                                return ( <li className="task mb-2" onClick={() => openModalWindow(ind , item.uid)} key = {item.uid}> { item.title } </li> )
+                            } )
+                        }
 
-                </ol>
+                    </ol>
+                </div>
             </div>
-            <TaskModalWindow data = {taskData as TaskInterface} isShown={modalWindowsIsShown} showModalWindow={setModalWindowIsShown}/>
+            <TaskModalWindow checkAnswer = {checkAnswer} data = {taskData as TaskInterface} isShown={modalWindowsIsShown} showModalWindow={setModalWindowIsShown}/>
         </Fragment>
     );
 

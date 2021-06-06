@@ -36,6 +36,10 @@ export interface TaskAnswerInterface{
     answer : string,
 }
 
+function errorPlug(){
+    return JSON.stringify({ success : false })
+}
+
 export function validateRegisterRequest( data : RequestRegisterType  ) : RequestRegisterErrorType
 {
     const errorReport : RequestRegisterErrorType = {
@@ -106,6 +110,10 @@ export function checkAuthMiddleware( request : Request , response : Response , n
 {
 
     const authData : SessionUserAuthData = JSON.parse( Buffer.from( request.headers["x-auth-token"]  as string, "base64" ).toString("utf-8")  );
+
+    console.log( authData );
+    response.locals.gradeBookNumber = authData.gradeBookNumber;
+
     if( authData?.gradeBookNumber ){
         const serverSideAuthData : SessionUserAuthData = TEMPORARY_KEY_STORAGE.get( authData.gradeBookNumber );
 
@@ -257,9 +265,6 @@ apiRouter.post( "/login/checkAuthData" , ( request : Request , response:Response
     {
         response.send( JSON.stringify({ token : null , uuid : null , gradeBookNumber : null }) );
     }
-
-
-
 } )
 
 apiRouter.post("/taskCategories/:category" , checkAuthMiddleware , (request : Request , response:Response) => {
@@ -305,21 +310,53 @@ apiRouter.post("/taskCategories" , checkAuthMiddleware  ,  ( request : Request ,
 
 } );
 
-apiRouter.post("/task/checkAnswer" , checkAuthMiddleware , (request:Request , resoponse:Response) => {
-    const taskAnswer : TaskAnswerInterface = request.body;
+apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , (request:Request , response:Response) => {
 
-    const  sha256 = crypto.createHash('sha256');
-    sha256.update( taskAnswer.answer );
+    interface AnswerDataInterface{
+        answer : string,
+        uid : string
+    }
 
-    // TaskDB.findOne(
-    //     {
-    //         where : {
-    //             answer : sha256.digest("hex")
-    //         }
-    //     }
-    // ).then( task => {
-    //     if( task.getDataValue('') )
-    // });
+    const {answer  , uid} : AnswerDataInterface = request.body;
+
+    // const  sha256 = crypto.createHash('sha256');
+    // sha256.update( answer.trim() );
+
+    TaskDB.findOne( {
+        where : {uid},
+        attributes : [ "answer" , "score" ]
+    } )
+    .then( taskDBResult => {
+        if( taskDBResult.answer === answer )
+        {
+
+            const { gradeBookNumber } = response.locals;
+
+            UserDB.findOne({
+                where : { gradeBookNumber },
+                attributes : ["uid"]
+            })
+            .then( userDBResult  => {
+                UserTaskPassedDB.create(
+                    {
+                        uid : uuidv4(),
+                        taskId : uid,
+                        userId : userDBResult.uid,
+                        score : taskDBResult.score
+                    }
+                 )
+            } )
+
+            response.send( JSON.stringify( { success : true , score : taskDBResult.score } ) )
+        }
+        else
+        {
+            response.send( JSON.stringify( {success : false} ) )
+        }
+    })
+    .catch( () => response.send(JSON.stringify({success : false})) );
+
+
 
 
 

@@ -5,7 +5,15 @@
 
 a{
   text-decoration: none !important;
+  outline: none;
 }
+
+/* a , a:hover , a:active{
+  text-decoration: none;
+  outline: none;
+  color : #1BBF00;
+} */
+
 
 *{
   color:#1BBF00;
@@ -22,9 +30,8 @@ body{
 }
 
 .app__shadow{
-  /*background: rgba(0 , 0 , 0 , 0.65) ;*/
   backdrop-filter: blur(2px);
-  height: 100vh;
+  height: 100%;
 }
 
 @font-face {

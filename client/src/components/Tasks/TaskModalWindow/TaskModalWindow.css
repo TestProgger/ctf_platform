@@ -1,3 +1,7 @@
+*{
+    font-family: "ChakraPetch-Bold"
+}
+
 
 .closeBtn{
   cursor: pointer;
@@ -64,3 +68,37 @@
 .modal_footer , .modal_body{
     border-top: 2px solid #1BBF00 ;
 }
+
+.modal_body p{
+    font-size: 18px;
+}
+
+.file_anchor , .file_anchor:hover{
+    outline: none;
+    color: #1BBF00;
+    font-size: 24px;
+    transition: cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+
+.file_anchor{
+    text-decoration: none ;
+}
+
+.file_anchor:hover{
+    text-decoration: underline #1BBF00 !important ;
+}
+
+.modal_wrapper .sign_up__form input{
+    font-size: 18px;
+}
+
+/* .check_button{
+    background: rgba(0,0,0,1);
+    border-radius: 57px;
+    border: 1px solid #1BBF00;
+    color: #1BBF00;
+    font-size: 130%;
+    width: 150px;
+    height: 40px;
+    margin-left: 5%;
+} */

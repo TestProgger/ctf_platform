@@ -2,11 +2,11 @@
     width: 100%;
 }
 
-/*.home__app_shadow{*/
-/*    background: rgba(0 , 0 , 0 , 0.1) ;*/
-/*    backdrop-filter: blur(8px);*/
-/*    height: 90vh;*/
-/*  }*/
+.home__app_shadow{
+   background: rgba(0 , 0 , 0 , 0.1) ;
+   backdrop-filter: blur(8px);
+   height: 90vh;
+}
 
 .home__logo{
     width: 100%;
