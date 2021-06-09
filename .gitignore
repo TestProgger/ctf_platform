@@ -15,7 +15,7 @@ dbs/*
 
 public/*
 
-*/*.idea/
+.idea/
 public/files/categories/img/*
 public/files/tasks/img/*
 public/files/tasks/taskFiles/*
