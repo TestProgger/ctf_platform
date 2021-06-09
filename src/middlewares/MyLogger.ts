@@ -1,4 +1,4 @@
-import express , { Request , Response , NextFunction } from 'express';
+import express , { Request , Response , NextFunction, request } from 'express';
 import fs from 'fs';
 
 const LoggerDir = "./logging/";
@@ -19,6 +19,19 @@ const getFormatedTime = () => {
         }
 }
 
+const parseXAuthHeader = ( request :  Request ) => {
+
+    const xAuthHeader = request.headers["x-auth-token"];
+    if( xAuthHeader )
+    {
+        return JSON.parse( Buffer.from( xAuthHeader as string , 'base64' ).toString() );
+    }else
+    {
+        return null;
+    }
+
+
+}
 
 
 
@@ -35,7 +48,7 @@ export const Logger = () =>  ( request : Request , response : Response,
     const path : string =  request.path;
     const protocol : string =  request.protocol;
     const grageBookNumber : string = request.body?.authData?.gradeBookNumber;
-    const  xAuthHeader: string = request.headers["x-auth-token"] as string;
+    const  xAuthHeader: string =  parseXAuthHeader(request);
 
     fs.appendFile( logFileName , JSON.stringify( { timeStamp , method  , ip , path , protocol , gradeBookNumber: grageBookNumber , xAuthHeader } ) + "\n" , (err) => err ? console.log( err ) : null );
     next();

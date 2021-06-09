@@ -34,7 +34,7 @@ function Tasks( { ...props }){
     const [ correctAnswer , setCorrectAnswer ] = useState<boolean>(false);
 
 
-    const sc :  ScoreContextInterface = useContext(ScoreContext);
+    const {setScore} :  ScoreContextInterface = useContext(ScoreContext);
 
 
     const openModalWindow = (ind : number  , uid : string ) => {
@@ -60,7 +60,11 @@ function Tasks( { ...props }){
 
                     setTimeout( () => setCorrectAnswer(false) , 2000 );
 
-                    sc.setScore( (prevScore : number) => prevScore + response.data?.score );
+                    // sc.setScore( (prevScore : number) => prevScore + response.data?.score );
+                    http.post(apiEndpoint +  "/task/getScoresForCurrentUser")
+                    .then( ( response:any ) => response.data )
+                    .then( (data) => setScore(data?.scores) )
+                    .catch(console.debug);
                     
                 }else
                 {
