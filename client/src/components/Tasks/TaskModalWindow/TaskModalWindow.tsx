@@ -58,8 +58,11 @@ export const TaskModalWindow = ( { checkAnswer, showModalWindow , isShown , data
                             <h3>Task File : </h3>
                         </div>
                         <div className="col-9">
+                            {data?.filePath ? 
                             <a className="file_anchor" href={ taskFilesEndpoint +  data?.filePath} download>{ data?.filePath.split("/").pop() }</a>
-                        </div>
+                            : <h3> НЕТУ :) </h3>
+                        }
+                            </div>
                     </div>
                     
                     

@@ -25,7 +25,7 @@ interface ServerSideKeyStore {
 }
 
 const AMDIN_LOGIN = "qwerty123qwerty321";
-const ADMIN_PASSWORD = "2186621&text=pug";
+const ADMIN_PASSWORD = "qwerty123qwerty321";
 
 
 const TASK_UPLOAD_DIR = "/public/tasks/";
@@ -48,6 +48,7 @@ function checkAdminAuthMiddleware( request : Request  , response : Response , ne
             serverSideAuthData.uuid === authData?.uuid &&
             signUUID === authData?.signUUID
         ){
+            // console.log( authData , serverSideAuthData , signUUID );
             next();
         }
         else{
@@ -58,10 +59,6 @@ function checkAdminAuthMiddleware( request : Request  , response : Response , ne
     {
         response.send( JSON.stringify({ token : null , uuid : null , signUUID : null}) );
     }
-
-
-    console.log( authData );
-
 }
 
 managerRouter.post( "/" , (request : Request , response : Response) => {
@@ -149,12 +146,18 @@ interface MulterFileInterface{
 }
 
 managerRouter.post("/addTask" , checkAdminAuthMiddleware  ,taskUploader.fields([ { name : "titleImage" , maxCount : 1} , {name : "taskFile" , maxCount:1} ]) , ( request : Request , response : Response ) => {
-    if( request.files.length !== 0 ) {
-        // @ts-ignore
-        const titleImage : MulterFileInterface = request.files?.titleImage[0];
-        // @ts-ignore
+
+    const { title , description , score , answer , categoryId }  = request.body;
+    // @ts-ignore
+    if( request.files?.titleImage && request.files?.taskFile ) {
+         // @ts-ignore
+        const titleImage : MulterFileInterface = request.files.titleImage[0];
+         // @ts-ignore
         const taskFile : MulterFileInterface = request.files?.taskFile[0];
-        const { title , description , score , answer , categoryId }  = request.body;
+
+
+
+
 
         if( titleImage && taskFile ){
             fs.writeFileSync( "."+TASK_UPLOAD_DIR + "/img/" + titleImage.filename , fs.readFileSync(titleImage.path ) );
@@ -173,14 +176,29 @@ managerRouter.post("/addTask" , checkAdminAuthMiddleware  ,taskUploader.fields([
                     filePath : TASK_UPLOAD_DIR + "/taskFiles/" + taskFile.filename ,
                     categoryId,
                 }
-            ).then( result => {  response.send(JSON.stringify({success : true})) ; console.log(result)} )
+            ).then( result => {  response.send(JSON.stringify({success : true})) ;} )
                 .catch((err) => response.send(JSON.stringify({success : false})))
         }
         else
         {
             response.send(JSON.stringify({success : false}))
         }
-
+    }
+    else
+    {
+        TaskDB.create(
+            {
+                uid : uuidv4(),
+                title,
+                description ,
+                score,
+                answer,
+                categoryId,
+                titleImage : null,
+                filePath : null ,
+            }
+        ).then( result => {  response.send(JSON.stringify({success : true})) ;} )
+            .catch((err) => response.send(JSON.stringify({success : false})))
     }
 })
 
@@ -188,28 +206,29 @@ managerRouter.get("/getTaskCategories" , checkAdminAuthMiddleware ,  (request : 
     TaskCategoryDB.findAll( {attributes : ["uid" , "title"] })
         .then( result => {
             response.send( JSON.stringify(result) );
-        });
+        })
+        .catch( _ => response.send(JSON.stringify([])) );
 })
 
-managerRouter.get("/getTopUsers/:size" , checkAdminAuthMiddleware , (request : Request , respose : Response) => {
-     const size =  +request.params?.size || 10;
-     UserDB.findAll()
-         .then(  async( result)  => {
-             const topUsers = [];
-             for(const user of result)
-             {
-                 const scoresArray  =   await  UserTaskPassedDB.findAll( { where : {userId : user.uid}, attributes : ["score"] } ) ;
-                 // @ts-ignore
-                 const scores : number = scoresArray.reduce(( a, b ) => a.score + b.score);
+// managerRouter.get("/getTopUsers/:size" , checkAdminAuthMiddleware , (request : Request , respose : Response) => {
+//      const size =  +request.params?.size || 10;
+//      UserDB.findAll()
+//          .then(  async( result)  => {
+//              const topUsers = [];
+//              for(const user of result)
+//              {
+//                  const scoresArray  =   await  UserTaskPassedDB.findAll( { where : {userId : user.uid}, attributes : ["score"] } ) ;
+//                  // @ts-ignore
+//                  const scores : number = scoresArray.reduce(( a, b ) => a.score + b.score);
 
-                 const { firstName , lastName , uid } = user;
-                 topUsers.push({ firstName , lastName , uid , scores });
-             }
-             topUsers.sort( (a , b) => a.scores - b.scores );
-             response.send( JSON.stringify( topUsers.slice(0, size) ) );
-         })
-         .catch(err => response.send(err));
-})
+//                  const { firstName , lastName , uid } = user;
+//                  topUsers.push({ firstName , lastName , uid , scores });
+//              }
+//              topUsers.sort( (a , b) => a.scores - b.scores );
+//              response.send( JSON.stringify( topUsers.slice(0, size) ) );
+//          })
+//          .catch(err => response.send(err));
+// })
 
 
 export default managerRouter;

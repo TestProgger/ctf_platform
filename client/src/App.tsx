@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 
 // Components
 import Header  from './components/Header';
@@ -14,6 +14,7 @@ import './static/css/bootstrap.min.css';
 
 // Context
 import  { AuthContext } from './context/AuthContext';
+import { ScoreContext } from './context/ScoreContext';
 
 function App() {
 
@@ -23,14 +24,18 @@ function App() {
 
   const routes = useRoutes(isAuthenticated);
 
+  const [ score , setScore]  = useState(0);
+
 
 
   return (
     <AuthContext.Provider value = {{ login , logout , token , uuid  , gradeBookNumber, isAuthenticated }} >
-          <div className = "app__shadow" >
-            {isAuthenticated ? <Header/> : null}
-            { routes }
-          </div>
+        <ScoreContext.Provider value = { { score , setScore} }>
+            <div className = "app__shadow" >
+              {isAuthenticated ? <Header/> : null}
+              { routes }
+            </div>
+          </ScoreContext.Provider>
     </AuthContext.Provider>
   );
 }

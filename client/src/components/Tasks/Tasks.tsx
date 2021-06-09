@@ -1,11 +1,14 @@
 import React, {useState, useEffect, useContext, Fragment} from 'react';
 import { apiEndpoint } from "../../hooks/useAuth";
+import  { Passed , NotPassed}  from './AnswerState/AnswerState';
+
 import {AuthContext, AuthContextInterface} from "../../context/AuthContext";
 
 import {TaskModalWindow} from "./TaskModalWindow";
 
 import './Tasks.css';
 import { useHttp } from '../../hooks/useHttp';
+import { ScoreContext, ScoreContextInterface } from '../../context/ScoreContext';
 
 interface TaskInterface{
     uid : string
@@ -27,6 +30,12 @@ function Tasks( { ...props }){
     const [ taskData , setTaskData ] = useState<TaskInterface>();
     const [ modalWindowsIsShown , setModalWindowIsShown ] = useState<boolean>(false);
 
+    const [ wrongAnswer , setWrongAnswer ] = useState<boolean>(false);
+    const [ correctAnswer , setCorrectAnswer ] = useState<boolean>(false);
+
+
+    const sc :  ScoreContextInterface = useContext(ScoreContext);
+
 
     const openModalWindow = (ind : number  , uid : string ) => {
         setTaskData( taskList[ind] );
@@ -45,10 +54,20 @@ function Tasks( { ...props }){
                     setTimeout( () => {
                         setModalWindowIsShown(false)
                     } , 1500 )
+
+                    setCorrectAnswer(true);
+                    setWrongAnswer(false);
+
+                    setTimeout( () => setCorrectAnswer(false) , 2000 );
+
+                    sc.setScore( (prevScore : number) => prevScore + response.data?.score );
                     
                 }else
                 {
-                    alert( "Error" )
+                    setCorrectAnswer(false);
+                    setWrongAnswer(true);
+
+                    setTimeout( () => setWrongAnswer(false) , 2000 );
                 }
             }
 
@@ -86,6 +105,8 @@ function Tasks( { ...props }){
                 </div>
             </div>
             <TaskModalWindow checkAnswer = {checkAnswer} data = {taskData as TaskInterface} isShown={modalWindowsIsShown} showModalWindow={setModalWindowIsShown}/>
+            { correctAnswer ?  <Passed/> : null}
+            { wrongAnswer ?  <NotPassed/> : null}
         </Fragment>
     );
 

@@ -8,7 +8,7 @@ export interface LoginDataInterface {
     signUUID : string | null
 }
 
-export const localStorageName : string = 'authData';
+export const localStorageName : string = 'adminAuthData';
 
 export const apiEndpoint  = "http://127.0.0.1:5000/manager/"
 
@@ -29,7 +29,7 @@ export const useAuth = () => {
 
         localStorage.setItem( localStorageName , JSON.stringify( responseData) );
         history.push(historyLocation);
-        console.log(historyLocation);
+        // console.log(historyLocation);
     } , []);
 
     const logout = useCallback(() => {
@@ -38,6 +38,11 @@ export const useAuth = () => {
         setSignUUID( null );
         localStorage.removeItem( localStorageName );
     },[]);
+
+    useEffect(() => {
+        const loginData = JSON.parse(  localStorage.getItem(localStorageName) as string );
+        loginData ? login(  loginData ) :  logout();
+    } , []);
 
     return { login , logout , token , uuid , signUUID };
 

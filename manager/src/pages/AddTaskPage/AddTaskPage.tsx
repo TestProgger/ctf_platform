@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import './AddTaskPage.css';
 import {apiEndpoint} from "../../hooks/useAuth";
 import {SaveAlert} from '../../components/SaveAlert';
@@ -80,6 +80,7 @@ export const AddTaskPage : React.FC = () => {
             const response = await http.get(apiEndpoint + '/getTaskCategories')
             if( response ){
                 setCategoryList(response.data)     // Правильно!
+                setCategoryId( response?.data[0]?.uid );
             }
             
         }

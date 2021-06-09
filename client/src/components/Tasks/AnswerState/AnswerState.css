@@ -1,0 +1,15 @@
+.passed__container{
+    min-width: 300px;
+    min-height: 50px;
+    max-width: 300px;
+    max-height: 100px;
+
+    /* border: 2px solid #1BBF00; */
+    border-radius: 50px;
+
+    position: absolute;
+    z-index: 999;
+
+    bottom: 250px;
+    right: 75px;
+}

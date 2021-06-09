@@ -108,10 +108,9 @@ export function generateToken( length : number = 128 ) : string
 
 export function checkAuthMiddleware( request : Request , response : Response , next : NextFunction):void
 {
-
     const authData : SessionUserAuthData = JSON.parse( Buffer.from( request.headers["x-auth-token"]  as string, "base64" ).toString("utf-8")  );
 
-    console.log( authData );
+    // console.log( authData );
     response.locals.gradeBookNumber = authData.gradeBookNumber;
 
     if( authData?.gradeBookNumber ){
@@ -192,6 +191,8 @@ apiRouter.post( "/register" , async( request: Request , response:Response ) => {
 
 apiRouter.post("/login" ,(request : Request , response : Response) => {
     const userData : RequestLoginType = request.body;
+
+    // response.locals.gradeBookNumber = userData.gradeBookNumber;
 
     UserDB.findOne(
         {
@@ -289,7 +290,7 @@ apiRouter.post("/taskCategories/:category" , checkAuthMiddleware , (request : Re
             });
     }catch (ex)
     {
-        console.log(ex);
+        // console.log(ex);
         response.send( {  } );
     }
 });
@@ -304,7 +305,7 @@ apiRouter.post("/taskCategories" , checkAuthMiddleware  ,  ( request : Request ,
             .catch( _ => response.send({  }));
     }catch (ex)
     {
-        console.log(ex);
+        // console.log(ex);
         response.send( {  } );
     }
 
@@ -332,22 +333,41 @@ apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , (request:Request 
 
             const { gradeBookNumber } = response.locals;
 
+
             UserDB.findOne({
                 where : { gradeBookNumber },
                 attributes : ["uid"]
             })
             .then( userDBResult  => {
-                UserTaskPassedDB.create(
-                    {
-                        uid : uuidv4(),
-                        taskId : uid,
-                        userId : userDBResult.uid,
-                        score : taskDBResult.score
+
+                UserTaskPassedDB.findAll( {
+                    where : { taskId : uid } ,
+                    attributes : [ 'uid' ] }
+                )
+                .then( userTaskPassedResult => {
+                    if( userTaskPassedResult.length ){
+                        response.send( JSON.stringify( { success : true , score : 0 } ) )
                     }
-                 )
+                    else
+                    {
+                        UserTaskPassedDB.create(
+                            {
+                                uid : uuidv4(),
+                                taskId : uid,
+                                userId : userDBResult.uid,
+                                score : taskDBResult.score
+                            }
+                         )
+                         .then( _ => { response.send( JSON.stringify( { success : true , score : taskDBResult.score } ) ) } )
+                         .catch(console.log);
+                    }
+                } )
+
+
+
             } )
 
-            response.send( JSON.stringify( { success : true , score : taskDBResult.score } ) )
+
         }
         else
         {
@@ -358,6 +378,33 @@ apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , (request:Request 
 
 
 
+
+
+});
+
+apiRouter.post("/task/getScoresForCurrentUser" , checkAuthMiddleware , (request : Request , response : Response) => {
+    const {gradeBookNumber} = response.locals;
+
+    UserDB.findOne( {
+        where : {  gradeBookNumber },
+        attributes : ["uid"]
+    } )
+    .then( userResult => {
+
+        UserTaskPassedDB.findAll({
+            where : { userId : userResult.uid },
+            attributes : [ 'score' ]
+        })
+        .then( taskPassedResult => {
+            let scoreSum = 0;
+            for( const i of taskPassedResult ){
+                scoreSum += i.score;
+            }
+            response.send( JSON.stringify( {scores : scoreSum } ) );
+        } )
+
+
+    } );
 
 
 });

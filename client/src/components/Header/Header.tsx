@@ -1,4 +1,4 @@
-import React, { Fragment, useContext } from 'react';
+import React, { Fragment, useContext, useEffect } from 'react';
 
 import { Link} from 'react-router-dom';
 
@@ -12,6 +12,9 @@ import './Header.css';
 import logoIcon from '../../static/images/magnifier_logo.png';
 // import logoIcon from '../../static/images/animated/logo.gif';
 import scoreIcon from '../../static/images/cpu_score_icon.png';
+import { ScoreContext, ScoreContextInterface } from '../../context/ScoreContext';
+import { useHttp } from '../../hooks/useHttp';
+import { apiEndpoint } from '../../hooks/useAuth';
 
 export const Header = () => {
 
@@ -24,6 +27,21 @@ export const Header = () => {
         history.push("/auth");
         
     }
+    const http = useHttp();
+    const { score  , setScore  } : ScoreContextInterface = useContext<ScoreContextInterface>(ScoreContext);
+
+    useEffect( () => {
+        setTimeout( () => {
+            http.post(apiEndpoint +  "/task/getScoresForCurrentUser")
+            .then( ( response:any ) => response.data )
+            .then( (data) => setScore(data?.scores) )
+            .catch(console.debug);
+        }  , 2000)
+        
+    } , [] )
+
+
+    
 
 
     return (
@@ -48,7 +66,7 @@ export const Header = () => {
 
                     <div className = "col-2 g-0 score__board">
                         <div className="row scores justify-content-around"> 
-                            <div className = "col"><span className="h4" >100</span></div>
+                            <div className = "col"><span className="h4" >{score}</span></div>
                             <div className="col"><img className="score__icon" src={scoreIcon} alt=""/> </div>  
                         </div>
                         <div className="row g-0" > <button className="h5 logout" onClick = { logoutHandler  } > Logout </button> </div>

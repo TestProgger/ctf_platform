@@ -92,13 +92,11 @@
     font-size: 18px;
 }
 
-/* .check_button{
-    background: rgba(0,0,0,1);
-    border-radius: 57px;
-    border: 1px solid #1BBF00;
-    color: #1BBF00;
-    font-size: 130%;
-    width: 150px;
-    height: 40px;
-    margin-left: 5%;
-} */
+.modal_body img{
+    max-width: 250px;
+    
+}
+
+.modal_body p{
+    word-break: break-all;
+}
