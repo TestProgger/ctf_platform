@@ -106,14 +106,34 @@ export function generateToken( length : number = 128 ) : string
     return token;
 }
 
+
+const CACHED_USER_DATA = new Map<string , string>();
+
+const  getUidForCurrentUser = async( gradeBookNumber : string) => {
+    if( gradeBookNumber ){
+        const uid = await UserDB.findOne( {
+            where : { gradeBookNumber },
+            attributes : ['uid']
+        }  );
+        CACHED_USER_DATA.set( gradeBookNumber , uid.getDataValue("uid") );
+    }
+
+}
+
 export function checkAuthMiddleware( request : Request , response : Response , next : NextFunction):void
 {
     const authData : SessionUserAuthData = JSON.parse( Buffer.from( request.headers["x-auth-token"]  as string, "base64" ).toString("utf-8")  );
 
-    // console.log( authData );
-    response.locals.gradeBookNumber = authData.gradeBookNumber;
+
+
 
     if( authData?.gradeBookNumber ){
+
+        response.locals.gradeBookNumber = authData?.gradeBookNumber;
+        if( !CACHED_USER_DATA.has(authData?.gradeBookNumber) ){
+            getUidForCurrentUser( authData?.gradeBookNumber );
+        }
+
         const serverSideAuthData : SessionUserAuthData = TEMPORARY_KEY_STORAGE.get( authData.gradeBookNumber );
 
         if( serverSideAuthData )
@@ -283,8 +303,33 @@ apiRouter.post("/taskCategories/:category" , checkAuthMiddleware , (request : Re
                             attributes : ['uid' , 'title' , "categoryId" , "description" , "filePath" , "titleImage" , "score"]
 
                         }
-                    ).then( rows => {
-                        response.send( rows );
+                    ).then( taskRows => {
+
+                        UserTaskPassedDB.findAll( {
+                            where : { userId : CACHED_USER_DATA.get(response.locals.gradeBookNumber) },
+                            attributes : ['taskId']
+                        } )
+                        .then(  userTaskPassed => {
+
+                            const tasks = taskRows.map( item => {
+                                for( const it of userTaskPassed )
+                                {
+                                    if ( it.taskId === item.uid )
+                                    {
+                                        return { ...item  , passed : true }
+                                    }
+                                }
+                                return { ...item  , passed : false }
+                            } );
+
+
+                            response.send( JSON.stringify( tasks ) );
+
+                        } )
+                        .catch( _ => response.send( JSON.stringify( taskRows ) ) );
+
+
+
                     } ).catch( _ => response.send({  }));
                 }else{ response.send( {  } ); }
             });
