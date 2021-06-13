@@ -16,6 +16,7 @@ import { ScoreContext, ScoreContextInterface } from '../../context/ScoreContext'
 import { useHttp } from '../../hooks/useHttp';
 import { apiEndpoint } from '../../hooks/useAuth';
 
+
 export const Header = () => {
 
     const auth : AuthContextInterface = useContext<AuthContextInterface>( AuthContext );

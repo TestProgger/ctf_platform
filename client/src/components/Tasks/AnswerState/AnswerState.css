@@ -4,12 +4,11 @@
     max-width: 300px;
     max-height: 100px;
 
-    /* border: 2px solid #1BBF00; */
     border-radius: 50px;
 
     position: absolute;
-    z-index: 999;
+    z-index: 99999;
 
-    bottom: 250px;
+    bottom: 17%;
     right: 75px;
 }

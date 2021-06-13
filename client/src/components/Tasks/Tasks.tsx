@@ -106,11 +106,12 @@ function Tasks( { ...props }){
         
     }  , []);
 
+
     return (
         <Fragment>
             <div className="task__app_shadow ">
                 <div className="row justify-content-center">
-                    <table className="table w-75">
+                    <table className="table w-75 mt-4">
                         <thead>
                         <tr>
                             <th scope="col">#</th>

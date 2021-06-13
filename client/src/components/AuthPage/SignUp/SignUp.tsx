@@ -73,7 +73,7 @@ export const SignUp = ({ signUpHandler } : IProps) => {
             <div className = "sign_up__form">
                 <label  className="form-label">Confirm Password</label>
                 <div className="">
-                    <input type="text" className="form_input"
+                    <input type="password" className="form_input"
                             placeholder="******"
                             value = { confirmPassword }
                             onChange = { ( event : React.ChangeEvent<HTMLInputElement> ) => setConfirmPassword(event.target.value) }

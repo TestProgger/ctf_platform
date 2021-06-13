@@ -6,7 +6,7 @@ import Header  from './components/Header';
 // hooks
 
 import { useRoutes } from './hooks/useRoutes';
-import { useAuth } from './hooks/useAuth';
+import { LoginDataInterface, useAuth } from './hooks/useAuth';
 
 // Styles
 import './App.css';
@@ -22,11 +22,33 @@ function App() {
 
   const isAuthenticated : boolean = !!token;
 
-  const routes = useRoutes(isAuthenticated);
+  const routes =  useRoutes(isAuthenticated) ;
+
 
   const [ score , setScore]  = useState(0);
 
+  window.onstorage = ( { key , newValue } : StorageEvent ) => {
 
+    if( key === 'authData' )
+    {
+      try{
+        const authData : LoginDataInterface = JSON.parse( newValue as string);
+        if( !( authData.token && authData.gradeBookNumber && authData.uuid) )
+        {
+          logout();
+        }
+      
+      }
+      catch( ex )
+      {
+        logout();
+      }
+      
+
+    }
+
+    
+  }
 
   return (
     <AuthContext.Provider value = {{ login , logout , token , uuid  , gradeBookNumber, isAuthenticated }} >

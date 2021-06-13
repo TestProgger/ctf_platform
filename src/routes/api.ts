@@ -16,7 +16,8 @@ export interface RequestRegisterType{
 export interface SessionUserAuthData{
     gradeBookNumber : string,
     token : string,
-    uuid : string
+    uuid : string,
+    userId : string
 }
 
 export interface RequestLoginType{
@@ -106,33 +107,13 @@ export function generateToken( length : number = 128 ) : string
     return token;
 }
 
-
-const CACHED_USER_DATA = new Map<string , string>();
-
-const  getUidForCurrentUser = async( gradeBookNumber : string) => {
-    if( gradeBookNumber ){
-        const uid = await UserDB.findOne( {
-            where : { gradeBookNumber },
-            attributes : ['uid']
-        }  );
-        CACHED_USER_DATA.set( gradeBookNumber , uid.getDataValue("uid") );
-    }
-
-}
-
 export function checkAuthMiddleware( request : Request , response : Response , next : NextFunction):void
 {
     const authData : SessionUserAuthData = JSON.parse( Buffer.from( request.headers["x-auth-token"]  as string, "base64" ).toString("utf-8")  );
 
-
-
-
     if( authData?.gradeBookNumber ){
 
         response.locals.gradeBookNumber = authData?.gradeBookNumber;
-        if( !CACHED_USER_DATA.has(authData?.gradeBookNumber) ){
-            getUidForCurrentUser( authData?.gradeBookNumber );
-        }
 
         const serverSideAuthData : SessionUserAuthData = TEMPORARY_KEY_STORAGE.get( authData.gradeBookNumber );
 
@@ -144,19 +125,19 @@ export function checkAuthMiddleware( request : Request , response : Response , n
                 next();
             }
             else{
-                response.send( JSON.stringify({ token : null , uuid : null , gradeBookNumber : null }) );
+                response.json( { token : null , uuid : null , gradeBookNumber : null } );
             }
         }
         else
         {
-            response.send( JSON.stringify({ token : null , uuid : null , gradeBookNumber : null }) );
+            response.json( { token : null , uuid : null , gradeBookNumber : null } );
         }
     }
 
 }
 
 export const TEMPORARY_KEY_STORAGE : Map<string, SessionUserAuthData> = new Map<string, SessionUserAuthData>();
-export const TEMPORARY_KEY_STORAGE_LIFETIME = 3600000;
+export const TEMPORARY_KEY_STORAGE_LIFETIME = 4 * 60 * 60 * 1000;
 
 const apiRouter: Router  = express.Router();
 
@@ -182,8 +163,6 @@ apiRouter.post( "/register" , async( request: Request , response:Response ) => {
             gradeBookNumber: userData.gradeBookNumber
         }
     }).then( (data : object[]) => {
-
-        // console.log( data )
         if( !data.length )
         {
             const sha256 = crypto.createHash('sha256');
@@ -199,14 +178,14 @@ apiRouter.post( "/register" , async( request: Request , response:Response ) => {
                 secretToken :  crypto.randomBytes(64).toString("base64")
             })
             .then(() => response.send( { successfully : true } ))
-            .catch( () => response.send( { successfully : false  , errorText : "Ошибка сохранения"} ));
+            .catch( () => response.send( { successfully : false  , errorText : "Save error"} ));
             sha256.end();
         }else{
-            response.send( { successfully : false , errorText : "Пользователь уже зарегестрирован" } )
+            response.send( { successfully : false , errorText : "The user is already registered" } )
         }
 
     } )
-    .catch( () => response.send( { successfully : false , errorText : "Ошибка Сервера" } ) )
+    .catch( () => response.send( { successfully : false , errorText : "Server Error" } ) )
 });
 
 apiRouter.post("/login" ,(request : Request , response : Response) => {
@@ -230,7 +209,7 @@ apiRouter.post("/login" ,(request : Request , response : Response) => {
 
             if ( sha256.digest('hex') === password  )
             {
-                const sessionData : SessionUserAuthData = { token : '' , uuid : '' , gradeBookNumber : userData.gradeBookNumber };
+                const sessionData : SessionUserAuthData = { token : '' , uuid : '' , gradeBookNumber : userData.gradeBookNumber , userId : user.uid };
 
                 sessionData.token = generateToken(32);
                 sessionData.uuid = uuidv5(secretToken , uuidv4() ) ;
@@ -251,17 +230,17 @@ apiRouter.post("/login" ,(request : Request , response : Response) => {
                 userData.gradeBookNumber
                 );
 
-                response.send(  JSON.stringify( sessionData ) );
+                response.json(   sessionData  );
             }
             else
             {
-                response.send( JSON.stringify ({ authorized : false }) );
+                response.json( { authorized : false } );
             }
             sha256.end();
         }
         else
         {
-            response.send( JSON.stringify ({ authorized : false }) );
+            response.json({ authorized : false } );
         }
     });
 });
@@ -305,8 +284,10 @@ apiRouter.post("/taskCategories/:category" , checkAuthMiddleware , (request : Re
                         }
                     ).then( taskRows => {
 
+                        const { userId }  = TEMPORARY_KEY_STORAGE.get( response.locals.gradeBookNumber );
+
                         UserTaskPassedDB.findAll( {
-                            where : { userId : CACHED_USER_DATA.get(response.locals.gradeBookNumber) },
+                            where : { userId },
                             attributes : ['taskId']
                         } )
                         .then(  userTaskPassed => {
@@ -323,20 +304,20 @@ apiRouter.post("/taskCategories/:category" , checkAuthMiddleware , (request : Re
                             } );
 
 
-                            response.send( JSON.stringify( tasks ) );
+                            response.json( tasks );
 
                         } )
-                        .catch( _ => response.send( JSON.stringify( taskRows ) ) );
+                        .catch( _ => response.json(  taskRows )  );
 
 
 
-                    } ).catch( _ => response.send({  }));
-                }else{ response.send( {  } ); }
+                    } ).catch( _ => response.json({  }));
+                }else{ response.json( {  } ); }
             });
     }catch (ex)
     {
         // console.log(ex);
-        response.send( {  } );
+        response.json( {  } );
     }
 });
 
@@ -345,13 +326,13 @@ apiRouter.post("/taskCategories" , checkAuthMiddleware  ,  ( request : Request ,
     try {
         TaskCategoryDB.findAll()
             .then( data => {
-                response.send( data );
+                response.json( data );
             } )
-            .catch( _ => response.send({  }));
+            .catch( _ => response.json({  }));
     }catch (ex)
     {
         // console.log(ex);
-        response.send( {  } );
+        response.json( {  } );
     }
 
 } );
@@ -365,9 +346,6 @@ apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , (request:Request 
 
     const {answer  , uid} : AnswerDataInterface = request.body;
 
-    // const  sha256 = crypto.createHash('sha256');
-    // sha256.update( answer.trim() );
-
     TaskDB.findOne( {
         where : {uid},
         attributes : [ "answer" , "score" ]
@@ -377,13 +355,7 @@ apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , (request:Request 
         {
 
             const { gradeBookNumber } = response.locals;
-
-
-            UserDB.findOne({
-                where : { gradeBookNumber },
-                attributes : ["uid"]
-            })
-            .then( userDBResult  => {
+            const { userId } = TEMPORARY_KEY_STORAGE.get( gradeBookNumber );
 
                 UserTaskPassedDB.findAll( {
                     where : { taskId : uid } ,
@@ -391,7 +363,7 @@ apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , (request:Request 
                 )
                 .then( userTaskPassedResult => {
                     if( userTaskPassedResult.length ){
-                        response.send( JSON.stringify( { success : true , score : 0 } ) )
+                        response.json(  { success : true , score : 0 }  );
                     }
                     else
                     {
@@ -399,27 +371,24 @@ apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , (request:Request 
                             {
                                 uid : uuidv4(),
                                 taskId : uid,
-                                userId : userDBResult.uid,
+                                userId,
                                 score : taskDBResult.score
                             }
                          )
-                         .then( _ => { response.send( JSON.stringify( { success : true , score : taskDBResult.score } ) ) } )
+                         .then( _ => { response.json( { success : true , score : taskDBResult.score }  ) } )
                          .catch(console.log);
                     }
                 } )
 
 
 
-            } )
-
-
         }
         else
         {
-            response.send( JSON.stringify( {success : false} ) )
+            response.json(  {success : false}  )
         }
     })
-    .catch( () => response.send(JSON.stringify({success : false})) );
+    .catch( () => response.json({success : false}) );
 
 
 
@@ -429,15 +398,10 @@ apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , (request:Request 
 
 apiRouter.post("/task/getScoresForCurrentUser" , checkAuthMiddleware , (request : Request , response : Response) => {
     const {gradeBookNumber} = response.locals;
-
-    UserDB.findOne( {
-        where : {  gradeBookNumber },
-        attributes : ["uid"]
-    } )
-    .then( userResult => {
+    const { userId }  = TEMPORARY_KEY_STORAGE.get( gradeBookNumber );
 
         UserTaskPassedDB.findAll({
-            where : { userId : userResult.uid },
+            where : { userId },
             attributes : [ 'score' ]
         })
         .then( taskPassedResult => {
@@ -447,10 +411,6 @@ apiRouter.post("/task/getScoresForCurrentUser" , checkAuthMiddleware , (request 
             }
             response.send( JSON.stringify( {scores : scoreSum } ) );
         } )
-
-
-    } );
-
 
 });
 

@@ -37,7 +37,16 @@ function AuthPage(){
                 'Content-Type': 'application/json'
               }
         }).then( response => response.json() )
-        .then( responseData => auth.login(responseData)  )
+        .then( responseData => {
+            if( responseData?.authorized === false )
+            {
+                alert( "Authorization Error: Invalid username or password"  )
+            }else
+            {
+                auth.login(responseData);
+            }
+            
+        })
         .catch( error => auth.logout() );
     }
 
@@ -52,9 +61,9 @@ function AuthPage(){
         } ).then( response => response.json() )
         .then( data => {
             if( data?.success ){
-                alert( "Вы успешно зарегестрированы. Можете авторизоваться" );
+                alert( "You have successfully registered. You can log in" );
             }else{
-                alert( "Ошибка : " + data.errorText );
+                alert( "Error : " + data.errorText );
             }
         })
         .catch( console.log);
