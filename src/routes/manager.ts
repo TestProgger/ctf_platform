@@ -1,7 +1,7 @@
 import express, { Request , Response, Router, response, NextFunction} from 'express';
 import { UserDB , TaskDB , UserTaskPassedDB , TaskCategoryDB } from '../models';
 import {v4 as uuidv4 , v5 as uuidv5} from 'uuid'
-import { generateToken } from './api';
+import { checkAuthMiddleware, generateToken } from './api';
 
 import multer from 'multer';
 
@@ -52,12 +52,12 @@ function checkAdminAuthMiddleware( request : Request  , response : Response , ne
             next();
         }
         else{
-            response.send( JSON.stringify({ token : null , uuid : null , signUUID : null}) );
+            response.json( { token : null , uuid : null , signUUID : null} );
         }
     }
     else
     {
-        response.send( JSON.stringify({ token : null , uuid : null , signUUID : null}) );
+        response.json( { token : null , uuid : null , signUUID : null} );
     }
 }
 
@@ -76,11 +76,11 @@ managerRouter.post( "/" , (request : Request , response : Response) => {
             signUUID :  uuidv5(adminData.randomBytes , adminData.uuid)
         }
         ADMIN_KEY_STORE.set( AMDIN_LOGIN , adminData );
-        response.send( respData );
+        response.json( respData );
     }
     else
     {
-        response.send( JSON.stringify({ token : null , uuid : null , signUUID : null}) )
+        response.json( { token : null , uuid : null , signUUID : null} );
     }
 } );
 
@@ -119,8 +119,8 @@ managerRouter.post("/addTaskCategory"  , checkAdminAuthMiddleware , taskCategory
             titleImage: CATEGORY_UPLOAD_DIR + "/img/" + titleImage.filename,
             shortName
         }
-    ).then(result => response.send( JSON.stringify({ success : true }) ))
-        .catch(err => response.send( JSON.stringify({ success : false }) ));
+    ).then(result => response.json( { success : true } ))
+        .catch(err => response.json( { success : false } ));
 });
 
 const taskStorageConfig = multer.diskStorage({
@@ -155,10 +155,6 @@ managerRouter.post("/addTask" , checkAdminAuthMiddleware  ,taskUploader.fields([
          // @ts-ignore
         const taskFile : MulterFileInterface = request.files?.taskFile[0];
 
-
-
-
-
         if( titleImage && taskFile ){
             fs.writeFileSync( "."+TASK_UPLOAD_DIR + "/img/" + titleImage.filename , fs.readFileSync(titleImage.path ) );
             fs.unlinkSync( titleImage.path );
@@ -176,12 +172,12 @@ managerRouter.post("/addTask" , checkAdminAuthMiddleware  ,taskUploader.fields([
                     filePath : TASK_UPLOAD_DIR + "/taskFiles/" + taskFile.filename ,
                     categoryId,
                 }
-            ).then( result => {  response.send(JSON.stringify({success : true})) ;} )
-                .catch((err) => response.send(JSON.stringify({success : false})))
+            ).then( result => {  response.json({success : true}) } )
+                .catch((err) => response.json({success : false}))
         }
         else
         {
-            response.send(JSON.stringify({success : false}))
+            response.json({success : false})
         }
     }
     else
@@ -197,38 +193,31 @@ managerRouter.post("/addTask" , checkAdminAuthMiddleware  ,taskUploader.fields([
                 titleImage : null,
                 filePath : null ,
             }
-        ).then( result => {  response.send(JSON.stringify({success : true})) ;} )
-            .catch((err) => response.send(JSON.stringify({success : false})))
+        ).then( result => {  response.json({success : true})} )
+            .catch((err) => response.json({success : false}))
     }
 })
 
 managerRouter.get("/getTaskCategories" , checkAdminAuthMiddleware ,  (request : Request  , response: Response) => {
     TaskCategoryDB.findAll( {attributes : ["uid" , "title"] })
         .then( result => {
-            response.send( JSON.stringify(result) );
+            response.json( result );
         })
-        .catch( _ => response.send(JSON.stringify([])) );
+        .catch( _ => response.json([]) );
 })
 
-// managerRouter.get("/getTopUsers/:size" , checkAdminAuthMiddleware , (request : Request , respose : Response) => {
-//      const size =  +request.params?.size || 10;
-//      UserDB.findAll()
-//          .then(  async( result)  => {
-//              const topUsers = [];
-//              for(const user of result)
-//              {
-//                  const scoresArray  =   await  UserTaskPassedDB.findAll( { where : {userId : user.uid}, attributes : ["score"] } ) ;
-//                  // @ts-ignore
-//                  const scores : number = scoresArray.reduce(( a, b ) => a.score + b.score);
+managerRouter.get( "/getTasks" , checkAuthMiddleware , ( request : Request , response : Response ) => {
 
-//                  const { firstName , lastName , uid } = user;
-//                  topUsers.push({ firstName , lastName , uid , scores });
-//              }
-//              topUsers.sort( (a , b) => a.scores - b.scores );
-//              response.send( JSON.stringify( topUsers.slice(0, size) ) );
-//          })
-//          .catch(err => response.send(err));
-// })
+    console.table([ 1, 2,3,4 ])
 
+    TaskDB.findAll( {
+        attributes : [ "uid" , "title" ]
+    } )
+    .then(result => {
+        response.json(result)
+    })
+    .catch( _ => response.json([]) );
+
+} );
 
 export default managerRouter;

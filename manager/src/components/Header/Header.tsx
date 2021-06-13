@@ -10,10 +10,17 @@ interface MenuItemInterface{ path : string , title : string };
 export const Header : React.FC = (  ) => {
 
 
-    const menuItems : Array< MenuItemInterface > = [
+    const menuItems : Array< MenuItemInterface | any> = [
         { path : "/" , title: "Home" },
+       
         { path : "/addTask" , title: "Add Task" },
+        { path : "/deleteTask" , title : "Delete Task"},
+        
         { path : "/addTaskCategory" , title: "Add Task Category" },
+        { path : "/deleteTaskCategory" , title: "Delete Task Category"} 
+     
+        
+        
     ]
 
     return (
@@ -24,8 +31,10 @@ export const Header : React.FC = (  ) => {
                     {
                         menuItems.map( item => {
                             return (
-                                <div className="col-3" key={item.title}>
-                                    <Link to={item.path} >  <button className="btn btn-outline-primary text-white btn-lg" >{ item.title }</button>  </Link>
+                                <div className="col" key={item.title}>
+                                    
+
+                                    <Link to={item.path} >  <button className="btn btn-outline-primary text-white btn-sm" >{ item.title }</button>  </Link>
                                 </div>
                             );
                         } )
