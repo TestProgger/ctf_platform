@@ -8,8 +8,14 @@
     "build": "tsc",
     "prestart": "npm run build",
     "start": "node .",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "manager": "concurrently \"npm run start\" \"npm run start --prefix manager \" "
+    "manager" : "npm run start --prefix manager",
+    "client" : "npm run start --prefix client",
+    "server" : "npm run start",
+    "start:server" : "concurrently \" npm run server \"",
+    "start:client" : "concurrently \" npm run server \" \"npm run client\" ",
+    "start:manager" : "concurrently \" npm run server \" \"npm run manager\" ",
+    "start:all" : "concurrently \" npm run server \" \"npm run client\" \"npm run manager\" ",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
