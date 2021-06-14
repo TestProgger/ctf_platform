@@ -26,8 +26,6 @@ export const useAuth = () => {
         setToken( responseData?.token );
         setUUID( responseData?.uuid );
         setGradeBookNumber( responseData?.gradeBookNumber );
-
-        // console.log( responseData );
         localStorage.setItem( localStorageName , JSON.stringify( responseData) );
         history.push(historyLocation);
      } , []);
