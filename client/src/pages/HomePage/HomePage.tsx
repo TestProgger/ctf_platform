@@ -1,11 +1,11 @@
 import React from 'react';
-import './Home.css';
+import './HomePage.css';
 
 
 import earthMap from '../../static/images/EarthMap.png';
 import hackedLogo from '../../static/images/hacked_logo.png';
 
-function Home(){
+function HomePage(){
 
     return(
         <div className="home__app_shadow">
@@ -22,4 +22,4 @@ function Home(){
 } 
 
 
-export default Home;
+export default HomePage;

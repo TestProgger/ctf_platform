@@ -1,12 +1,12 @@
 import React from 'react';
 
-import './AboutDevelopers.css';
+import './AboutDevelopersPage.css';
 
 // Componets
 
 import DevCard from './DevCard';
 
-function AboutDevelopers(){
+function AboutDevelopersPage(){
 
     return (
         <div className = "about_devs__container" >
@@ -43,4 +43,4 @@ function AboutDevelopers(){
 }
 
 
-export default AboutDevelopers;
+export default AboutDevelopersPage;

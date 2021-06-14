@@ -4,7 +4,7 @@ import  { Passed , NotPassed}  from './AnswerState/AnswerState';
 
 import {TaskModalWindow} from "./TaskModalWindow";
 
-import './Tasks.css';
+import './TasksPage.css';
 import { useHttp } from '../../hooks/useHttp';
 import { ScoreContext, ScoreContextInterface } from '../../context/ScoreContext';
 
@@ -26,7 +26,7 @@ interface TaskInterface{
 
 
 
-function Tasks( { ...props }){
+function TasksPage( { ...props }){
     const category: string = props.match.params.category;
     const http = useHttp();
 
@@ -147,4 +147,4 @@ function Tasks( { ...props }){
 
 }
 
-export default Tasks;
+export default TasksPage;

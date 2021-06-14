@@ -1,5 +1,5 @@
 import React from 'react';
-import "./TaskCategories.css";
+import "./TaskCategoriesPage.css";
 
 
 import joyIcon from '../../static/images/tasks/joy_icon.png';
@@ -13,7 +13,7 @@ import TaskCategoryCard from './TaskCategoryCard';
 
 
 
-function TaskCategories(){
+function TaskCategoriesPage(){
 
     return (
         <div className = "task_categories__container">
@@ -31,4 +31,4 @@ function TaskCategories(){
     );
 }
 
-export default TaskCategories;
+export default TaskCategoriesPage;
