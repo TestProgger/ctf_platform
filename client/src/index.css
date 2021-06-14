@@ -4,14 +4,14 @@
 }
 
 
-/* @font-face {
-    font-family: "ChakraPetch-Bold";
-    src: url("./static/fonts/ChakraPetch-Bold.ttf");
-} */
-
-
 @font-face {
     font-family: "ChakraPetch-Bold";
-    src: url("./static/fonts/Nerd.Font.Complete.ttf");
+    src: url("./static/fonts/ChakraPetch-Bold.ttf");
 }
+
+
+/* @font-face {
+    font-family: "ChakraPetch-Bold";
+    src: url("./static/fonts/Nerd.Font.Complete.ttf");
+} */
 

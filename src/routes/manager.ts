@@ -1,7 +1,6 @@
 import express, { Request , Response, Router, response, NextFunction} from 'express';
 import { UserDB , TaskDB , UserTaskPassedDB , TaskCategoryDB } from '../models';
 import {v4 as uuidv4 , v5 as uuidv5} from 'uuid'
-import { checkAuthMiddleware, generateToken } from './api';
 
 import multer from 'multer';
 
@@ -48,7 +47,6 @@ function checkAdminAuthMiddleware( request : Request  , response : Response , ne
             serverSideAuthData.uuid === authData?.uuid &&
             signUUID === authData?.signUUID
         ){
-            // console.log( authData , serverSideAuthData , signUUID );
             next();
         }
         else{
@@ -66,7 +64,7 @@ managerRouter.post( "/" , (request : Request , response : Response) => {
     if( loginData.login === AMDIN_LOGIN && loginData.password === ADMIN_PASSWORD )
     {
         const adminData : ServerSideKeyStore = { token : '' ,  randomBytes : '' , uuid : '' };
-        adminData.token = generateToken(16);
+        adminData.token = crypto.randomBytes(16).toString("hex");
         adminData.uuid = uuidv4();
         adminData.randomBytes = crypto.randomBytes(16).toString("base64");
         const respData =
@@ -206,10 +204,7 @@ managerRouter.get("/getTaskCategories" , checkAdminAuthMiddleware ,  (request : 
         .catch( _ => response.json([]) );
 })
 
-managerRouter.get( "/getTasks" , checkAuthMiddleware , ( request : Request , response : Response ) => {
-
-    console.table([ 1, 2,3,4 ])
-
+managerRouter.get( "/getTasks" , checkAdminAuthMiddleware , ( request : Request , response : Response ) => {
     TaskDB.findAll( {
         attributes : [ "uid" , "title" ]
     } )

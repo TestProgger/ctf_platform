@@ -1,12 +1,12 @@
-import React  ,  {useCallback} from 'react';
+import React   from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 
-import Home from '../components/Home';
-import AboutDevelopers from '../components/AboutDevelopers';
-import TaskCategories from '../components/TaskCategories';
-import Tasks from '../components/Tasks';
-import AuthPage from '../components/AuthPage';
-import ErrorPage from "../components/ErrorPage";
+import Home from '../pages/Home';
+import AboutDevelopers from '../pages/AboutDevelopers';
+import TaskCategories from '../pages/TaskCategories';
+import Tasks from '../pages/Tasks';
+import AuthPage from '../pages/AuthPage';
+import ErrorPage from "../pages/ErrorPage";
 
 
 export const useRoutes  = ( isAuthenticated : boolean ) => {

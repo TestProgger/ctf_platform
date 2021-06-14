@@ -37,10 +37,6 @@ export interface TaskAnswerInterface{
     answer : string,
 }
 
-function errorPlug(){
-    return JSON.stringify({ success : false })
-}
-
 export function validateRegisterRequest( data : RequestRegisterType  ) : RequestRegisterErrorType
 {
     const errorReport : RequestRegisterErrorType = {
@@ -92,20 +88,20 @@ export function validateRegisterRequest( data : RequestRegisterType  ) : Request
 
 }
 
-export function randint(min : number , max:number):number
-{
-    return Math.floor(( Math.random() * max ) + (min));
-}
+// export function randint(min : number , max:number):number
+// {
+//     return Math.floor(( Math.random() * max ) + (min));
+// }
 
-export function generateToken( length : number = 128 ) : string
-{
-    let token : string = "";
-    for( let i:number = 0; i < length ;i++)
-    {
-        token += randint(100, 254).toString(16);
-    }
-    return token;
-}
+// export function generateToken( length : number = 128 ) : string
+// {
+//     let token : string = "";
+//     for( let i:number = 0; i < length ;i++)
+//     {
+//         token += randint(100, 254).toString(16);
+//     }
+//     return token;
+// }
 
 export function checkAuthMiddleware( request : Request , response : Response , next : NextFunction):void
 {
@@ -211,7 +207,7 @@ apiRouter.post("/login" ,(request : Request , response : Response) => {
             {
                 const sessionData : SessionUserAuthData = { token : '' , uuid : '' , gradeBookNumber : userData.gradeBookNumber , userId : user.uid };
 
-                sessionData.token = generateToken(32);
+                sessionData.token = crypto.randomBytes(32).toString("hex");
                 sessionData.uuid = uuidv5(secretToken , uuidv4() ) ;
 
                 if ( TEMPORARY_KEY_STORAGE.has(  userData.gradeBookNumber ) )
@@ -316,7 +312,6 @@ apiRouter.post("/taskCategories/:category" , checkAuthMiddleware , (request : Re
             });
     }catch (ex)
     {
-        // console.log(ex);
         response.json( {  } );
     }
 });
@@ -331,7 +326,6 @@ apiRouter.post("/taskCategories" , checkAuthMiddleware  ,  ( request : Request ,
             .catch( _ => response.json({  }));
     }catch (ex)
     {
-        // console.log(ex);
         response.json( {  } );
     }
 
@@ -344,7 +338,7 @@ apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , (request:Request 
         uid : string
     }
 
-    const {answer  , uid} : AnswerDataInterface = request.body;
+    const {answer  , uid } : AnswerDataInterface = request.body;
 
     TaskDB.findOne( {
         where : {uid},
@@ -358,7 +352,7 @@ apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , (request:Request 
             const { userId } = TEMPORARY_KEY_STORAGE.get( gradeBookNumber );
 
                 UserTaskPassedDB.findAll( {
-                    where : { taskId : uid } ,
+                    where : { taskId : uid ,  userId } ,
                     attributes : [ 'uid' ] }
                 )
                 .then( userTaskPassedResult => {

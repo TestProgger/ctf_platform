@@ -42,3 +42,11 @@ tr , td {
      border-color: #1BBF00 !important;
      background-color: rgba(0 , 0 , 0 , 0.5);
  }
+
+ td.index{
+     font-size: 20px;
+ }
+
+ th{
+     text-align: center !important;
+ }

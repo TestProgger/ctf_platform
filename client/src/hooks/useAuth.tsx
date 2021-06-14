@@ -1,4 +1,4 @@
-import React , { useState , useCallback , useEffect} from 'react';
+import { useState , useCallback , useEffect} from 'react';
 
 import {useHistory} from 'react-router-dom';
 
@@ -51,7 +51,7 @@ export const useAuth = () => {
          ).then( data   => data.json() )
              .then( data =>  !(data?.token) ? logout() : login(data)  )
              .catch(_ => logout());
-     },[]);
+     },[login, logout]);
 
      useEffect( () => {
         const authData = localStorage.getItem(localStorageName);
@@ -73,6 +73,6 @@ export const useAuth = () => {
             logout();
         }
 
-     } , [login , logout]);
+     } , []);
      return { login , logout , checkAuthData , token , uuid , gradeBookNumber };
 }

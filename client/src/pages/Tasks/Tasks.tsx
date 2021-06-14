@@ -2,8 +2,6 @@ import React, {useState, useEffect, useContext, Fragment} from 'react';
 import { apiEndpoint } from "../../hooks/useAuth";
 import  { Passed , NotPassed}  from './AnswerState/AnswerState';
 
-import {AuthContext, AuthContextInterface} from "../../context/AuthContext";
-
 import {TaskModalWindow} from "./TaskModalWindow";
 
 import './Tasks.css';
@@ -29,7 +27,6 @@ interface TaskInterface{
 
 
 function Tasks( { ...props }){
-    const authContext   : AuthContextInterface = useContext<AuthContextInterface>(AuthContext);
     const category: string = props.match.params.category;
     const http = useHttp();
 
@@ -126,7 +123,7 @@ function Tasks( { ...props }){
                                     taskList.map( ( item , ind)  => {
                                         return (                                             
                                             <tr key = {item.uid} onClick={() => openModalWindow(ind , item.uid)} >
-                                                <td  valign="middle" align="center" >{ ind +1 }</td>
+                                                <td  valign="middle" align="center" className="index">{ ind +1 }</td>
                                                 <td valign="middle" align="center"> { item.title } </td>
                                                 <td valign="middle" align="center"> { item.score } </td>
                                                 <td valign="middle" align="center"> <img src={ item.passed ? passedIcon : notPassedIcon } alt="" width="48px" /> </td>

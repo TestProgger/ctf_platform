@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, {  useState } from 'react';
 
 // Components
 import Header  from './components/Header';
@@ -35,13 +35,13 @@ function App() {
         const authData : LoginDataInterface = JSON.parse( newValue as string);
         if( !( authData.token && authData.gradeBookNumber && authData.uuid) )
         {
-          window.location.reload()
+          logout();
         }
       
       }
       catch( ex )
       {
-        window.location.reload()
+        logout();
       }
       
 
