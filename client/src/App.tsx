@@ -35,13 +35,13 @@ function App() {
         const authData : LoginDataInterface = JSON.parse( newValue as string);
         if( !( authData.token && authData.gradeBookNumber && authData.uuid) )
         {
-          logout();
+          window.location.reload()
         }
       
       }
       catch( ex )
       {
-        logout();
+        window.location.reload()
       }
       
 

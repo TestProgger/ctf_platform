@@ -124,17 +124,14 @@ function Tasks( { ...props }){
                             
                             {
                                     taskList.map( ( item , ind)  => {
-                                        return ( 
-                                        // <li className="task mb-2" onClick={() => openModalWindow(ind , item.uid)} key = {item.uid}> { item.title } </li>
-                                            
-                                        <tr key = {item.uid} onClick={() => openModalWindow(ind , item.uid)} >
-                                            <th scope="row">{ ind +1 }</th>
-                                            <td> { item.title } </td>
-                                            <td> { item.score } </td>
-                                            <td> <img src={ item.passed ? passedIcon : notPassedIcon } alt="" width="48px" /> </td>
-                                        </tr>
+                                        return (                                             
+                                            <tr key = {item.uid} onClick={() => openModalWindow(ind , item.uid)} >
+                                                <td  valign="middle" align="center" >{ ind +1 }</td>
+                                                <td valign="middle" align="center"> { item.title } </td>
+                                                <td valign="middle" align="center"> { item.score } </td>
+                                                <td valign="middle" align="center"> <img src={ item.passed ? passedIcon : notPassedIcon } alt="" width="48px" /> </td>
+                                            </tr>
 
-                                        
                                         )
                                     } )
                                 
@@ -143,20 +140,6 @@ function Tasks( { ...props }){
                         </tbody>
                     </table>
                 </div>
-                
-
-
-                {/* <div className="tasks__container">
-
-                    <ol className="list-group list-group-flush task_list mt-5 mb-5">
-                        {
-                            taskList.map( ( item , ind)  => {
-                                return ( <li className="task mb-2" onClick={() => openModalWindow(ind , item.uid)} key = {item.uid}> { item.title } </li> )
-                            } )
-                        }
-
-                    </ol>
-                </div> */}
             </div>
             <TaskModalWindow checkAnswer = {checkAnswer} data = {taskData as TaskInterface} isShown={modalWindowsIsShown} showModalWindow={setModalWindowIsShown}/>
             { correctAnswer ?  <Passed/> : null}

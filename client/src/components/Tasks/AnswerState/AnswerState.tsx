@@ -7,7 +7,7 @@ import errIcon  from  "../../../static/images/error-icon.png";
 
 export const Passed = () => {
     return(
-        <div className="passed__container" >
+        <div className="answer_state__container" >
             <div className="row justify-content-center">
                 <div className="col-2">
                     <img src={okIcon} alt="" />
@@ -22,7 +22,7 @@ export const Passed = () => {
 }
 export const NotPassed = () => {
     return(
-        <div className="passed__container" >
+        <div className="answer_state__container" >
             <div className="row justify-content-center">
                 <div className="col-2">
                     <img src={errIcon} alt="" />
