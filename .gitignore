@@ -21,3 +21,4 @@ public/files/tasks/img/*
 public/files/tasks/taskFiles/*
 public/files/tasks/tmp/*
 
+package-lock.json
