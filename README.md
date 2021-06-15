@@ -6,7 +6,6 @@
 ####     Developer : [Makhmudov Shamil](https://vk.com/dubkinec) 
 ####     Designer : [Alexander Kozyrkov](https://vk.com/kozyrkov_alll) 
 
-======
 
 
 
