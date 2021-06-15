@@ -8,6 +8,7 @@
     "build": "tsc",
     "prestart": "npm run build",
     "start": "node .",
+
     "manager" : "npm run start --prefix manager",
     "client" : "npm run start --prefix client",
     "server" : "npm run start",
@@ -15,6 +16,12 @@
     "start:client" : "concurrently \" npm run server \" \"npm run client\" ",
     "start:manager" : "concurrently \" npm run server \" \"npm run manager\" ",
     "start:all" : "concurrently \" npm run server \" \"npm run client\" \"npm run manager\" ",
+
+    "prepare:manager" : "npm install --prefix manager",
+    "prepare:client" : "npm install --prefix client",
+    "prepare:server": "npm install",
+    "prepare" :  " concurrently \" npm run prepare:server \" \"npm run prepare:client\" \"npm run prepare:manager\" ",
+
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

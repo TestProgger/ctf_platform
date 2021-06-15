@@ -4,38 +4,9 @@ import { UserDB , TaskDB , UserTaskPassedDB , TaskCategoryDB } from '../models';
 import {v4 as uuidv4 , v5 as uuidv5} from 'uuid';
 
 import crypto  from 'crypto';
+import {RequestLoginType, RequestRegisterErrorType, RequestRegisterType, SessionUserAuthData} from "./@types/api";
 
-export interface RequestRegisterType{
-    firstName  : string,
-    lastName : string,
-    gradeBookNumber  : string,
-    password : string,
-    confirmPassword : string
-}
 
-export interface SessionUserAuthData{
-    gradeBookNumber : string,
-    token : string,
-    uuid : string,
-    userId : string
-}
-
-export interface RequestLoginType{
-    gradeBookNumber : string,
-    password : string
-}
-
-export interface RequestRegisterErrorType{
-    firstName  : boolean,
-    lastName : boolean,
-    gradeBookNumber  : boolean,
-    password : boolean
-}
-
-export interface TaskAnswerInterface{
-    taskId : number,
-    answer : string,
-}
 
 export function validateRegisterRequest( data : RequestRegisterType  ) : RequestRegisterErrorType
 {
@@ -122,8 +93,8 @@ export const TEMPORARY_KEY_STORAGE_LIFETIME = 4 * 60 * 60 * 1000;
 
 const apiRouter: Router  = express.Router();
 
-apiRouter.post("/", ( request : Request , response : Response ) => {
-    response.send( "<div style='position:absolute;top:25%;left:25%;align-items:center;'> <h1 style='color:#ff0000;font-size:25px;'> Саламалейкум :) </h1></div>");
+apiRouter.post("/", checkAuthMiddleware , (  request : Request , response : Response ) => {
+    response.status(200).send( "<div style='position:absolute;top:25%;left:25%;align-items:center;'> <h1 style='color:#ff0000;font-size:25px;'> Саламалейкум :) </h1></div>");
 });
 
 apiRouter.post( "/register" , async( request: Request , response:Response ) => {
@@ -333,9 +304,6 @@ apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , (request:Request 
                          .catch(console.log);
                     }
                 } )
-
-
-
         }
         else
         {
@@ -343,11 +311,6 @@ apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , (request:Request 
         }
     })
     .catch( () => response.json({success : false}) );
-
-
-
-
-
 });
 
 apiRouter.post("/task/getScoresForCurrentUser" , checkAuthMiddleware , (request : Request , response : Response) => {
@@ -365,7 +328,6 @@ apiRouter.post("/task/getScoresForCurrentUser" , checkAuthMiddleware , (request 
             }
             response.send( JSON.stringify( {scores : scoreSum } ) );
         } )
-
 });
 
 

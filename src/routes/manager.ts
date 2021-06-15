@@ -6,22 +6,9 @@ import multer from 'multer';
 
 import crypto from 'crypto';
 import * as fs from "fs";
+import {AdminKeyStore, ServerSideKeyStore} from "./@types/manager";
 
 const managerRouter  = express.Router();
-
-
-
-interface AdminKeyStore{
-    token : string,
-    uuid : string,
-    signUUID : string
-}
-
-interface ServerSideKeyStore {
-    randomBytes : string,
-    token : string,
-    uuid : string
-}
 
 const AMDIN_LOGIN = "qwerty123qwerty321";
 const ADMIN_PASSWORD = "qwerty123qwerty321";
