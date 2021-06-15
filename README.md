@@ -19,12 +19,29 @@
 
 ## Start Project
 
-    1. npm run prepare  - Installing dependencies to run the project
+Installing dependencies to run the project
+```bash
+    npm run prepare  
+```
 
+Run manager , server and client
+```bash
+    npm run start:all
+```
 
-    2. npm run start:all - Run manager , server and client
-       2.1 npm run start:server - Run server 
-       2.2 npm run start:manager - Run server & manager
-       2.3 npm run start:client - Run server & client
+Run server 
+```bash
+    npm run start:server
+```
+
+Run server & manager
+```bash
+    npm run start:manager
+```
+
+Run server & client
+```bash
+    npm run start:client
+```
 
 
