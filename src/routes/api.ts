@@ -307,12 +307,12 @@ apiRouter.post("/taskCategories/:category" , checkAuthMiddleware , (request : Re
 
 
 
-                    } ).catch( _ => response.json({  }));
-                }else{ response.json( {  } ); }
+                    } ).catch( _ => response.json([]));
+                }else{ response.json( []); }
             });
     }catch (ex)
     {
-        response.json( {  } );
+        response.json( [] );
     }
 });
 
