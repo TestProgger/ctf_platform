@@ -133,11 +133,11 @@ apiRouter.post( "/register" , async( request: Request , response:Response ) => {
             .catch( () => response.send( { successfully : false  , errorText : "Save error"} ));
             sha256.end();
         }else{
-            response.send( { successfully : false , errorText : "The user is already registered" } )
+            response.json( { successfully : false , errorText : "The user is already registered" } )
         }
 
     } )
-    .catch( () => response.send( { successfully : false , errorText : "Server Error" } ) )
+    .catch( () => response.json( { successfully : false , errorText : "Server Error" } ) )
 });
 
 apiRouter.post("/login" ,(request : Request , response : Response) => {
@@ -163,10 +163,7 @@ apiRouter.post("/login" ,(request : Request , response : Response) => {
                 sessionData.token = crypto.randomBytes(32).toString("hex");
                 sessionData.uuid = uuidv5(secretToken , uuidv4() ) ;
 
-                if ( TEMPORARY_KEY_STORAGE.has(  userData.gradeBookNumber ) )
-                {
-                    TEMPORARY_KEY_STORAGE.delete( userData.gradeBookNumber );
-                }
+                if ( TEMPORARY_KEY_STORAGE.has(  userData.gradeBookNumber ) ){ TEMPORARY_KEY_STORAGE.delete( userData.gradeBookNumber ); }
 
                 TEMPORARY_KEY_STORAGE.set( userData.gradeBookNumber , sessionData );
 
