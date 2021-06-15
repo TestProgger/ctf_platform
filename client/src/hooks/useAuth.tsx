@@ -1,6 +1,7 @@
 import { useState , useCallback , useEffect} from 'react';
 
 import {useHistory} from 'react-router-dom';
+import { useHttp } from './useHttp';
 
 export const apiEndpoint  = "http://127.0.0.1:5000/api/"
 
@@ -21,6 +22,8 @@ export const useAuth = () => {
     const history = useHistory();
     const historyLocation : string = history.location.pathname;
 
+    const http = useHttp();
+
 
     const login =  useCallback( ( responseData : LoginDataInterface ) => {
         setToken( responseData?.token );
@@ -37,40 +40,10 @@ export const useAuth = () => {
         localStorage.removeItem( localStorageName );
      },[]);
 
-     const checkAuthData  = useCallback(() => {
-         const authData = localStorage.getItem(localStorageName);
-         fetch(apiEndpoint + "/login/checkAuthData" , {
-                 method: "POST",
-                 headers: {
-                     "Content-Type": "application/json"
-                 },
-                 body : authData
-             }
-         ).then( data   => data.json() )
-             .then( data =>  !(data?.token) ? logout() : login(data)  )
-             .catch(_ => logout());
-     },[login, logout]);
-
      useEffect( () => {
-        const authData = localStorage.getItem(localStorageName);
-        if( authData )
-        {
-            login(JSON.parse(authData));
-            fetch(apiEndpoint + "/login/checkAuthData" , {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body : authData
-                }
-            ).then( data   => data.json() )
-                .then( data =>  !(data?.token) ? logout() : login(data));
-                // .catch(_ => logout());
-        } else
-        {
-            logout();
-        }
-
+        http.post( apiEndpoint + '/' )
+        .then( ( data: any)   => !(data?.token) ? logout() : login(data) )
+        .catch( err => logout() );
      } , []);
-     return { login , logout , checkAuthData , token , uuid , gradeBookNumber };
+     return { login , logout , token , uuid , gradeBookNumber };
 }

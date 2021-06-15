@@ -88,21 +88,6 @@ export function validateRegisterRequest( data : RequestRegisterType  ) : Request
 
 }
 
-// export function randint(min : number , max:number):number
-// {
-//     return Math.floor(( Math.random() * max ) + (min));
-// }
-
-// export function generateToken( length : number = 128 ) : string
-// {
-//     let token : string = "";
-//     for( let i:number = 0; i < length ;i++)
-//     {
-//         token += randint(100, 254).toString(16);
-//     }
-//     return token;
-// }
-
 export function checkAuthMiddleware( request : Request , response : Response , next : NextFunction):void
 {
     const authData : SessionUserAuthData = JSON.parse( Buffer.from( request.headers["x-auth-token"]  as string, "base64" ).toString("utf-8")  );
@@ -186,9 +171,6 @@ apiRouter.post( "/register" , async( request: Request , response:Response ) => {
 
 apiRouter.post("/login" ,(request : Request , response : Response) => {
     const userData : RequestLoginType = request.body;
-
-    // response.locals.gradeBookNumber = userData.gradeBookNumber;
-
     UserDB.findOne(
         {
             where : { gradeBookNumber  : userData.gradeBookNumber }
@@ -240,28 +222,6 @@ apiRouter.post("/login" ,(request : Request , response : Response) => {
         }
     });
 });
-
-
-apiRouter.post( "/login/checkAuthData" , ( request : Request , response:Response ) =>{
-    const authData : SessionUserAuthData = request.body;
-
-    if( TEMPORARY_KEY_STORAGE.has(authData.gradeBookNumber) )
-    {
-        const serverSideAuthData : SessionUserAuthData = TEMPORARY_KEY_STORAGE.get( authData.gradeBookNumber );
-        // console.log( authData , serverSideAuthData);
-        if( serverSideAuthData.uuid === authData.uuid && serverSideAuthData.token === authData.token )
-        {
-            response.send( JSON.stringify( authData ) );
-        }else
-        {
-            response.send( JSON.stringify({ token : null , uuid : null , gradeBookNumber : null }) );
-        }
-    }
-    else
-    {
-        response.send( JSON.stringify({ token : null , uuid : null , gradeBookNumber : null }) );
-    }
-} )
 
 apiRouter.post("/taskCategories/:category" , checkAuthMiddleware , (request : Request , response:Response) => {
     try {
