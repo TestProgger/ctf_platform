@@ -21,8 +21,6 @@ const parseXAuthHeader = ( request :  Request ) => {
     {
         return null;
     }
-
-
 }
 
 
