@@ -3,8 +3,8 @@
 ## Platform for conducting CTF (Capture The Flag)
 
 ### The platform was developed by two students of SRSPU(NPI):
-####     [Developer]( https://www.linkedin.com/in/shamil-makhmudov-86a9831a9/ )
-####     [Designer](https://vk.com/kozyrkov_alll) 
+####     [Developer : Makhmudov Shamil]( https://www.linkedin.com/in/shamil-makhmudov-86a9831a9/ )
+####     [Designer : Alexander Kozyrkov](https://vk.com/kozyrkov_alll) 
 
 
 
