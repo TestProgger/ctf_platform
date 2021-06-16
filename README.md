@@ -21,9 +21,7 @@
 
 Installing dependencies to run the project
 ```bash
-    npm run manager:install  
-    npm run client:install 
-    npm run server:install 
+    npm run prepare
 ```
 
 Run manager , server and client
