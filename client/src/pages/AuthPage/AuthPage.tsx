@@ -7,16 +7,14 @@ import SignUp from './SignUp';
 import './AuthPage.css';
 
 
-import { apiEndpoint, useAuth } from '../../hooks/useAuth';
-import { useHistory } from 'react-router-dom';
-
 import { AuthContext , AuthContextInterface } from '../../context/AuthContext';
+import {useAuth} from "../../hooks/useAuth";
 interface RegisterDataInterface{
     firstName : string,
     lastName : string ,
     gradeBookNumber : string ,
     password : string,
-    confirmPassword : string 
+    confirmPassword : string
 }
 
 
@@ -26,8 +24,7 @@ function AuthPage(){
 
     const [ isSignIn , setIsSignIn ] = useState<boolean>(true);
 
-    const auth :  AuthContextInterface = useContext<AuthContextInterface>(AuthContext);
-
+    const { apiEndpoint , ...auth } = useContext<AuthContextInterface>(AuthContext);
 
     const singInHandler = ( password : string , gradeBookNumber : string  ) => {
         fetch( `${apiEndpoint}/login` ,  {
@@ -45,9 +42,8 @@ function AuthPage(){
             {
                 auth.login(responseData);
             }
-            
         })
-        .catch( error => auth.logout() );
+        .catch( console.log );
     }
 
 

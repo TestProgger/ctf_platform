@@ -1,7 +1,6 @@
-import React , { useState , useCallback , useEffect} from 'react';
+import React , { useState , useCallback } from 'react';
 
 import {useHistory} from 'react-router-dom';
-import {useHttp} from "./useHttp";
 
 export interface LoginDataInterface {
     token : string | null
@@ -11,8 +10,6 @@ export interface LoginDataInterface {
 
 export const localStorageName : string = 'adminAuthData';
 
-export const apiEndpoint  = "http://127.0.0.1:5000/manager/"
-
 export const useAuth = () => {
 
     const [ token , setToken ] = useState< string | null>(null);
@@ -21,6 +18,8 @@ export const useAuth = () => {
 
     const history = useHistory();
     const historyLocation = history.location.pathname;
+
+    const apiEndpoint = "http://" +  window.location.host.split(":")[0] + ":5000/manager";
 
 
     const login =  useCallback( ( responseData : LoginDataInterface ) => {
@@ -39,7 +38,7 @@ export const useAuth = () => {
         localStorage.removeItem( localStorageName );
     },[]);
 
-    return { login , logout , token , uuid , signUUID };
+    return { login , logout , token , uuid , signUUID , apiEndpoint };
 
 
 }

@@ -6,7 +6,7 @@ import Header  from './components/Header';
 // hooks
 
 import { useRoutes } from './hooks/useRoutes';
-import {apiEndpoint, localStorageName, LoginDataInterface, useAuth} from './hooks/useAuth';
+import { localStorageName, useAuth} from './hooks/useAuth';
 
 // Styles
 import './App.css';
@@ -16,10 +16,11 @@ import './static/css/bootstrap.min.css';
 import  { AuthContext } from './context/AuthContext';
 import { ScoreContext } from './context/ScoreContext';
 import {useHttp} from "./hooks/useHttp";
+import { useHistory } from 'react-router-dom';
 
 function App() {
 
-  const { login , logout , token , uuid  , gradeBookNumber } = useAuth();
+  const { login , logout , token , uuid  , gradeBookNumber , apiEndpoint } = useAuth();
 
   const isAuthenticated : boolean = !!token;
 
@@ -28,14 +29,17 @@ function App() {
 
   const [ score , setScore]  = useState(0);
   const http = useHttp();
+  const history = useHistory();
   useEffect( () => {
-    http.post( apiEndpoint + '/' )
-        .then( data => login( JSON.parse( localStorage.getItem(localStorageName) as string) ))
-        .catch( console.log );
+      if( history.location.pathname !==  '/auth'){
+          http.post( apiEndpoint + '/' )
+              .then( data => login( JSON.parse( localStorage.getItem(localStorageName) as string) ))
+              .catch( console.log );
+      }
   } , []);
 
   return (
-    <AuthContext.Provider value = {{ login , logout , token , uuid  , gradeBookNumber, isAuthenticated }} >
+    <AuthContext.Provider value = {{ login , logout , token , uuid  , gradeBookNumber, isAuthenticated , apiEndpoint }} >
         <ScoreContext.Provider value = { { score , setScore} }>
             <div className = "app__shadow" >
               {isAuthenticated ? <Header/> : null}

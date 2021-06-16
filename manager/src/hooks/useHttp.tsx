@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React , { useCallback} from 'react';
-import { localStorageName, useAuth } from './useAuth';
+import { localStorageName } from './useAuth';
 import {useHistory} from 'react-router-dom';
 
 export const useHttp = () => {

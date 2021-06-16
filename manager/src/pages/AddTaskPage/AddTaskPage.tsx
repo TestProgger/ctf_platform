@@ -1,13 +1,15 @@
 import React, {useContext, useEffect, useState} from 'react';
 import './AddTaskPage.css';
-import {apiEndpoint} from "../../hooks/useAuth";
 import {SaveAlert} from '../../components/SaveAlert';
 import { useHttp } from '../../hooks/useHttp';
+import {AuthContext} from "../../context/AuthContext";
 
 
 export const AddTaskPage : React.FC = () => {
 
     const http = useHttp();
+
+    const { apiEndpoint } = useContext(AuthContext);
 
     const [title , setTitle] = useState<string>('');
     const [score , setScore] = useState<number>(0);

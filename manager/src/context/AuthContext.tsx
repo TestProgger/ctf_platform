@@ -7,7 +7,8 @@ export interface AuthContextInterface{
     uuid: string | null,
     login: Function,
     logout: Function,
-    isAuthenticated: boolean
+    isAuthenticated: boolean,
+    apiEndpoint : string
 }
 
 export const AuthContext = createContext<AuthContextInterface>({
@@ -15,5 +16,6 @@ export const AuthContext = createContext<AuthContextInterface>({
     uuid: null,
     login: noop,
     logout: noop,
-    isAuthenticated: false
+    isAuthenticated: false,
+    apiEndpoint : ''
 })

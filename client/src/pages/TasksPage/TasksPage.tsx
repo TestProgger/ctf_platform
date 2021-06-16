@@ -1,5 +1,4 @@
 import React, {useState, useEffect, useContext, Fragment} from 'react';
-import { apiEndpoint } from "../../hooks/useAuth";
 import  { Passed , NotPassed}  from './AnswerState/AnswerState';
 
 import {TaskModalWindow} from "./TaskModalWindow";
@@ -10,6 +9,7 @@ import { ScoreContext, ScoreContextInterface } from '../../context/ScoreContext'
 
 import passedIcon from '../../static/images/green-ok-icon.png';
 import notPassedIcon from '../../static/images/error-icon.png';
+import {AuthContext} from "../../context/AuthContext";
 
 interface TaskInterface{
     uid : string
@@ -29,6 +29,7 @@ function TasksPage( { ...props }){
     const category: string = props.match.params.category;
     const http = useHttp();
 
+
     const [ taskList , setTaskList ] = useState<TaskInterface[]>([]);
     const [ taskData , setTaskData ] = useState<TaskInterface>();
     const [ modalWindowsIsShown , setModalWindowIsShown ] = useState<boolean>(false);
@@ -38,6 +39,7 @@ function TasksPage( { ...props }){
 
 
     const {setScore} :  ScoreContextInterface = useContext(ScoreContext);
+    const { apiEndpoint } = useContext(AuthContext);
 
 
     const openModalWindow = (ind : number  , uid : string ) => {
@@ -64,7 +66,6 @@ function TasksPage( { ...props }){
                     .then( ( response:any ) => response.data )
                     .then( (data) => setScore(data?.scores) )
                     .catch(console.debug);
-                    
                 }else
                 {
                     setCorrectAnswer(false);
@@ -90,7 +91,7 @@ function TasksPage( { ...props }){
                     } );
                 }
                 setTaskList(  tasks  )  ;
-            } ); 
+            } );
         }
         startFetching();
         

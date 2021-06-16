@@ -64,8 +64,6 @@ export const TaskModalWindow = ( { checkAnswer, showModalWindow , isShown , data
                         }
                             </div>
                     </div>
-                    
-                    
                 </div>
             </div>
         </div>

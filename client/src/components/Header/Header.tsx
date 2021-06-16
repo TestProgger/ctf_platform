@@ -2,31 +2,25 @@ import React, { Fragment, useContext, useEffect } from 'react';
 
 import { Link} from 'react-router-dom';
 
-// import { useAuth } from '../../hooks/useAuth';
-
 import {AuthContext , AuthContextInterface} from '../../context/AuthContext'
 
 import { useHistory } from 'react-router-dom';
 import './Header.css';
 
 import logoIcon from '../../static/images/magnifier_logo.png';
-// import logoIcon from '../../static/images/animated/logo.gif';
 import scoreIcon from '../../static/images/cpu_score_icon.png';
 import { ScoreContext, ScoreContextInterface } from '../../context/ScoreContext';
 import { useHttp } from '../../hooks/useHttp';
-import { apiEndpoint } from '../../hooks/useAuth';
 
 
 export const Header = () => {
 
-    const auth : AuthContextInterface = useContext<AuthContextInterface>( AuthContext );
+    const {apiEndpoint , ...auth} : AuthContextInterface = useContext<AuthContextInterface>( AuthContext );
     const history = useHistory();
     const logoutHandler = (event  : React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
-
         auth.logout();
         history.push("/auth");
-        
     }
     const http = useHttp();
     const { score  , setScore  } : ScoreContextInterface = useContext<ScoreContextInterface>(ScoreContext);
@@ -38,7 +32,6 @@ export const Header = () => {
             .then( (data) => setScore(data?.scores) )
             .catch(console.debug);
         }  , 2000)
-        
     } , [] )
 
 

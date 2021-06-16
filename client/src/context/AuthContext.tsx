@@ -12,6 +12,7 @@ export interface AuthContextInterface{
     // tslint:disable-next-line:ban-types
     logout: Function,
     isAuthenticated: boolean
+    apiEndpoint : string
 }
 
 export const AuthContext = createContext<AuthContextInterface>({
@@ -20,5 +21,6 @@ export const AuthContext = createContext<AuthContextInterface>({
   gradeBookNumber : null,
   login: noop,
   logout: noop,
-  isAuthenticated: false
+  isAuthenticated: false,
+    apiEndpoint :  ''
 })

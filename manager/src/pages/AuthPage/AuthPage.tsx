@@ -2,8 +2,6 @@ import React, {useState , useContext} from 'react';
 import './AuthPage.css';
 import {AuthContext} from "../../context/AuthContext";
 
-import { apiEndpoint} from "../../hooks/useAuth";
-
 
 interface  AuthDataInterface{
     token  : string,
@@ -13,8 +11,7 @@ interface  AuthDataInterface{
 export const AuthPage : React.FC = () => {
     const [login , setLogin] = useState<string>('');
     const [password , setPassword] = useState<string>('');
-    const auth = useContext(AuthContext);
-
+    const { apiEndpoint  , ...auth } = useContext(AuthContext);
     const signInHandler = () => {
         fetch(apiEndpoint + "/" , {
             method : "POST",

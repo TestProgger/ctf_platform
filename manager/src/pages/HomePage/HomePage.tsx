@@ -1,9 +1,7 @@
 import React, {useContext, useEffect, useState} from 'react';
 import './HomePage.css';
 import {useHttp} from "../../hooks/useHttp";
-import {apiEndpoint} from "../../hooks/useAuth";
 import {AuthContext} from "../../context/AuthContext";
-import {AxiosResponse} from "axios";
 
 interface DashboardItemIterface{
     uid : number,
@@ -21,10 +19,11 @@ export const Home : React.FC  = () => {
 
     const http = useHttp();
 
+    const { apiEndpoint } = useContext(AuthContext);
+
     useEffect(() => {
         const startFetching = async () => {
             const data  = await http.get(apiEndpoint + "/getTopHackers")
-            // console.log(data);
             setDashboardItems( data?.data );
         }
 

@@ -129,15 +129,15 @@ apiRouter.post( "/register" , async( request: Request , response:Response ) => {
                 uuid : uuidv4(),
                 secretToken :  crypto.randomBytes(64).toString("base64")
             })
-            .then(() => response.send( { successfully : true } ))
-            .catch( () => response.send( { successfully : false  , errorText : "Save error"} ));
+            .then(() => response.send( { success : true } ))
+            .catch( () => response.send( { success : false  , errorText : "Save error"} ));
             sha256.end();
         }else{
-            response.json( { successfully : false , errorText : "The user is already registered" } )
+            response.json( { success : false , errorText : "The user is already registered" } )
         }
 
     } )
-    .catch( () => response.json( { successfully : false , errorText : "Server Error" } ) )
+    .catch( () => response.json( { success : false , errorText : "Server Error" } ) )
 });
 
 apiRouter.post("/login" ,(request : Request , response : Response) => {
@@ -226,15 +226,9 @@ apiRouter.post("/taskCategories/:category" , checkAuthMiddleware , (request : Re
                                 }
                                 return { ...item  , passed : false }
                             } );
-
-
                             response.json( tasks );
-
                         } )
                         .catch( _ => response.json(  taskRows )  );
-
-
-
                     } ).catch( _ => response.json([]));
                 }else{ response.json( []); }
             });

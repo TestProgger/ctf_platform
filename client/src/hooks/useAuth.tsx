@@ -3,7 +3,6 @@ import { useState , useCallback , useEffect} from 'react';
 import {useHistory} from 'react-router-dom';
 import { useHttp } from './useHttp';
 
-export const apiEndpoint  = "http://127.0.0.1:5000/api/"
 
 export interface LoginDataInterface {
     token : string | null
@@ -21,6 +20,7 @@ export const useAuth = () => {
 
     const history = useHistory();
     const historyLocation : string = history.location.pathname;
+    const apiEndpoint = "http://" +  window.location.host.split(":")[0] + ":5000/api";
 
     const login =  useCallback( ( responseData : LoginDataInterface ) => {
         setToken( responseData?.token );
@@ -37,5 +37,5 @@ export const useAuth = () => {
         localStorage.removeItem( localStorageName );
         history.go(0);
      },[]);
-     return { login , logout , token , uuid , gradeBookNumber };
+     return { login , logout , token , uuid , gradeBookNumber , apiEndpoint };
 }

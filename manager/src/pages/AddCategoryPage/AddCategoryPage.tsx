@@ -1,6 +1,5 @@
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import React, { useContext ,  useState} from 'react';
 import './AddCategoryPage.css';
-import {apiEndpoint} from "../../hooks/useAuth";
 import {SaveAlert} from "../../components/SaveAlert";
 import { useHttp } from '../../hooks/useHttp';
 import {AuthContext} from "../../context/AuthContext";
@@ -10,6 +9,8 @@ import {AuthContext} from "../../context/AuthContext";
 export const AddCategoryPage : React.FC = () => {
 
     const http = useHttp();
+
+    const { apiEndpoint } = useContext(AuthContext);
 
     const [ title , setTitle] = useState<string>('');
     const [ shortName , setShortName ] = useState<string>('');
