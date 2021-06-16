@@ -2,7 +2,7 @@ import React from "react";
 
 import './AnswerState.css'
 
-import okIcon  from  "../../../static/images/green-ok-icon.png";
+import okIcon  from  "../../../static/images/ok-icon.png";
 import errIcon  from  "../../../static/images/error-icon.png";
 
 export const Passed = () => {

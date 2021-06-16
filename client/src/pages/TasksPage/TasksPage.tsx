@@ -7,7 +7,7 @@ import './TasksPage.css';
 import { useHttp } from '../../hooks/useHttp';
 import { ScoreContext, ScoreContextInterface } from '../../context/ScoreContext';
 
-import passedIcon from '../../static/images/green-ok-icon.png';
+import passedIcon from '../../static/images/ok-icon.png';
 import notPassedIcon from '../../static/images/error-icon.png';
 import {AuthContext} from "../../context/AuthContext";
 

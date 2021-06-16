@@ -15,8 +15,6 @@
     "client:start": "concurrently \" npm run server \" \"npm run client\" ",
     "manager:start": "concurrently \" npm run server \" \"npm run manager\" ",
     "start:all": "concurrently \" npm run server \" \"npm run client\" \"npm run manager\" ",
-
-
     "prepare": "concurrently \"npm install --prefix manager\" \"npm install --prefix client\"  ",
     "build:project": "concurrently \" npm run build \" \"npm run build --prefix manager\" \"npm run build --prefix client\"  ",
     "start:project": "concurrently \"npm run start\"  \"serve -s ./client/build -l tcp://0.0.0.0:3000\"  \"serve -s ./manager/build -l tcp://0.0.0.0:5555\"",
