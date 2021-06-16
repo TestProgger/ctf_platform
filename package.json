@@ -12,16 +12,14 @@
     "manager" : "npm run start --prefix manager",
     "client" : "npm run start --prefix client",
     "server" : "npm run start",
-    "start:server" : "concurrently \" npm run server \"",
-    "start:client" : "concurrently \" npm run server \" \"npm run client\" ",
-    "start:manager" : "concurrently \" npm run server \" \"npm run manager\" ",
+    "server:start" : "concurrently \" npm run server \"",
+    "client:start" : "concurrently \" npm run server \" \"npm run client\" ",
+    "manager:start" : "concurrently \" npm run server \" \"npm run manager\" ",
     "start:all" : "concurrently \" npm run server \" \"npm run client\" \"npm run manager\" ",
 
     "manager:install" : "npm install --prefix manager",
     "client:install" : "npm install --prefix client",
     "server:install": "npm install",
-
-    "prepare" : "concurrently \"npm run manager:install\" \"npm run npm install --prefix client\" \"npm install\"",
 
     "test": "echo \"Error: no test specified\" && exit 1"
   },
