@@ -17,10 +17,9 @@
     "start:manager" : "concurrently \" npm run server \" \"npm run manager\" ",
     "start:all" : "concurrently \" npm run server \" \"npm run client\" \"npm run manager\" ",
 
-    "prepare:manager" : "npm install --prefix manager",
-    "prepare:client" : "npm install --prefix client",
-    "prepare:server": "npm install",
-    "prepare" :  " concurrently \" npm run prepare:server \" \"npm run prepare:client\" \"npm run prepare:manager\" ",
+    "manager:install" : "npm install --prefix manager",
+    "client:install" : "npm install --prefix client",
+    "server:install": "npm install",
 
     "test": "echo \"Error: no test specified\" && exit 1"
   },
