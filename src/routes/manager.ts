@@ -38,7 +38,6 @@ function checkAdminAuthMiddleware( request : Request  , response : Response , ne
         }
         else{
             response.status(404).end();
-            // response.json( { token : null , uuid : null , signUUID : null} );
         }
     }
     else
@@ -205,8 +204,20 @@ managerRouter.get( "/getTasks" , checkAdminAuthMiddleware , ( request : Request 
 
 
 managerRouter.get( "/getTopHackers" , checkAdminAuthMiddleware , ( request : Request , response : Response ) => {
-    UserDB.findAll()
-        .then(data => response.json( data ));
+    UserDB.findAll( { attributes : ['uid' , 'firstName' , 'lastName' ] })
+        .then(async(userData) => {
+            const responseData = [];
+            for( const user of userData )
+            {
+                const passedTasks = await UserTaskPassedDB.findAll({ attributes : ['score' ] , where : { userId : user.uid } });
+                const sumScores = passedTasks.reduce((accumulator, currentValue) => accumulator + currentValue.score, 0);
+                const { uid , firstName , lastName } = user;
+                responseData.push({ uid , firstName , lastName , scores : sumScores });
+            }
+            responseData.sort( ( a , b ) => b.scores - a.scores );
+            response.json( responseData );
+        })
+        .catch(err => console.error(err));
 } );
 
 export default managerRouter;

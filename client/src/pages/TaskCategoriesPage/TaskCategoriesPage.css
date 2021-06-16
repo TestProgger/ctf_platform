@@ -5,3 +5,9 @@
 html{
     overflow-x: hidden;
 }
+
+.task_categories__app_shadow{
+    background: rgba(0 , 0 , 0 , 0.1) ;
+    backdrop-filter: blur(8px);
+    height: 83.5vh;
+}

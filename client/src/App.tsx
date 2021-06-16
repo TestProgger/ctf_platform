@@ -6,7 +6,7 @@ import Header  from './components/Header';
 // hooks
 
 import { useRoutes } from './hooks/useRoutes';
-import {apiEndpoint, LoginDataInterface, useAuth} from './hooks/useAuth';
+import {apiEndpoint, localStorageName, LoginDataInterface, useAuth} from './hooks/useAuth';
 
 // Styles
 import './App.css';
@@ -30,7 +30,8 @@ function App() {
   const http = useHttp();
   useEffect( () => {
     http.post( apiEndpoint + '/' )
-        .catch( err => logout() );
+        .then( data => login( JSON.parse( localStorage.getItem(localStorageName) as string) ))
+        .catch( console.log );
   } , []);
 
   return (

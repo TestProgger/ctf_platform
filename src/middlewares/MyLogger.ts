@@ -12,15 +12,8 @@ const getFormatedTime = () => {
 }
 
 const parseXAuthHeader = ( request :  Request ) => {
-
     const xAuthHeader = request.headers["x-auth-token"];
-    if( xAuthHeader )
-    {
-        return JSON.parse( Buffer.from( xAuthHeader as string , 'base64' ).toString() );
-    }else
-    {
-        return null;
-    }
+    return xAuthHeader ?  JSON.parse( Buffer.from( xAuthHeader as string , 'base64' ).toString() ) : null
 }
 
 

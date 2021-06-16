@@ -16,16 +16,18 @@ import TaskCategoryCard from './TaskCategoryCard';
 function TaskCategoriesPage(){
 
     return (
-        <div className = "task_categories__container">
-            <div className = "row justify-content-center" >
-                <TaskCategoryCard category  = "joy" title = "Joy" icon = {joyIcon}  description = "Различные развлекательные задачи с выбором ответа" />
-                <TaskCategoryCard category  = "reverse" title = "Reverse" icon = {reverseIcon}  description = "Различные развлекательные задачи с выбором ответа" />
-                <TaskCategoryCard category  = "stegano" title = "Stegano" icon = {steganoIcon}  description = "Различные развлекательные задачи с выбором ответа" />
-            </div>
-            <div className = "row justify-content-center" >
-                <TaskCategoryCard category  = "crypto" title = "Crypto" icon = {cryptoIcon}  description = "Различные развлекательные задачи с выбором ответа" />
-                <TaskCategoryCard category  = "web" title = "WEB" icon = {webIcon}  description = "Различные развлекательные задачи с выбором ответа" />
-                <TaskCategoryCard category  = "linux" title = "Linux" icon = {linuxIcon}  description = "Различные развлекательные задачи с выбором ответа" />
+        <div className="task_categories__app_shadow">
+            <div className = "task_categories__container">
+                <div className = "row justify-content-center" >
+                    <TaskCategoryCard category  = "joy" title = "Joy" icon = {joyIcon}  description = "Различные развлекательные задачи с выбором ответа" />
+                    <TaskCategoryCard category  = "reverse" title = "Reverse" icon = {reverseIcon}  description = "Различные развлекательные задачи с выбором ответа" />
+                    <TaskCategoryCard category  = "stegano" title = "Stegano" icon = {steganoIcon}  description = "Различные развлекательные задачи с выбором ответа" />
+                </div>
+                <div className = "row justify-content-center" >
+                    <TaskCategoryCard category  = "crypto" title = "Crypto" icon = {cryptoIcon}  description = "Различные развлекательные задачи с выбором ответа" />
+                    <TaskCategoryCard category  = "web" title = "WEB" icon = {webIcon}  description = "Различные развлекательные задачи с выбором ответа" />
+                    <TaskCategoryCard category  = "linux" title = "Linux" icon = {linuxIcon}  description = "Различные развлекательные задачи с выбором ответа" />
+                </div>
             </div>
         </div>
     );

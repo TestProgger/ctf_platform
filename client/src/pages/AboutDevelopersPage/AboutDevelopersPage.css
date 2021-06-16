@@ -11,3 +11,8 @@
     line-height: 125px;
 }
 
+.about_devs__app_shadow{
+    background: rgba(0 , 0 , 0 , 0.1) ;
+    backdrop-filter: blur(8px);
+    height: 79.8vh;
+}

@@ -3,9 +3,10 @@ import './HomePage.css';
 import {useHttp} from "../../hooks/useHttp";
 import {apiEndpoint} from "../../hooks/useAuth";
 import {AuthContext} from "../../context/AuthContext";
+import {AxiosResponse} from "axios";
 
 interface DashboardItemIterface{
-    id : number,
+    uid : number,
     firstName : string,
     lastName : string,
     scores : number
@@ -15,19 +16,22 @@ interface DashboardItemIterface{
 export const Home : React.FC  = () => {
 
     const date  = new Date();
-    const [dashboardItems , setDashboardItems] = useState<DashboardItemIterface[]>([]);
+    const [dashboardItems , setDashboardItems] = useState<DashboardItemIterface[] | any>([]);
     const [ refreshDate  , setRefreshDate ] = useState<string>(date.toLocaleString());
 
     const http = useHttp();
 
+    useEffect(() => {
+        const startFetching = async () => {
+            const data  = await http.get(apiEndpoint + "/getTopHackers")
+            // console.log(data);
+            setDashboardItems( data?.data );
+        }
 
-    // useEffect(() => {
-    //     const startFetching = async() => {
-    //         const data  = await http.get(apiEndpoint + "/getTopHackers");
-    //         console.log(data);
-    //     }
-    //     startFetching();
-    // } , []);
+        startFetching();
+
+
+    } , [])
 
     return (
         <div>Home Page {refreshDate}
@@ -43,9 +47,9 @@ export const Home : React.FC  = () => {
                     </thead>
                     <tbody>
                         {dashboardItems.length ?
-                            dashboardItems.map( (item , index) => {
+                            dashboardItems.map( (item : DashboardItemIterface , index : number) => {
                                 return (
-                                    <tr key={item.id}>
+                                    <tr key={item.uid}>
                                         <th scope="row">{index + 1}</th>
                                         <td>{item.firstName}</td>
                                         <td>{item.lastName}</td>

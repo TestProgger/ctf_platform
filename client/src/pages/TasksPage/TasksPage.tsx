@@ -20,7 +20,6 @@ interface TaskInterface{
     titleImage : string
     categoryId : string
     passed : boolean
-    
 }
 
 
@@ -58,13 +57,9 @@ function TasksPage( { ...props }){
                     setTimeout( () => {
                         setModalWindowIsShown(false)
                     } , 1500 )
-
                     setCorrectAnswer(true);
                     setWrongAnswer(false);
-
                     setTimeout( () => setCorrectAnswer(false) , 2000 );
-
-                    // sc.setScore( (prevScore : number) => prevScore + response.data?.score );
                     http.post(apiEndpoint +  "/task/getScoresForCurrentUser")
                     .then( ( response:any ) => response.data )
                     .then( (data) => setScore(data?.scores) )
@@ -74,15 +69,13 @@ function TasksPage( { ...props }){
                 {
                     setCorrectAnswer(false);
                     setWrongAnswer(true);
-
                     setTimeout( () => setWrongAnswer(false) , 2000 );
                 }
             }
 
 
         })
-        .catch( console.log ); 
-
+        .catch( console.log );
     }
 
     useEffect(() => {
@@ -96,7 +89,7 @@ function TasksPage( { ...props }){
                         return { ...item.dataValues ,  passed : item.passed }
                     } );
                 }
-                setTaskList(  tasks  )   ; 
+                setTaskList(  tasks  )  ;
             } ); 
         }
         startFetching();
@@ -106,7 +99,7 @@ function TasksPage( { ...props }){
 
     return (
         <Fragment>
-            <div className="task__app_shadow ">
+            <div className="task__app_shadow " style={ taskList.length < 10 ? { height : "83.5vh" } : {height : "100%"} }>
                 <div className="row justify-content-center">
                     <table className="table w-75 mt-4">
                         <thead>
@@ -118,10 +111,10 @@ function TasksPage( { ...props }){
                         </tr>
                         </thead>
                         <tbody>
-                            
+
                             {
                                     taskList.map( ( item , ind)  => {
-                                        return (                                             
+                                        return (
                                             <tr key = {item.uid} onClick={() => openModalWindow(ind , item.uid)} >
                                                 <td  valign="middle" align="center" className="index">{ ind +1 }</td>
                                                 <td valign="middle" align="center"> { item.title } </td>

@@ -22,15 +22,12 @@ export const useAuth = () => {
     const history = useHistory();
     const historyLocation : string = history.location.pathname;
 
-    const http = useHttp();
-
-
     const login =  useCallback( ( responseData : LoginDataInterface ) => {
         setToken( responseData?.token );
         setUUID( responseData?.uuid );
         setGradeBookNumber( responseData?.gradeBookNumber );
         localStorage.setItem( localStorageName , JSON.stringify( responseData) );
-        history.push(historyLocation);
+        history.push(historyLocation === '/auth' ? "/" : historyLocation);
      } , []);
 
      const logout = useCallback(() => {

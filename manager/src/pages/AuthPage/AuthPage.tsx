@@ -43,7 +43,7 @@ export const AuthPage : React.FC = () => {
                             />
                         </div>
                         <div className="row mb-3 justify-content-center">
-                            <input type="text" placeholder="Password"
+                            <input type="password" placeholder="Password"
                                    className  = "form-control"
                                    value={password}
                                    onChange={ (event : React.ChangeEvent<HTMLInputElement>) => setPassword( event.target.value ) }

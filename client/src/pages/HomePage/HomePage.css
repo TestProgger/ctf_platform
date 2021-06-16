@@ -5,7 +5,7 @@
 .home__app_shadow{
    background: rgba(0 , 0 , 0 , 0.1) ;
    backdrop-filter: blur(8px);
-   height: 90vh;
+   height: 83.5vh;
 }
 
 .home__logo{
