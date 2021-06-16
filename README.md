@@ -24,11 +24,6 @@ Installing main dependencies
     npm install
 ```
 
-Installing dependencies to run the project
-```bash
-    npm run prepare
-```
-
 Building project
 ```bash
     npm run build:project
