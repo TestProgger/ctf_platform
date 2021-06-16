@@ -1,19 +1,21 @@
-import React, {useRef, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import './AddCategoryPage.css';
 import {apiEndpoint} from "../../hooks/useAuth";
 import {SaveAlert} from "../../components/SaveAlert";
 import { useHttp } from '../../hooks/useHttp';
+import {AuthContext} from "../../context/AuthContext";
 
 
 
 export const AddCategoryPage : React.FC = () => {
+
+    const http = useHttp();
 
     const [ title , setTitle] = useState<string>('');
     const [ shortName , setShortName ] = useState<string>('');
     const [ description , setDescription ] = useState<string>('');
     const [ titleImage , setTitleImage ] = useState<File>();
 
-    const http = useHttp();
 
     const [successfullySaved , setSuccessfullySaved] = useState<boolean>(false);
     const [saveError , setSaveError] = useState<boolean>(false);

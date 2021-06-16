@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import './AddTaskPage.css';
 import {apiEndpoint} from "../../hooks/useAuth";
 import {SaveAlert} from '../../components/SaveAlert';
@@ -6,6 +6,8 @@ import { useHttp } from '../../hooks/useHttp';
 
 
 export const AddTaskPage : React.FC = () => {
+
+    const http = useHttp();
 
     const [title , setTitle] = useState<string>('');
     const [score , setScore] = useState<number>(0);
@@ -16,8 +18,6 @@ export const AddTaskPage : React.FC = () => {
 
     const [titleImage , setTitleImage] = useState<File>();
     const [taskFile , setTaskFile] = useState<File>();
-
-    const http = useHttp();
 
     const [successfullySaved , setSuccessfullySaved] = useState<boolean>(false);
     const [saveError , setSaveError] = useState<boolean>(false);

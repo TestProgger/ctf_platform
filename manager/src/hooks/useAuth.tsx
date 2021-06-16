@@ -1,6 +1,7 @@
 import React , { useState , useCallback , useEffect} from 'react';
 
 import {useHistory} from 'react-router-dom';
+import {useHttp} from "./useHttp";
 
 export interface LoginDataInterface {
     token : string | null
@@ -29,7 +30,6 @@ export const useAuth = () => {
 
         localStorage.setItem( localStorageName , JSON.stringify( responseData) );
         history.push(historyLocation);
-        // console.log(historyLocation);
     } , []);
 
     const logout = useCallback(() => {
@@ -38,11 +38,6 @@ export const useAuth = () => {
         setSignUUID( null );
         localStorage.removeItem( localStorageName );
     },[]);
-
-    useEffect(() => {
-        const loginData = JSON.parse(  localStorage.getItem(localStorageName) as string );
-        loginData ? login(  loginData ) :  logout();
-    } , []);
 
     return { login , logout , token , uuid , signUUID };
 

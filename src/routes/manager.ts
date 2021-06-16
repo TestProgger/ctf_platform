@@ -37,12 +37,13 @@ function checkAdminAuthMiddleware( request : Request  , response : Response , ne
             next();
         }
         else{
-            response.json( { token : null , uuid : null , signUUID : null} );
+            response.status(404).end();
+            // response.json( { token : null , uuid : null , signUUID : null} );
         }
     }
     else
     {
-        response.json( { token : null , uuid : null , signUUID : null} );
+        response.status(404).end();
     }
 }
 
@@ -200,6 +201,12 @@ managerRouter.get( "/getTasks" , checkAdminAuthMiddleware , ( request : Request 
     })
     .catch( _ => response.json([]) );
 
+} );
+
+
+managerRouter.get( "/getTopHackers" , checkAdminAuthMiddleware , ( request : Request , response : Response ) => {
+    UserDB.findAll()
+        .then(data => response.json( data ));
 } );
 
 export default managerRouter;

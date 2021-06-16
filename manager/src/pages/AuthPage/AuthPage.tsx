@@ -11,7 +11,6 @@ interface  AuthDataInterface{
 }
 
 export const AuthPage : React.FC = () => {
-
     const [login , setLogin] = useState<string>('');
     const [password , setPassword] = useState<string>('');
     const auth = useContext(AuthContext);

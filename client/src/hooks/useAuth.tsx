@@ -38,12 +38,7 @@ export const useAuth = () => {
         setUUID( null );
         setGradeBookNumber( null );
         localStorage.removeItem( localStorageName );
+        history.go(0);
      },[]);
-
-     useEffect( () => {
-        http.post( apiEndpoint + '/' )
-        .then( ( data: any)   => !(data?.token) ? logout() : login(data) )
-        .catch( err => logout() );
-     } , []);
      return { login , logout , token , uuid , gradeBookNumber };
 }

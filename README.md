@@ -42,7 +42,7 @@ Run manager , server and client
 
 Run server 
 ```bash
-    npm run server:start:
+    npm run server:start
 ```
 
 Run server & manager

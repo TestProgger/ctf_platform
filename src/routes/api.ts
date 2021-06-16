@@ -77,12 +77,12 @@ export function checkAuthMiddleware( request : Request , response : Response , n
                 next();
             }
             else{
-                response.json( { token : null , uuid : null , gradeBookNumber : null } );
+                response.status(403).end();
             }
         }
         else
         {
-            response.json( { token : null , uuid : null , gradeBookNumber : null } );
+            response.status(403).end();
         }
     }
 

@@ -1,5 +1,8 @@
-import React , { useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import './HomePage.css';
+import {useHttp} from "../../hooks/useHttp";
+import {apiEndpoint} from "../../hooks/useAuth";
+import {AuthContext} from "../../context/AuthContext";
 
 interface DashboardItemIterface{
     id : number,
@@ -14,6 +17,17 @@ export const Home : React.FC  = () => {
     const date  = new Date();
     const [dashboardItems , setDashboardItems] = useState<DashboardItemIterface[]>([]);
     const [ refreshDate  , setRefreshDate ] = useState<string>(date.toLocaleString());
+
+    const http = useHttp();
+
+
+    // useEffect(() => {
+    //     const startFetching = async() => {
+    //         const data  = await http.get(apiEndpoint + "/getTopHackers");
+    //         console.log(data);
+    //     }
+    //     startFetching();
+    // } , []);
 
     return (
         <div>Home Page {refreshDate}
