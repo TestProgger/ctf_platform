@@ -1,5 +1,5 @@
 import express, {RouterOptions , Request , Response, Router, response, NextFunction, request} from 'express';
-import { UserDB , TaskDB , UserTaskPassedDB , TaskCategoryDB } from '../models';
+import { UserDB , TaskDB , UserTaskPassedDB , TaskCategoryDB  , WrongAnswersDB} from '../models';
 
 import {v4 as uuidv4 , v5 as uuidv5} from 'uuid';
 
@@ -175,8 +175,8 @@ apiRouter.post("/login" ,(request : Request , response : Response) => {
                 TEMPORARY_KEY_STORAGE_LIFETIME,
                 userData.gradeBookNumber
                 );
-
-                response.json(   sessionData  );
+                const { uuid , gradeBookNumber , token }  = sessionData;
+                response.json(   { uuid , gradeBookNumber , token }  );
             }
             else
             {
@@ -267,12 +267,10 @@ apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , (request:Request 
         attributes : [ "answer" , "score" ]
     } )
     .then( taskDBResult => {
+        const { gradeBookNumber } = response.locals;
+        const { userId } = TEMPORARY_KEY_STORAGE.get( gradeBookNumber );
         if( taskDBResult.answer === answer )
         {
-
-            const { gradeBookNumber } = response.locals;
-            const { userId } = TEMPORARY_KEY_STORAGE.get( gradeBookNumber );
-
                 UserTaskPassedDB.findAll( {
                     where : { taskId : uid ,  userId } ,
                     attributes : [ 'uid' ] }
@@ -299,6 +297,15 @@ apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , (request:Request 
         else
         {
             response.json(  {success : false}  )
+            WrongAnswersDB.create(
+                {
+                    uid : uuidv4(),
+                    userId,
+                    taskId : uid,
+                    answer
+                }
+            )
+                .catch(console.log);
         }
     })
     .catch( () => response.json({success : false}) );

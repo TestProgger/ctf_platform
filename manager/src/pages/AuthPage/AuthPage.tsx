@@ -13,7 +13,7 @@ export const AuthPage : React.FC = () => {
     const [password , setPassword] = useState<string>('');
     const { apiEndpoint  , ...auth } = useContext(AuthContext);
     const signInHandler = () => {
-        fetch(apiEndpoint + "/" , {
+        fetch(apiEndpoint + "/login" , {
             method : "POST",
             headers : {
                 "Content-Type" : "application/json"

@@ -1,5 +1,5 @@
 import express, { Request , Response, Router, response, NextFunction} from 'express';
-import { UserDB , TaskDB , UserTaskPassedDB , TaskCategoryDB } from '../models';
+import {UserDB, TaskDB, UserTaskPassedDB, TaskCategoryDB, WrongAnswersDB} from '../models';
 import {v4 as uuidv4 , v5 as uuidv5} from 'uuid'
 
 import multer from 'multer';
@@ -7,6 +7,7 @@ import multer from 'multer';
 import crypto from 'crypto';
 import * as fs from "fs";
 import {AdminKeyStore, ServerSideKeyStore} from "./@types/manager";
+import WrongAnswers from "../models/WrongAnswers";
 
 const managerRouter  = express.Router();
 
@@ -46,7 +47,11 @@ function checkAdminAuthMiddleware( request : Request  , response : Response , ne
     }
 }
 
-managerRouter.post( "/" , (request : Request , response : Response) => {
+managerRouter.post('/' ,  checkAdminAuthMiddleware ,  ( request : Request , response : Response ) => {
+    response.status(200).end();
+});
+
+managerRouter.post( "/login" , (request : Request , response : Response) => {
     const loginData = request.body;
     if( loginData.login === AMDIN_LOGIN && loginData.password === ADMIN_PASSWORD )
     {
@@ -65,7 +70,7 @@ managerRouter.post( "/" , (request : Request , response : Response) => {
     }
     else
     {
-        response.json( { token : null , uuid : null , signUUID : null} );
+        response.status(404).end();
     }
 } );
 
@@ -204,18 +209,25 @@ managerRouter.get( "/getTasks" , checkAdminAuthMiddleware , ( request : Request 
 
 
 managerRouter.get( "/getTopHackers" , checkAdminAuthMiddleware , ( request : Request , response : Response ) => {
+
+    const numHackers : number = +request.query.q || 10;
+
     UserDB.findAll( { attributes : ['uid' , 'firstName' , 'lastName' ] })
         .then(async(userData) => {
             const responseData = [];
             for( const user of userData )
             {
                 const passedTasks = await UserTaskPassedDB.findAll({ attributes : ['score' ] , where : { userId : user.uid } });
+                const numWrongAttempts = await WrongAnswersDB.count( { where : { userId: user.uid } } );
                 const sumScores = passedTasks.reduce((accumulator, currentValue) => accumulator + currentValue.score, 0);
-                const { uid , firstName , lastName } = user;
-                responseData.push({ uid , firstName , lastName , scores : sumScores });
+                if( sumScores !== 0)
+                {
+                    const { uid , firstName , lastName } = user;
+                    responseData.push({ uid , firstName , lastName , scores : sumScores , numWrongAttempts , numSuccessAttempts : passedTasks.length  });
+                }
             }
             responseData.sort( ( a , b ) => b.scores - a.scores );
-            response.json( responseData );
+            response.json( responseData.slice(0, numHackers) );
         })
         .catch(err => console.error(err));
 } );

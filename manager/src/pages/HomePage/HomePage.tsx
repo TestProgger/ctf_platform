@@ -7,7 +7,9 @@ interface DashboardItemIterface{
     uid : number,
     firstName : string,
     lastName : string,
-    scores : number
+    scores : number,
+    numWrongAttempts : number,
+    numSuccessAttempts : number
 }
 
 
@@ -42,6 +44,8 @@ export const Home : React.FC  = () => {
                             <th scope="col">First Name </th>
                             <th scope="col">Last Name</th>
                             <th scope="col">Scores</th>
+                            <th scope="col">S/A</th>
+                            <th scope="col">U/A</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -49,10 +53,12 @@ export const Home : React.FC  = () => {
                             dashboardItems.map( (item : DashboardItemIterface , index : number) => {
                                 return (
                                     <tr key={item.uid}>
-                                        <th scope="row">{index + 1}</th>
-                                        <td>{item.firstName}</td>
-                                        <td>{item.lastName}</td>
-                                        <td>{item.scores}</td>
+                                        <td align='center' valign='middle'>{index + 1}</td>
+                                        <td align='center' valign='middle' >{item.firstName}</td>
+                                        <td align='center' valign='middle' >{item.lastName}</td>
+                                        <td align='center' valign='middle' >{item.scores}</td>
+                                        <td align='center' valign='middle' >{item.numSuccessAttempts}</td>
+                                        <td align='center' valign='middle' >{item.numWrongAttempts}</td>
                                     </tr>
                                 );
                             } ) : null

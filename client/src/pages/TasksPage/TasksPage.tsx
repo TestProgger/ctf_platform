@@ -100,7 +100,7 @@ function TasksPage( { ...props }){
 
     return (
         <Fragment>
-            <div className="task__app_shadow " style={ taskList.length < 10 ? { height : "83.5vh" } : {height : "100%"} }>
+            <div className="task__app_shadow " style={ taskList.length < 10 ? { height : "100vh" } : {height : "100%"} }>
                 <div className="row justify-content-center">
                     <table className="table w-75 mt-4">
                         <thead>

@@ -1,5 +1,6 @@
 import express , { Request , Response , NextFunction, request } from 'express';
 import fs from 'fs';
+import {consoleTestResultHandler} from "tslint/lib/test";
 
 const LoggerDir = "./logging/";
 
@@ -12,6 +13,7 @@ const getFormatedTime = () => {
 }
 
 const parseXAuthHeader = ( request :  Request ) => {
+
     const xAuthHeader = request.headers["x-auth-token"];
     return xAuthHeader ?  JSON.parse( Buffer.from( xAuthHeader as string , 'base64' ).toString() ) : null
 }
@@ -30,9 +32,17 @@ export const Logger = () =>  ( request : Request , response : Response,
     const ip : string = request.ip;
     const path : string =  request.path;
     const protocol : string =  request.protocol;
-    const grageBookNumber : string = request.body?.authData?.gradeBookNumber;
-    const  xAuthHeader: string =  parseXAuthHeader(request);
+    const  xAuthHeader =  parseXAuthHeader(request);
+    fs.appendFile( logFileName ,
+        JSON.stringify(
+            {
+                timeStamp ,
+                method  ,
+                ip ,
+                path ,
+                protocol ,
+                gradeBookNumber: xAuthHeader?.gradeBookNumber ,
 
-    fs.appendFile( logFileName , JSON.stringify( { timeStamp , method  , ip , path , protocol , gradeBookNumber: grageBookNumber , xAuthHeader } ) + "\n" , (err) => err ? console.log( err ) : null );
+            } ) + "\n" , (err) => err ? console.log( err ) : null );
     next();
 }

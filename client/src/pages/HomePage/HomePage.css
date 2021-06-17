@@ -3,9 +3,10 @@
 }
 
 .home__app_shadow{
+    /*min-height: 150%;*/
    background: rgba(0 , 0 , 0 , 0.1) ;
    backdrop-filter: blur(8px);
-   height: 83.5vh;
+   min-height: 100vh;
 }
 
 .home__logo{

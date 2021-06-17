@@ -2,7 +2,7 @@ import React from 'react';
 
 
 import {useRoutes} from "./hooks/useRoutes";
-import {useAuth} from "./hooks/useAuth";
+import { useAuth} from "./hooks/useAuth";
 import {Header} from "./components/Header/Header";
 import { AuthContext } from "./context/AuthContext";
 
@@ -10,9 +10,8 @@ import { AuthContext } from "./context/AuthContext";
 
 import './static/css/bootstrap.min.css';
 import './App.css';
-
 function App() {
-    const auth = useAuth();
+    const {  apiEndpoint , login , ...auth }  = useAuth();
 
     const isAuthenticated = !!auth.token;
     const routes = useRoutes(isAuthenticated);
@@ -21,7 +20,7 @@ function App() {
 
 
   return (
-          <AuthContext.Provider value={{...auth , isAuthenticated}}>
+          <AuthContext.Provider value={{ apiEndpoint, login , ...auth , isAuthenticated}}>
             <div className="App">
                 { isAuthenticated ?  <Header /> : null}
                 {routes}

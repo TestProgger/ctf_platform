@@ -35,7 +35,7 @@ export const useAuth = () => {
         setToken( null );
         setUUID( null );
         setSignUUID( null );
-        localStorage.removeItem( localStorageName );
+        localStorage.removeItem( localStorageName );history.go(0);
     },[]);
 
     return { login , logout , token , uuid , signUUID , apiEndpoint };

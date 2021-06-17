@@ -26,7 +26,7 @@ export const useHttp = () => {
         }
     }, [getAuthToken]);
 
-    const get = useCallback( async (url : string ,  customHeaders : object = {}) => {
+    const get = useCallback( async (url : string ,  customHeaders : object = {}) =>{
         const headers = {
             "X-Auth-Token" : getAuthToken(),
             ...customHeaders
@@ -36,6 +36,7 @@ export const useHttp = () => {
             return response;
         }catch( err )
         {
+            console.log( 'logout' )
             localStorage.removeItem(localStorageName);
             history.go(0);
         }

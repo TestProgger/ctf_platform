@@ -8,12 +8,11 @@ import {Logger} from './middlewares/MyLogger';
 import { ProjectStructChecker } from './middlewares/ProjectStructChecker';
 
 
-import { UserDB , TaskDB , UserTaskPassedDB, TaskCategoryDB    } from './models';
+import {UserDB, TaskDB, UserTaskPassedDB, TaskCategoryDB, WrongAnswersDB} from './models';
 
 
 import apiRouter from './routes/api';
 import managerRouter from './routes/manager';
-import * as path from "path";
 
 ProjectStructChecker();
 
@@ -37,5 +36,6 @@ app.listen(5000 , "0.0.0.0" , () => {
     TaskCategoryDB.sync();
     TaskDB.sync();
     UserTaskPassedDB.sync();
+    WrongAnswersDB.sync();
 } );
 

@@ -33,7 +33,7 @@ export const TaskModalWindow = ( { checkAnswer, showModalWindow , isShown , data
                 <div className="modal_body">
                     <img src={ taskFilesEndpoint +  data?.titleImage } className="mb-3 mt-3" alt="" />
 
-                    <p className="mr-2 ml-2">{ data?.description }</p>
+                    <pre className="mr-2 ml-2">{ data?.description }</pre>
 
                     <div className="row mt-4">
                         <div className = "sign_up__form col-9">

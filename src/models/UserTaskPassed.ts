@@ -41,5 +41,5 @@ export default (  sequelize : Sequelize.Sequelize ) => {
             type  : Sequelize.BOOLEAN,
             allowNull : true
         }
-    })
+    },  {updatedAt : false})
 }

@@ -64,5 +64,6 @@ export default  ( sequelize : Sequelize.Sequelize ) => {
             allowNull : false,
         }
 
-    })
+    }
+        )
 }
