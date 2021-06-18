@@ -3,7 +3,7 @@ import React , { useCallback} from 'react';
 import { localStorageName } from './useAuth';
 import {useHistory} from 'react-router-dom';
 
-export const useHttp = () => {
+export const useHttp = (logoutIfError : boolean = true) => {
     const getAuthToken = () => {
         return btoa( localStorage.getItem( localStorageName ) as string );
     }
@@ -21,8 +21,10 @@ export const useHttp = () => {
             return response;
         }catch( err )
         {
-            localStorage.removeItem(localStorageName);
-            history.go(0);
+            if( logoutIfError){
+                localStorage.removeItem(localStorageName);
+                history.go(0);
+            }
         }
     }, [getAuthToken]);
 
@@ -37,8 +39,10 @@ export const useHttp = () => {
         }catch( err )
         {
             console.log( 'logout' )
-            localStorage.removeItem(localStorageName);
-            history.go(0);
+            if( logoutIfError){
+                localStorage.removeItem(localStorageName);
+                history.go(0);
+            }
         }
     } , [getAuthToken])
 

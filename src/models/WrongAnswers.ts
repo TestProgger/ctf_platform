@@ -5,6 +5,7 @@ interface WrongAnswerInterface{
     userId : string,
     taskId : string,
     answer : string,
+    categoryId : string,
     toDelete : boolean
 };
 
@@ -32,6 +33,10 @@ export default  ( sequelize : Sequelize.Sequelize ) => {
         taskId : {
             type: Sequelize.STRING,
             allowNull: false,
+        },
+        categoryId : {
+            type : Sequelize.STRING,
+            allowNull : false
         },
         toDelete : {
             type : Sequelize.BOOLEAN,

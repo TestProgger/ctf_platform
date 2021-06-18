@@ -264,7 +264,7 @@ apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , (request:Request 
 
     TaskDB.findOne( {
         where : {uid},
-        attributes : [ "answer" , "score" ]
+        attributes : [ "answer" , "score" , "categoryId" ]
     } )
     .then( taskDBResult => {
         const { gradeBookNumber } = response.locals;
@@ -286,6 +286,7 @@ apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , (request:Request 
                                 uid : uuidv4(),
                                 taskId : uid,
                                 userId,
+                                categoryId : taskDBResult.categoryId,
                                 score : taskDBResult.score
                             }
                          )
@@ -302,6 +303,7 @@ apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , (request:Request 
                     uid : uuidv4(),
                     userId,
                     taskId : uid,
+                    categoryId : taskDBResult.categoryId,
                     answer
                 }
             )

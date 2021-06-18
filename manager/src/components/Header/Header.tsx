@@ -14,6 +14,7 @@ export const Header : React.FC = (  ) => {
         { path : "/" , title: "Home" },
         { path : "/addTask" , title: "Add Task" },
         { path : "/addTaskCategory" , title: "Add Task Category" },
+        { path : "/getUserStat" , title: "User Stat" }
     ]
 
     return (

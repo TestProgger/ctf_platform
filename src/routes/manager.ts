@@ -8,6 +8,7 @@ import crypto from 'crypto';
 import * as fs from "fs";
 import {AdminKeyStore, ServerSideKeyStore} from "./@types/manager";
 import WrongAnswers from "../models/WrongAnswers";
+import User from "../models/User";
 
 const managerRouter  = express.Router();
 
@@ -231,5 +232,52 @@ managerRouter.get( "/getTopHackers" , checkAdminAuthMiddleware , ( request : Req
         })
         .catch(err => console.error(err));
 } );
+
+
+managerRouter.get("/getDataPassedTasksByCategory" , checkAdminAuthMiddleware , ( request : Request , response : Response ) => {
+    TaskCategoryDB.findAll( { attributes : ['uid' , "title"] } )
+        .then( async( taskCategories)  => {
+            const respData = [];
+            for( const taskCategory of taskCategories )
+            {
+                const numOfPassedTasks  = await UserTaskPassedDB.count({ where : { categoryId : taskCategory.uid } });
+                respData.push( { categoryName : taskCategory.title , numOfPassedTasks  } );
+            }
+            respData.sort( ( a , b ) => b.numOfPassedTasks - a.numOfPassedTasks );
+            response.json( respData );
+
+        } )
+});
+
+managerRouter.get("/getUserStat" , checkAdminAuthMiddleware , async ( request : Request , response : Response ) => {
+    try{
+        const gradeBookNumber = request.query.gbn;
+        const userId = (await UserDB.findOne( { where : { gradeBookNumber } , attributes : ['uid'] }  )).uid;
+
+        const taskCategories = await TaskCategoryDB.findAll({  attributes : [ 'uid' , 'title' ] });
+        const passedTasksStat = [];
+
+
+        for( const taskCategory of taskCategories )
+        {
+            passedTasksStat.push(
+                { categoryName  : taskCategory.title , numOfPassedTasks : await UserTaskPassedDB.count( { where : {userId , categoryId: taskCategory.uid} } )  }
+            );
+        }
+
+        const userData = await  UserDB.findOne( { where : { uid : userId } , attributes : ['firstName' , 'lastName' , 'gradeBookNumber'] }  );
+
+        response.json( {
+            passedTasksStat : passedTasksStat.filter(( item ) => item.numOfPassedTasks).sort((a,b) => b.numOfPassedTasks -a.numOfPassedTasks),
+            firstName :  userData.firstName,
+            lastName :  userData.lastName,
+            gradeBookNumber : userData.gradeBookNumber,
+        } )
+    }
+    catch (e) {
+        response.json(null);
+    }
+});
+
 
 export default managerRouter;
