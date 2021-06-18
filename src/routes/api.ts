@@ -105,7 +105,7 @@ apiRouter.post( "/register" , async( request: Request , response:Response ) => {
     {
         if( !value )
         {
-            response.send( errorReport );
+            response.json( errorReport );
             return;
         }
     }
@@ -129,8 +129,8 @@ apiRouter.post( "/register" , async( request: Request , response:Response ) => {
                 uuid : uuidv4(),
                 secretToken :  crypto.randomBytes(64).toString("base64")
             })
-            .then(() => response.send( { success : true } ))
-            .catch( () => response.send( { success : false  , errorText : "Save error"} ));
+            .then(() => response.json( { success : true } ))
+            .catch( () => response.json( { success : false  , errorText : "Save error"} ));
             sha256.end();
         }else{
             response.json( { success : false , errorText : "The user is already registered" } )
@@ -326,7 +326,7 @@ apiRouter.post("/task/getScoresForCurrentUser" , checkAuthMiddleware , (request 
             for( const i of taskPassedResult ){
                 scoreSum += i.score;
             }
-            response.send( JSON.stringify( {scores : scoreSum } ) );
+            response.json( {scores : scoreSum }  );
         } )
 });
 
