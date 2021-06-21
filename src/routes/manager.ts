@@ -7,8 +7,6 @@ import multer from 'multer';
 import crypto from 'crypto';
 import * as fs from "fs";
 import {AdminKeyStore, ServerSideKeyStore} from "./@types/manager";
-import WrongAnswers from "../models/WrongAnswers";
-import User from "../models/User";
 
 const managerRouter  = express.Router();
 

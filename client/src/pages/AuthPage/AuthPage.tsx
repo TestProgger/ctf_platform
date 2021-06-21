@@ -8,7 +8,7 @@ import './AuthPage.css';
 
 
 import { AuthContext , AuthContextInterface } from '../../context/AuthContext';
-import {useAuth} from "../../hooks/useAuth";
+import {useHttp} from "../../hooks/useHttp";
 interface RegisterDataInterface{
     firstName : string,
     lastName : string ,
@@ -17,52 +17,39 @@ interface RegisterDataInterface{
     confirmPassword : string
 }
 
-
-
-
 function AuthPage(){
 
     const [ isSignIn , setIsSignIn ] = useState<boolean>(true);
 
     const { apiEndpoint , ...auth } = useContext<AuthContextInterface>(AuthContext);
 
+    const http = useHttp();
+
     const singInHandler = ( password : string , gradeBookNumber : string  ) => {
-        fetch( `${apiEndpoint}/login` ,  {
-            method : 'POST',
-            body : JSON.stringify( { password , gradeBookNumber } ),
-            headers: {
-                'Content-Type': 'application/json'
-              }
-        }).then( response => response.json() )
-        .then( responseData => {
-            if( responseData?.authorized === false )
-            {
-                alert( "Authorization Error: Invalid username or password"  )
-            }else
-            {
-                auth.login(responseData);
-            }
-        })
-        .catch( console.log );
+        http.post( `${apiEndpoint}/login` , { password , gradeBookNumber } )
+            .then( ( { data } : any ) => {
+                if( data?.authorized === false )
+                {
+                    alert( "Authorization Error: Invalid username or password"  )
+                }else
+                {
+                    auth.login(data);
+                }
+            } )
+            .catch( console.log );
     }
 
 
-    const signUpHandler = ( registerData : RegisterDataInterface  ) => {  
-        fetch( `${apiEndpoint}/register` , {
-            method : 'POST',
-            body : JSON.stringify( registerData ),
-            headers : {
-                'Content-Type': 'application/json'
-            }
-        } ).then( response => response.json() )
-        .then( data => {
-            if( data?.success ){
-                alert( "You have successfully registered. You can log in" );
-            }else{
-                alert( "Error : " + data.errorText );
-            }
-        })
-        .catch( console.log);
+    const signUpHandler = ( registerData : RegisterDataInterface  ) => {
+        http.post( `${apiEndpoint}/register` , registerData )
+            .then( ( { data } : any ) => {
+                if( data?.success ){
+                    alert( "You have successfully registered. You can log in" );
+                }else{
+                    alert( "Error : " + data.errorText );
+                }
+            } )
+            .catch( console.log );
     }
 
 
@@ -91,16 +78,12 @@ function AuthPage(){
     }
     return (
         <div className="auth_page__app_shadow">
-            <div className = "auth_page__container"> 
-
+            <div className = "auth_page__container">
                 { isSignIn ?  <SignIn signInHandler = {singInHandler}/> : <SignUp signUpHandler = {signUpHandler}/> }
-                
                 <div className  = "auth_page__buttons">
                     <button style = {isSignIn ? styles.active : styles.inactive} onClick={ () =>  setIsSignIn(true) }> Sign In </button>
                     <button style = {isSignIn ? styles.inactive : styles.active} onClick = { () => setIsSignIn(false) } > Sign Up </button>
                 </div>
-                
-                
             </div>
         </div>
     );

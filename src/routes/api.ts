@@ -4,8 +4,18 @@ import { UserDB , TaskDB , UserTaskPassedDB , TaskCategoryDB  , WrongAnswersDB} 
 import {v4 as uuidv4 , v5 as uuidv5} from 'uuid';
 
 import crypto  from 'crypto';
-import {RequestLoginType, RequestRegisterErrorType, RequestRegisterType, SessionUserAuthData} from "./@types/api";
+import {
+    BrowserFingerprintInterface,
+    RequestLoginType,
+    RequestRegisterErrorType,
+    RequestRegisterType,
+    SessionUserAuthData
+} from "./@types/api";
 
+
+
+export const TEMPORARY_KEY_STORAGE : Map<string, SessionUserAuthData> = new Map<string, SessionUserAuthData>();
+export const TEMPORARY_KEY_STORAGE_LIFETIME = 4 * 60 * 60 * 1000;
 
 
 export function validateRegisterRequest( data : RequestRegisterType  ) : RequestRegisterErrorType
@@ -62,21 +72,31 @@ export function validateRegisterRequest( data : RequestRegisterType  ) : Request
 export function checkAuthMiddleware( request : Request , response : Response , next : NextFunction):void
 {
     const authData : SessionUserAuthData = JSON.parse( Buffer.from( request.headers["x-auth-token"]  as string, "base64" ).toString("utf-8")  );
+    const suspFingerprint = {
+        browserFingerprint :  JSON.parse( Buffer.from( request.headers["x-finger-data"]  as string, "base64" ).toString("utf-8")  ),
+        userAgent : request.headers["user-agent"],
+        userIp :  request.ip
+    }
 
     if( authData?.gradeBookNumber ){
 
         response.locals.gradeBookNumber = authData?.gradeBookNumber;
 
         const serverSideAuthData : SessionUserAuthData = TEMPORARY_KEY_STORAGE.get( authData.gradeBookNumber );
-
         if( serverSideAuthData )
         {
-            if( serverSideAuthData.token === authData?.token &&
-                serverSideAuthData.uuid === authData?.uuid
-            ){
-                next();
-            }
-            else{
+            if( JSON.stringify(suspFingerprint) ===  JSON.stringify(serverSideAuthData.fingerprint) )
+            {
+                if( serverSideAuthData.token === authData?.token &&
+                    serverSideAuthData.uuid === authData?.uuid
+                ){
+                    next();
+                }
+                else{
+                    response.status(403).end();
+                }
+            }else
+            {
                 response.status(403).end();
             }
         }
@@ -88,8 +108,7 @@ export function checkAuthMiddleware( request : Request , response : Response , n
 
 }
 
-export const TEMPORARY_KEY_STORAGE : Map<string, SessionUserAuthData> = new Map<string, SessionUserAuthData>();
-export const TEMPORARY_KEY_STORAGE_LIFETIME = 4 * 60 * 60 * 1000;
+
 
 const apiRouter: Router  = express.Router();
 
@@ -142,6 +161,11 @@ apiRouter.post( "/register" , async( request: Request , response:Response ) => {
 
 apiRouter.post("/login" ,(request : Request , response : Response) => {
     const userData : RequestLoginType = request.body;
+
+    const browserFingerprint :BrowserFingerprintInterface = JSON.parse( Buffer.from( request.headers["x-finger-data"]  as string, "base64" ).toString("utf-8")  );
+    const userAgent : string  = request.headers["user-agent"];
+    const userIp : string = request.ip;
+
     UserDB.findOne(
         {
             where : { gradeBookNumber  : userData.gradeBookNumber }
@@ -162,8 +186,16 @@ apiRouter.post("/login" ,(request : Request , response : Response) => {
 
                 sessionData.token = crypto.randomBytes(32).toString("hex");
                 sessionData.uuid = uuidv5(secretToken , uuidv4() ) ;
+                sessionData.fingerprint = {
+                    browserFingerprint,
+                    userAgent,
+                    userIp
+                }
 
-                if ( TEMPORARY_KEY_STORAGE.has(  userData.gradeBookNumber ) ){ TEMPORARY_KEY_STORAGE.delete( userData.gradeBookNumber ); }
+                if ( TEMPORARY_KEY_STORAGE.has(  userData.gradeBookNumber ) )
+                {
+                    TEMPORARY_KEY_STORAGE.delete( userData.gradeBookNumber );
+                }
 
                 TEMPORARY_KEY_STORAGE.set( userData.gradeBookNumber , sessionData );
 

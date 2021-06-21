@@ -6,11 +6,28 @@ export interface RequestRegisterType{
     confirmPassword : string
 }
 
+export interface BrowserFingerprintInterface {
+    timezone : string
+    screenConf : {
+        width : number
+        height : number
+        colorDepth: number
+        pixelDepth : number
+    },
+    languages : string[],
+    appCodeName : string
+}
+
 export interface SessionUserAuthData{
     gradeBookNumber : string,
     token : string,
     uuid : string,
-    userId : string
+    userId : string,
+    fingerprint ?: {
+        browserFingerprint : BrowserFingerprintInterface,
+        userAgent : string,
+        userIp : string
+    }
 }
 
 export interface RequestLoginType{
@@ -29,3 +46,4 @@ export interface TaskAnswerInterface{
     taskId : number,
     answer : string,
 }
+

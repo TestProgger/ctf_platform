@@ -17,6 +17,7 @@ import  { AuthContext } from './context/AuthContext';
 import { ScoreContext } from './context/ScoreContext';
 import {useHttp} from "./hooks/useHttp";
 import { useHistory } from 'react-router-dom';
+import Footer from './components/Footer';
 
 function App() {
 
@@ -44,6 +45,7 @@ function App() {
             <div className = "app__shadow" >
               {isAuthenticated ? <Header/> : null}
               { routes }
+              {isAuthenticated ? <Footer/> : null}
             </div>
           </ScoreContext.Provider>
     </AuthContext.Provider>

@@ -42,6 +42,7 @@ export const Logger = () =>  ( request : Request , response : Response,
                 path ,
                 protocol ,
                 gradeBookNumber: xAuthHeader?.gradeBookNumber ,
+                userAgent : request.headers["user-agent"]
 
             } ) + "\n" , (err) => err ? console.log( err ) : null );
     next();
