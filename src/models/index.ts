@@ -9,7 +9,7 @@ import WrongAnswers from "./WrongAnswers";
 
 export const sequelize  = new Sequelize("sqlite:./dbs/ctf_simple_db.db" ,
     {
-        logging : true ,
+        logging : false ,
         pool : {
             max : 10
         }
