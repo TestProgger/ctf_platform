@@ -1,5 +1,5 @@
 import fs from 'fs';
-
+import { UserTaskPassedDB , TaskCategoryDB , WrongAnswersDB , TaskDB , UserDB } from '../models';
 
 export const ProjectStructChecker = () => {
 
@@ -28,8 +28,11 @@ export const ProjectStructChecker = () => {
             fs.mkdirSync('./public/tasks/tmp' , {recursive : true});
             fs.mkdirSync('./public/tasks/taskFiles' , {recursive : true});
         }
-    })
+    });
 
-
-
+    UserDB.sync();
+    TaskCategoryDB.sync();
+    TaskDB.sync();
+    UserTaskPassedDB.sync();
+    WrongAnswersDB.sync();
 }
