@@ -2,11 +2,33 @@
     width: 100%;
 }
 
-.home__app_shadow{
-    /*min-height: 150%;*/
-   background: rgba(0 , 0 , 0 , 0.1) ;
-   backdrop-filter: blur(8px);
-   min-height: 100vh;
+/*.home__app_shadow{*/
+/*    !*min-height: 150%;*!*/
+/*   background: rgba(0 , 0 , 0 , 0.1) ;*/
+/*   backdrop-filter: blur(8px);*/
+/*   min-height: 100vh;*/
+/*}*/
+
+.home__app_shadow {
+    background-size: cover;
+    width: 100vw;
+    height: 85vh;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.home__app_shadow::after {
+    content: "";
+    /*background:  no-repeat center center;*/
+    background-size: cover;
+    filter: blur(10px) brightness(0.4);
+    position: absolute;
+    left: -10px;
+    top: -10px;
+    right: -10px;
+    bottom: -10px;
+    z-index: -1;
 }
 
 .home__logo{

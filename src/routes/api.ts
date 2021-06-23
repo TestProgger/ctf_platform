@@ -85,18 +85,14 @@ export function checkAuthMiddleware( request : Request , response : Response , n
         const serverSideAuthData : SessionUserAuthData = TEMPORARY_KEY_STORAGE.get( authData.gradeBookNumber );
         if( serverSideAuthData )
         {
-            if( JSON.stringify(suspFingerprint) ===  JSON.stringify(serverSideAuthData.fingerprint) )
-            {
-                if( serverSideAuthData.token === authData?.token &&
-                    serverSideAuthData.uuid === authData?.uuid
-                ){
-                    next();
-                }
-                else{
-                    response.status(403).end();
-                }
-            }else
-            {
+            if(
+                JSON.stringify(suspFingerprint) ===  JSON.stringify(serverSideAuthData.fingerprint) &&
+                serverSideAuthData.token === authData?.token &&
+                serverSideAuthData.uuid === authData?.uuid
+            ){
+                next();
+            }
+            else{
                 response.status(403).end();
             }
         }

@@ -3,6 +3,31 @@
     text-align: center;
 }
 
+
+.about_devs__app_shadow {
+    background-size: cover;
+    width: 100vw;
+    height: 85vh;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.about_devs__app_shadow::after {
+    content: "";
+    /*background: black no-repeat center center;*/
+    opacity: 1;
+    background-size: cover;
+    filter: blur(10px) brightness(0.4);
+    position: absolute;
+    left: -10px;
+    top: -10px;
+    right: -10px;
+    bottom: -10px;
+    z-index: -1;
+}
+
+
 .about_devs__title .title{
     font-family: "ChakraPetch-Bold";
     font-style: normal;
@@ -11,8 +36,8 @@
     line-height: 125px;
 }
 
-.about_devs__app_shadow{
-    background: rgba(0 , 0 , 0 , 0.1) ;
-    backdrop-filter: blur(8px);
-    min-height: 100vh;
-}
+/*.about_devs__app_shadow{*/
+/*    background: rgba(0 , 0 , 0 , 0.1) ;*/
+/*    backdrop-filter: blur(8px);*/
+/*    min-height: 100vh;*/
+/*}*/

@@ -45,7 +45,7 @@ function App() {
             <div className = "app__shadow" >
               {isAuthenticated ? <Header/> : null}
               { routes }
-              {isAuthenticated ? <Footer/> : null}
+              {/*{isAuthenticated ? <Footer/> : null}*/}
             </div>
           </ScoreContext.Provider>
     </AuthContext.Provider>
