@@ -1,5 +1,29 @@
 import fs from 'fs';
 import { UserTaskPassedDB , TaskCategoryDB , WrongAnswersDB , TaskDB , UserDB } from '../models';
+import { v4 as uuidv4 } from "uuid";
+
+async function createDefaultCategories()
+{
+    const DEFAULT_CATEGORIES = [
+        'Joy' , 'Reverse' , 'Web', 'Linux' , 'Crypto' , 'Stegano'
+    ];
+    for( const category of DEFAULT_CATEGORIES)
+    {
+        await TaskCategoryDB.create(
+            {
+                uid : uuidv4(),
+                title : category,
+                description : '',
+                shortName : category.toLowerCase(),
+                titleImage : ''
+            }
+        );
+    }
+}
+
+
+
+
 
 export const ProjectStructChecker = () => {
 
@@ -31,7 +55,7 @@ export const ProjectStructChecker = () => {
     });
 
     UserDB.sync();
-    TaskCategoryDB.sync();
+    TaskCategoryDB.sync().then(createDefaultCategories);
     TaskDB.sync();
     UserTaskPassedDB.sync();
     WrongAnswersDB.sync();

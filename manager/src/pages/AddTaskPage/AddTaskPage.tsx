@@ -38,6 +38,11 @@ export const AddTaskPage : React.FC = () => {
     }
 
     const _addTaksHandler = (event  : React.MouseEvent<HTMLButtonElement>) => {
+
+
+        if( answer.length === 0  ){ return 0; }
+
+
         const formData = new FormData();
 
         formData.append("title" , title);
