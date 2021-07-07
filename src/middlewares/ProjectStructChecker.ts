@@ -59,4 +59,71 @@ export const ProjectStructChecker = () => {
     TaskDB.sync();
     UserTaskPassedDB.sync();
     WrongAnswersDB.sync();
+
+
+    {
+        TaskCategoryDB.create(
+            {
+                uid: uuidv4(),
+                title: "Joy",
+                description: "",
+                shortName: "joy",
+                titleImage: ''
+            }
+        );
+
+        TaskCategoryDB.create(
+            {
+                uid: uuidv4(),
+                title: "Reverse",
+                description: "",
+                shortName: "reverse",
+                titleImage: ''
+            }
+        );
+
+        TaskCategoryDB.create(
+            {
+                uid : uuidv4(),
+                title : "Stegano",
+                description : "",
+                shortName : "stegano",
+                titleImage : ''
+            }
+        );
+
+        TaskCategoryDB.create(
+            {
+                uid : uuidv4(),
+                title : "Crypto",
+                description : "",
+                shortName : "crypto",
+                titleImage : ''
+            }
+        );
+
+        TaskCategoryDB.create(
+            {
+                uid : uuidv4(),
+                title : "Web",
+                description : "",
+                shortName : "web",
+                titleImage : ''
+            }
+        )
+
+        TaskCategoryDB.create(
+            {
+                uid : uuidv4(),
+                title : "Linux",
+                description : "",
+                shortName : "linux",
+                titleImage : ''
+            }
+        )
+
+
+    }
+
+
 }
