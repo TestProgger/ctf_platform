@@ -28,13 +28,6 @@ app.use("/public" , express.static("public") );
 app.use('/api', apiRouter);
 app.use('/manager' , managerRouter);
 
-// const options : ServerOptions  = {
-//     key : fs.readFileSync('./certs/key.pem'),
-//     cert : fs.readFileSync('./certs/cert.pem')
-// }
-
-// https.createServer( options  ,  app ).listen(5000);
-
 app.listen(5000 , "0.0.0.0" , () => {
     console.log( "Server Started : 0.0.0.0:5000" );
 } );

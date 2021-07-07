@@ -216,7 +216,7 @@ apiRouter.post("/login" ,(request : Request , response : Response) => {
         {
             response.json({ authorized : false } );
         }
-    });
+    }).catch(_ => response.json({ authorized : false }));
 });
 
 apiRouter.post("/taskCategories/:category" , checkAuthMiddleware , (request : Request , response:Response) => {
@@ -268,17 +268,11 @@ apiRouter.post("/taskCategories/:category" , checkAuthMiddleware , (request : Re
 
 
 apiRouter.post("/taskCategories" , checkAuthMiddleware  ,  ( request : Request , response : Response ) => {
-    try {
-        TaskCategoryDB.findAll()
-            .then( data => {
-                response.json( data );
-            } )
-            .catch( _ => response.json({  }));
-    }catch (ex)
-    {
-        response.json( {  } );
-    }
-
+    TaskCategoryDB.findAll()
+        .then( data => {
+            response.json( data );
+        } )
+        .catch( _ => response.json({  }));
 } );
 
 apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , (request:Request , response:Response) => {
