@@ -34,6 +34,7 @@ export default  ( sequelize : Sequelize.Sequelize ) => {
         title : {
             type : Sequelize.STRING(256),
             allowNull : false,
+            unique : true
         },
         description  :  {
             type : Sequelize.TEXT,

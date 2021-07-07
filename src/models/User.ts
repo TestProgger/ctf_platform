@@ -30,7 +30,7 @@ export default  (sequelize : Sequelize.Sequelize) => {
         },
         gradeBookNumber : {
             type : Sequelize.STRING(32),
-            allowNull : false
+            allowNull : false,
         },
         firstName : {
             type :  Sequelize.STRING(32),

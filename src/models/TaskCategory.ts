@@ -28,7 +28,7 @@ export default (  sequelize : Sequelize.Sequelize ) => {
         },
         title : {
             type : Sequelize.STRING(64),
-            allowNull : false
+            allowNull : false,
         },
         description : {
             type : Sequelize.TEXT,
