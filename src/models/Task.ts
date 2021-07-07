@@ -41,7 +41,7 @@ export default  ( sequelize : Sequelize.Sequelize ) => {
             allowNull : true
         },
         score : {
-            type : Sequelize.INTEGER.UNSIGNED,
+            type : Sequelize.INTEGER,
             allowNull : false
         },
         answer: {

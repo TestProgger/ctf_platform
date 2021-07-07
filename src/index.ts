@@ -1,8 +1,6 @@
-import express , { Response , Request } from 'express';
+import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-
-// import https, { ServerOptions } from 'https';
 
 import {Logger} from './middlewares/MyLogger';
 
@@ -10,7 +8,6 @@ import { ProjectStructChecker } from './middlewares/ProjectStructChecker';
 
 import apiRouter from './routes/api';
 import managerRouter from './routes/manager';
-// import fs from 'fs';
 
 ProjectStructChecker();
 

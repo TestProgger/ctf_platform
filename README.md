@@ -26,12 +26,12 @@ Installing main dependencies
 
 Building project
 ```bash
-    npm run build:project
+    npm run project:build
 ```
 
 Start Project
 ```bash
-    npm run start:project
+    npm run project:start
 ```
 
 

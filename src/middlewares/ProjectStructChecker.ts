@@ -9,21 +9,21 @@ async function createDefaultCategories()
     ];
     for( const category of DEFAULT_CATEGORIES)
     {
-        await TaskCategoryDB.create(
-            {
-                uid : uuidv4(),
-                title : category,
-                description : '',
-                shortName : category.toLowerCase(),
-                titleImage : ''
-            }
-        );
+        const cnt = await TaskCategoryDB.count({where : { title : category , shortName : category.toLowerCase() }});
+        if( !cnt )
+        {
+            await TaskCategoryDB.create(
+                {
+                    uid : uuidv4(),
+                    title : category,
+                    description : '',
+                    shortName : category.toLowerCase(),
+                    titleImage : ''
+                }
+            );
+        }
     }
 }
-
-
-
-
 
 export const ProjectStructChecker = () => {
 
