@@ -9,6 +9,12 @@ import { ProjectStructChecker } from './middlewares/ProjectStructChecker';
 import apiRouter from './routes/api';
 import managerRouter from './routes/manager';
 
+
+
+const TEAM_MODE = false;
+
+
+
 ProjectStructChecker();
 
 const app = express();

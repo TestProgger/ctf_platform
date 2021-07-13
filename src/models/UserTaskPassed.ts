@@ -4,7 +4,6 @@ interface UserTaskPassedInterface{
     userId : string,
     taskId : string,
     toDelete : boolean,
-    score : number,
     categoryId : string
 };
 
@@ -37,10 +36,6 @@ export default (  sequelize : Sequelize.Sequelize ) => {
         categoryId : {
             type : Sequelize.STRING,
             allowNull : false
-        },
-        score: {
-            type : Sequelize.INTEGER,
-            allowNull :  false
         },
         toDelete : {
             type  : Sequelize.BOOLEAN,

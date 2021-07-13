@@ -1,5 +1,5 @@
 import express, {RouterOptions , Request , Response, Router, response, NextFunction, request} from 'express';
-import { UserDB , TaskDB , UserTaskPassedDB , TaskCategoryDB  , WrongAnswersDB} from '../models';
+import {UserDB, TaskDB, UserTaskPassedDB, TaskCategoryDB, WrongAnswersDB, UserScoresDB} from '../models';
 
 import {v4 as uuidv4 , v5 as uuidv5} from 'uuid';
 
@@ -309,11 +309,34 @@ apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , (request:Request 
                                 taskId : uid,
                                 userId,
                                 categoryId : taskDBResult.categoryId,
-                                score : taskDBResult.score
                             }
                          )
                          .then( _ => { response.json( { success : true , score : taskDBResult.score }  ) } )
                          .catch(console.log);
+
+                        UserScoresDB.findOne(
+                            {
+                                where : { userId }
+                            }
+                        ).then( userScoresResult => {
+                            if ( userScoresResult )
+                            {
+                                UserScoresDB.update({ scores : userScoresResult.scores + taskDBResult.score } , {
+                                    where : {userId}
+                                }).catch(console.log);
+                            }
+                            else
+                            {
+                                UserScoresDB.create(
+                                    {
+                                        uid : uuidv4(),
+                                        userId ,
+                                        scores : taskDBResult.score
+                                    }
+                                ).catch(console.log);
+                            }
+                        } ).catch(console.log);
+                        ;
                     }
                 } )
         }
@@ -339,17 +362,29 @@ apiRouter.post("/task/getScoresForCurrentUser" , checkAuthMiddleware , (request 
     const {gradeBookNumber} = response.locals;
     const { userId }  = TEMPORARY_KEY_STORAGE.get( gradeBookNumber );
 
-        UserTaskPassedDB.findAll({
-            where : { userId },
-            attributes : [ 'score' ]
-        })
-        .then( taskPassedResult => {
-            let scoreSum = 0;
-            for( const i of taskPassedResult ){
-                scoreSum += i.score;
+    UserScoresDB.findOne( { where : {userId} } )
+        .then( userScoresResult => {
+            if( userScoresResult?.scores ){
+                response.json( {scores : userScoresResult.scores }  );
             }
-            response.json( {scores : scoreSum }  );
+            else {
+                response.json( {scores : 0 }  );
+            }
         } )
+        .catch(console.log);
+
+
+        // UserTaskPassedDB.findAll({
+        //     where : { userId },
+        //     attributes : [ 'score' ]
+        // })
+        // .then( taskPassedResult => {
+        //     let scoreSum = 0;
+        //     for( const i of taskPassedResult ){
+        //         scoreSum += i.score;
+        //     }
+        //     response.json( {scores : scoreSum }  );
+        // } )
 });
 
 

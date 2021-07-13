@@ -1,5 +1,6 @@
 import fs from 'fs';
-import { UserTaskPassedDB , TaskCategoryDB , WrongAnswersDB , TaskDB , UserDB } from '../models';
+import { UserTaskPassedDB , TaskCategoryDB , WrongAnswersDB , TaskDB , UserDB , TeamDB , UserScoresDB , TeamScoresDB } from '../models';
+import { TaskToTeamLinkTable , UserToTeamLinkTable } from '../models';
 import { v4 as uuidv4 } from "uuid";
 
 async function createDefaultCategories()
@@ -59,6 +60,13 @@ export const ProjectStructChecker = () => {
     TaskDB.sync();
     UserTaskPassedDB.sync();
     WrongAnswersDB.sync();
+    TeamDB.sync();
+    UserScoresDB.sync();
+    TeamScoresDB.sync();
+
+    // Link
+    TaskToTeamLinkTable.sync();
+    UserToTeamLinkTable.sync();
 
 
 
