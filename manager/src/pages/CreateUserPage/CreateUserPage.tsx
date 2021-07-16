@@ -2,7 +2,6 @@ import React, {useContext, useState} from "react";
 import {useHttp} from "../../hooks/useHttp";
 import {AuthContext} from "../../context/AuthContext";
 import {SaveAlert} from "../../components/SaveAlert";
-import {response} from "express";
 
 export const CreateUserPage = () => {
 
