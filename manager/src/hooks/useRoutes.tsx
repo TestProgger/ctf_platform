@@ -8,6 +8,8 @@ import  AddTaskPage  from '../pages/AddTaskPage';
 import AddCategoryPage from '../pages/AddCategoryPage';
 import AuthPage from '../pages/AuthPage';
 import UserStatPage from "../pages/UserStatPage";
+import CreateUserPage from '../pages/CreateUserPage';
+import CreateTeamPage from '../pages/CreateTeamPage';
 
 
 
@@ -17,9 +19,11 @@ export const useRoutes  = ( isAuthenticated : boolean ) => {
         return (
             <Switch>
                 <Route exact  path="/" component={Home}/>
-                <Route path="/addTask" component={AddTaskPage}/>
-                <Route path="/addTaskCategory" component={AddCategoryPage}/>
+                <Route path="/createTask" component={AddTaskPage}/>
+                <Route path="/createTaskCategory" component={AddCategoryPage}/>
                 <Route path="/getUserStat"  component = { UserStatPage }/>
+                <Route path={"/createUser"} component={CreateUserPage}></Route>
+                <Route path={"/createTeam"} component={CreateTeamPage}></Route>
             </Switch>
         )
     }

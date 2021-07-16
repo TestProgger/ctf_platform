@@ -2,7 +2,7 @@ import Sequelize, {Model, Optional} from 'sequelize';
 
 interface TaskToTeamLKInterface{
     uid : string
-    commandId : string,
+    teamId : string,
     taskId : string,
     toDelete : boolean
 };
@@ -23,7 +23,7 @@ export default  ( sequelize : Sequelize.Sequelize ) => {
                 primaryKey : true,
                 allowNull : false
             },
-            commandId : {
+            teamId : {
                 type : Sequelize.STRING(256),
                 allowNull : false,
             },

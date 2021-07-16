@@ -44,7 +44,6 @@ export const AuthPage : React.FC = () => {
                                    className  = "form-control"
                                    value={password}
                                    onChange={ (event : React.ChangeEvent<HTMLInputElement>) => setPassword( event.target.value ) }
-
                             />
                         </div>
 

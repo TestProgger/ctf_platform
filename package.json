@@ -16,8 +16,8 @@
     "manager:start": "concurrently \" npm run server \" \"npm run manager\" ",
     "start:all": "concurrently \" npm run server \" \"npm run client\" \"npm run manager\" ",
     "prepare": "concurrently \"npm install --prefix manager\" \"npm install --prefix client\"  ",
-    "project:build": "concurrently \" npm run build \" \"npm run build --prefix manager\" \"npm run build --prefix client\"  ",
-    "project:start": "concurrently \"npm run start\"  \"serve -s ./client/build -l tcp://0.0.0.0:3000\"  \"serve -s ./manager/build -l tcp://0.0.0.0:5555\"",
+    "build:project": "concurrently \" npm run build \" \"npm run build --prefix manager\" \"npm run build --prefix client\"  ",
+    "start:project": "concurrently \"npm run start\"  \"serve -s ./client/build -l tcp://0.0.0.0:3000\"  \"serve -s ./manager/build -l tcp://0.0.0.0:5555\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

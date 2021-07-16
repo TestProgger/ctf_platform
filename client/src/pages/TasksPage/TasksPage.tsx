@@ -47,9 +47,9 @@ function TasksPage( { ...props }){
         setModalWindowIsShown(true);
     }
 
-    const checkAnswer = (answer : string  , uid : string ) => {
+    const checkAnswer = (answer : string  , taskId : string ) => {
 
-        http.post( apiEndpoint + "/task/checkTaskAnswer" , { answer  , uid } )
+        http.post( apiEndpoint + "/task/checkTaskAnswer" , { answer  , taskId } )
         .then( ( response : any)   =>  {
 
             if( response?.data )

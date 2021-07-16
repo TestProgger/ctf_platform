@@ -19,7 +19,7 @@ export const useAuth = () => {
     const history = useHistory();
     const historyLocation = history.location.pathname;
 
-    const apiEndpoint = "http://" +  window.location.host.split(":")[0] + ":5000/manager";
+    const apiEndpoint = "http://" +  window.location.host.split(":")[0] + ":5000/manager/";
 
 
     const login =  useCallback( ( responseData : LoginDataInterface ) => {

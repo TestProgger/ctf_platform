@@ -1,5 +1,14 @@
-import express, { Request , Response, Router, response, NextFunction} from 'express';
-import {UserDB, TaskDB, UserTaskPassedDB, TaskCategoryDB, WrongAnswersDB} from '../models';
+import express, { Request , Response,  NextFunction} from 'express';
+import {
+    UserDB,
+    TaskDB,
+    UserTaskPassedDB,
+    TaskCategoryDB,
+    WrongAnswersDB,
+    UserScoresDB,
+    TeamDB,
+    UserToTeamLinkTable
+} from '../models';
 import {v4 as uuidv4 , v5 as uuidv5} from 'uuid'
 
 import multer from 'multer';
@@ -7,6 +16,11 @@ import multer from 'multer';
 import crypto from 'crypto';
 import * as fs from "fs";
 import {AdminKeyStore, ServerSideKeyStore} from "./@types/manager";
+
+import {Sequelize} from 'sequelize'
+import {readdirSync} from "fs";
+import User from "../models/User";
+
 
 const managerRouter  = express.Router();
 
@@ -208,27 +222,23 @@ managerRouter.get( "/getTasks" , checkAdminAuthMiddleware , ( request : Request 
 
 
 managerRouter.get( "/getTopHackers" , checkAdminAuthMiddleware , ( request : Request , response : Response ) => {
-
     const numHackers : number = +request.query.q || 10;
-
-    UserDB.findAll( { attributes : ['uid' , 'firstName' , 'lastName' ] })
-        .then(async(userData) => {
-            const responseData = [];
-            for( const user of userData )
-            {
-                const passedTasks = await UserTaskPassedDB.findAll({ attributes : ['score' ] , where : { userId : user.uid } });
-                const numWrongAttempts = await WrongAnswersDB.count( { where : { userId: user.uid } } );
-                const sumScores = passedTasks.reduce((accumulator, currentValue) => accumulator + currentValue.score, 0);
-                if( sumScores !== 0)
-                {
-                    const { uid , firstName , lastName } = user;
-                    responseData.push({ uid , firstName , lastName , scores : sumScores , numWrongAttempts , numSuccessAttempts : passedTasks.length  });
-                }
+    UserScoresDB.findAll({
+            limit : numHackers,
+            order : Sequelize.literal("scores DESC"),
+        }
+    ).then( async ( usResult )  => {
+        const responseData = [];
+        if(usResult.length){
+            for( const user of usResult ){
+                const numSuccessAttempts = await UserTaskPassedDB.count({ where : { userId : user.uid } });
+                const numWrongAttempts = await WrongAnswersDB.count( { where : { userId: user.userId } } );
+                const { uid , firstName , lastName } = await UserDB.findOne({where : { uid : user.userId } , attributes : ['uid' , 'firstName' , 'lastName']});
+                responseData.push({ uid , firstName , lastName , scores : user.scores , numWrongAttempts , numSuccessAttempts   })
             }
-            responseData.sort( ( a , b ) => b.scores - a.scores );
-            response.json( responseData.slice(0, numHackers) );
-        })
-        .catch(err => console.error(err));
+        }
+        response.json( responseData );
+    }).catch(console.log)
 } );
 
 
@@ -254,8 +264,6 @@ managerRouter.get("/getUserStat" , checkAdminAuthMiddleware , async ( request : 
 
         const taskCategories = await TaskCategoryDB.findAll({  attributes : [ 'uid' , 'title' ] });
         const passedTasksStat = [];
-
-
         for( const taskCategory of taskCategories )
         {
             passedTasksStat.push(
@@ -277,5 +285,95 @@ managerRouter.get("/getUserStat" , checkAdminAuthMiddleware , async ( request : 
     }
 });
 
+
+managerRouter.post("/createUser" , checkAdminAuthMiddleware , async (request : Request , response : Response) => {
+    try{
+        const { firstName  , lastName , gradeBookNumber  , password } = request.body;
+
+
+        const [ user , created ] = await UserDB.findOrCreate(
+            {
+                where : {gradeBookNumber},
+                defaults : {
+                    uid : uuidv4(),
+                    firstName,
+                    lastName,
+                    gradeBookNumber,
+                    password,
+                    uuid : uuidv4(),
+                    secretToken : crypto.randomBytes(64).toString("base64")
+                }
+            }
+        );
+        response.json(
+            created ? user.uid : { error : "A user with this grade book number already exists" }
+        )
+    } catch (e) {
+        console.log(e);
+        response.json(null);
+    }
+});
+
+managerRouter.post("/destroyUser" , checkAdminAuthMiddleware , async (request : Request , response : Response) => {
+    try{
+        const { uid } = request.body;
+        await UserDB.destroy( { where : { uid } } );
+        await UserToTeamLinkTable.destroy( { where : {userId : uid} } );
+        response.json(uid);
+    } catch (e) {
+        response.json(null);
+    }
+});
+
+
+
+managerRouter.post("/createTeam" , checkAdminAuthMiddleware , async (request : Request , response  : Response) => {
+    try{
+        const { teamName , users } = request.body;
+        const team  = await  TeamDB.create( { uid : uuidv4() , title : teamName } );
+        for( const user of users)
+        {
+            await UserToTeamLinkTable.create(
+                {
+                    uid : uuidv4(),
+                    teamId : team.uid,
+                    userId : user
+                }
+            )
+        }
+        response.json(team.uid);
+    }
+    catch (e) {
+        response.json(null);
+    }
+});
+
+managerRouter.post("/destroyTeam" , checkAdminAuthMiddleware , async (request : Request , response  : Response) => {
+    try{
+        const { uid } = request.body;
+        await  TeamDB.destroy( { where : {uid} } );
+        UserToTeamLinkTable.destroy({ where : { teamId : uid } });
+        response.json(uid)
+    }
+    catch (e) {
+        response.json(null);
+    }
+});
+
+
+managerRouter.get( "/getUsers" , checkAdminAuthMiddleware , async (request : Request , response : Response) => {
+    try{
+        const usersToTeam =  ( await UserToTeamLinkTable.findAll( {attributes : ['userId'] } ) ).map(item => item.userId);
+        const users = await UserDB.findAll({ attributes : ['uid' , 'firstName' , 'lastName'] });
+
+
+        // console.log(usersToTeam , users);
+
+        const diff = users.filter( item => usersToTeam.indexOf(item.uid) === -1  );
+        response.json(diff);
+    }catch (e) {
+        response.json([]);
+    }
+});
 
 export default managerRouter;

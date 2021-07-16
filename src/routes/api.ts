@@ -1,5 +1,13 @@
 import express, {RouterOptions , Request , Response, Router, response, NextFunction, request} from 'express';
-import {UserDB, TaskDB, UserTaskPassedDB, TaskCategoryDB, WrongAnswersDB, UserScoresDB} from '../models';
+import {
+    UserDB,
+    TaskDB,
+    UserTaskPassedDB,
+    TaskCategoryDB,
+    WrongAnswersDB,
+    UserScoresDB,
+    TaskToTeamLinkTable, UserToTeamLinkTable, TeamScoresDB
+} from '../models';
 
 import {v4 as uuidv4 , v5 as uuidv5} from 'uuid';
 
@@ -11,6 +19,8 @@ import {
     RequestRegisterType,
     SessionUserAuthData
 } from "./@types/api";
+import TaskToTeam_lt from "../models/lt/TaskToTeam_lt";
+import TeamScores from "../models/TeamScores";
 
 
 
@@ -279,13 +289,13 @@ apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , (request:Request 
 
     interface AnswerDataInterface{
         answer : string,
-        uid : string
+        taskId : string
     }
 
-    const {answer  , uid } : AnswerDataInterface = request.body;
+    const { answer  , taskId  } : AnswerDataInterface = request.body;
 
     TaskDB.findOne( {
-        where : {uid},
+        where : {uid : taskId},
         attributes : [ "answer" , "score" , "categoryId" ]
     } )
     .then( taskDBResult => {
@@ -294,7 +304,7 @@ apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , (request:Request 
         if( taskDBResult.answer === answer )
         {
                 UserTaskPassedDB.findAll( {
-                    where : { taskId : uid ,  userId } ,
+                    where : { taskId  ,  userId } ,
                     attributes : [ 'uid' ] }
                 )
                 .then( userTaskPassedResult => {
@@ -306,7 +316,7 @@ apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , (request:Request 
                         UserTaskPassedDB.create(
                             {
                                 uid : uuidv4(),
-                                taskId : uid,
+                                taskId ,
                                 userId,
                                 categoryId : taskDBResult.categoryId,
                             }
@@ -314,12 +324,42 @@ apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , (request:Request 
                          .then( _ => { response.json( { success : true , score : taskDBResult.score }  ) } )
                          .catch(console.log);
 
+                        UserToTeamLinkTable.findOne(
+                            {
+                                where : {userId},
+                                attributes: ['teamId']
+                            }
+                        ).then( result => {
+                            if( result?.teamId )
+                            {
+                                TaskToTeamLinkTable.create( {
+                                    uid : uuidv4(),
+                                    teamId : result.teamId ,
+                                    taskId
+                                } ).catch(console.log);
+
+                                TeamScoresDB.findOne( {
+                                    where : {uid : result.teamId},
+                                } ).then( tsResult => {
+                                    if( tsResult?.scores  )
+                                    {
+                                        tsResult.update({    scores : tsResult.scores +  taskDBResult.score }).catch(console.log);
+                                    }
+                                    else
+                                    {
+                                        TeamScoresDB.create( { teamId : result.teamId , scores : taskDBResult.score , uid : uuidv4() } ).catch(console.log);
+                                    }
+                                }).catch(console.log);
+                            }
+
+                        });
+
                         UserScoresDB.findOne(
                             {
                                 where : { userId }
                             }
                         ).then( userScoresResult => {
-                            if ( userScoresResult )
+                            if ( userScoresResult?.userId )
                             {
                                 UserScoresDB.update({ scores : userScoresResult.scores + taskDBResult.score } , {
                                     where : {userId}
@@ -347,7 +387,7 @@ apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , (request:Request 
                 {
                     uid : uuidv4(),
                     userId,
-                    taskId : uid,
+                    taskId ,
                     categoryId : taskDBResult.categoryId,
                     answer
                 }
@@ -372,19 +412,6 @@ apiRouter.post("/task/getScoresForCurrentUser" , checkAuthMiddleware , (request 
             }
         } )
         .catch(console.log);
-
-
-        // UserTaskPassedDB.findAll({
-        //     where : { userId },
-        //     attributes : [ 'score' ]
-        // })
-        // .then( taskPassedResult => {
-        //     let scoreSum = 0;
-        //     for( const i of taskPassedResult ){
-        //         scoreSum += i.score;
-        //     }
-        //     response.json( {scores : scoreSum }  );
-        // } )
 });
 
 

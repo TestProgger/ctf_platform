@@ -12,9 +12,11 @@ export const Header : React.FC = (  ) => {
 
     const menuItems : MenuItemInterface[] = [
         { path : "/" , title: "Home" },
-        { path : "/addTask" , title: "Add Task" },
-        { path : "/addTaskCategory" , title: "Add Task Category" },
-        { path : "/getUserStat" , title: "User Stat" }
+        { path : "/createTask" , title: "Add Task" },
+        { path : "/createTaskCategory" , title: "Add Task Category" },
+        { path : "/getUserStat" , title: "User Stat" },
+        { path : "/createUser" , title : "Create User"},
+        { path : "/createTeam" , title : "Create Team"}
     ]
 
     return (
@@ -25,8 +27,8 @@ export const Header : React.FC = (  ) => {
                     {
                         menuItems.map( item => {
                             return (
-                                <div className="col" key={item.title}>
-                                    <Link to={item.path} >  <button className="btn btn-outline-primary text-white btn-lg" >{ item.title }</button>  </Link>
+                                <div className="col d-flex justify-content-center" key={item.title}>
+                                    <Link to={item.path} >  <button className="btn btn-outline-primary text-white btn-md" >{ item.title }</button>  </Link>
                                 </div>
                             );
                         } )
