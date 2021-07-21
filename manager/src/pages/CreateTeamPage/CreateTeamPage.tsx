@@ -28,7 +28,7 @@ export const CreateTeamPage = () => {
     const http = useHttp();
     const { apiEndpoint } = useContext(AuthContext);
     useEffect(() => {
-        http.get(apiEndpoint + "/getUsers")
+        http.get(apiEndpoint + "/getFreeUsers")
             .then( result => {
                 if(result?.data?.length){
                     setUserList( result?.data );

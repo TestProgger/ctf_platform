@@ -314,14 +314,16 @@ managerRouter.post("/createUser" , checkAdminAuthMiddleware , async (request : R
     }
 });
 
-managerRouter.post("/destroyUser" , checkAdminAuthMiddleware , async (request : Request , response : Response) => {
+managerRouter.post("/destroyUsers" , checkAdminAuthMiddleware , async (request : Request , response : Response) => {
     try{
-        const { uid } = request.body;
-        await UserDB.destroy( { where : { uid } } );
-        await UserToTeamLinkTable.destroy( { where : {userId : uid} } );
-        response.json(uid);
+        const { uids } = request.body;
+        for(const uid of uids){
+            await UserDB.update( { deleted : true} ,  { where : { uid } }  );
+            await UserToTeamLinkTable.destroy( { where : {userId : uid} } );
+        }
+        response.json({success : true});
     } catch (e) {
-        response.json(null);
+        response.json({success : false});
     }
 });
 
@@ -351,7 +353,7 @@ managerRouter.post("/createTeam" , checkAdminAuthMiddleware , async (request : R
 managerRouter.post("/destroyTeam" , checkAdminAuthMiddleware , async (request : Request , response  : Response) => {
     try{
         const { uid } = request.body;
-        await  TeamDB.destroy( { where : {uid} } );
+        await  TeamDB.update( { deleted : true } , { where : {uid} } );
         UserToTeamLinkTable.destroy({ where : { teamId : uid } });
         response.json(uid)
     }
@@ -361,14 +363,10 @@ managerRouter.post("/destroyTeam" , checkAdminAuthMiddleware , async (request : 
 });
 
 
-managerRouter.get( "/getUsers" , checkAdminAuthMiddleware , async (request : Request , response : Response) => {
+managerRouter.get( "/getFreeUsers" , checkAdminAuthMiddleware , async (request : Request , response : Response) => {
     try{
         const usersToTeam =  ( await UserToTeamLinkTable.findAll( {attributes : ['userId'] } ) ).map(item => item.userId);
-        const users = await UserDB.findAll({ attributes : ['uid' , 'firstName' , 'lastName'] });
-
-
-        // console.log(usersToTeam , users);
-
+        const users = await UserDB.findAll({ attributes : ['uid' , 'firstName' , 'lastName'] , where : {deleted : false} });
         const diff = users.filter( item => usersToTeam.indexOf(item.uid) === -1  );
         response.json(diff);
     }catch (e) {

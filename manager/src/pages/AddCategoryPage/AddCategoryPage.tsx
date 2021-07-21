@@ -104,7 +104,7 @@ export const AddCategoryPage : React.FC = () => {
             </div>
 
             <div className="row mt-5">
-                <button onClick={_addTaskCategoryHandler} className="btn btn-primary w-100"> Добавить</button>
+                <button onClick={_addTaskCategoryHandler} className="btn btn-primary w-100"> Create Task Category</button>
             </div>
             <SaveAlert success={successfullySaved} unsuccess={saveError}/>
         </div>

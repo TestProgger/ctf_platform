@@ -7,7 +7,8 @@ interface UserInterface{
     lastName : string,
     password : string,
     uuid : string,
-    secretToken : string
+    secretToken : string,
+    deleted ?: boolean
 };
 
 interface UserCreationAttributes
@@ -18,6 +19,7 @@ interface UserInstance
         UserInterface {
     createdAt?: Date;
     updatedAt?: Date;
+    deleted ?: boolean;
 }
 
 
@@ -50,6 +52,10 @@ export default  (sequelize : Sequelize.Sequelize) => {
         secretToken : {
             type : Sequelize.STRING(128),
             allowNull : false
+        },
+        deleted : {
+            type : Sequelize.BOOLEAN,
+            defaultValue : false
         }
     });
 }

@@ -3,6 +3,7 @@ import Sequelize, {Model, Optional} from 'sequelize';
 interface TeamInterface{
     uid : string
     title : string
+    deleted ?: boolean
 };
 
 interface TeamCreationAttributes
@@ -13,6 +14,7 @@ interface CommandInstance
         TeamInterface {
     createdAt?: Date;
     updatedAt?: Date;
+    deleted ?: boolean;
 }
 
 export default  ( sequelize : Sequelize.Sequelize ) => {
@@ -27,6 +29,10 @@ export default  ( sequelize : Sequelize.Sequelize ) => {
                 allowNull : false,
                 unique : true
             },
+            deleted : {
+                type : Sequelize.BOOLEAN,
+                defaultValue : false
+            }
         }
     )
 }

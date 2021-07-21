@@ -137,7 +137,8 @@ apiRouter.post( "/register" , async( request: Request , response:Response ) => {
 
     UserDB.findAll( {
         where : {
-            gradeBookNumber: userData.gradeBookNumber
+            gradeBookNumber: userData.gradeBookNumber,
+            deleted :  false
         }
     }).then( (data : object[]) => {
         if( !data.length )
@@ -174,7 +175,7 @@ apiRouter.post("/login" ,(request : Request , response : Response) => {
 
     UserDB.findOne(
         {
-            where : { gradeBookNumber  : userData.gradeBookNumber }
+            where : { gradeBookNumber  : userData.gradeBookNumber  , deleted :  false}
         })
     .then( user => {
 

@@ -136,7 +136,7 @@ export const AddTaskPage : React.FC = () => {
                     <label className="form-label">Task Category</label>
                     <select name="categoryList" className="form-control" onChange={ (event : React.ChangeEvent<HTMLSelectElement>) => setCategoryId(event.target.value) }>
                         {
-                            categoryList.length ? 
+                            categoryList.length ?
                                 categoryList?.map( item => {
                                     return (<option value={item.uid} key={item.uid}>{item.title}</option> )
                                 } )
@@ -163,7 +163,7 @@ export const AddTaskPage : React.FC = () => {
 
             <div className="row justify-content-around mt-5">
                 <div className="col">
-                    <button className="btn btn-primary w-100 btn-lg" onClick={_addTaksHandler}> Add Task </button>
+                    <button className="btn btn-primary w-100 btn-lg" onClick={_addTaksHandler}> Create Task </button>
                 </div>
             </div>
 

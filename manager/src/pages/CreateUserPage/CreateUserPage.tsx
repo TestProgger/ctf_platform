@@ -15,27 +15,38 @@ export const CreateUserPage = () => {
     const { apiEndpoint } = useContext(AuthContext);
     const http = useHttp();
 
+    const raindint = ( min : number , max : number ) : number => {
+        return Math.floor(Math.random() * (max - min) ) + min;
+    }
+
     const generatePassword = (length : number = 10) => {
+
+        const alphabet= 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz@#$&'
+
         const tmpPassword = [];
         for( let i = 0; i < length ; i++)
         {
-            tmpPassword.push( String.fromCharCode(  34 + Math.round(  Math.random() * 100 ) %  90 ) );
+            tmpPassword.push(alphabet[raindint(0 , alphabet.length)] )
         }
         setPassword( tmpPassword.join('') );
+    }
+
+    const generateGradeBookNumber = () => {
+        setGradeBookNumber( `100502${raindint(0,9)}${raindint(0,9)}${raindint(0,9)}${raindint(0,9)}`);
     }
 
     const createUser = () => {
         http.post(apiEndpoint + '/createUser' , { firstName,  lastName, gradeBookNumber, password })
             .then( result => {
 
-                if( result?.data.hasOwnProperty('error') )
-                {
-                    alert(result.data.error);
-                    return;
-                }
-
                 if( result?.data )
                 {
+                    if( result?.data.hasOwnProperty('error') )
+                    {
+                        alert(result.data.error);
+                        return;
+                    }
+
                     setSuccessfullySaved(true)
                     setTimeout(() => setSuccessfullySaved(false), 1500);
                 }else
@@ -43,6 +54,9 @@ export const CreateUserPage = () => {
                     setSaveError(true)
                     setTimeout(() => setSaveError(false), 1500);
                 }
+
+
+
             } )
     }
 
@@ -78,6 +92,7 @@ export const CreateUserPage = () => {
                            id="category" placeholder="Grade Book Number"
                            value={gradeBookNumber}
                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setGradeBookNumber(event.target.value) ; }}
+                           onContextMenu={ (event : React.MouseEvent<HTMLInputElement>) => { event.preventDefault();  generateGradeBookNumber() }}
                     />
                 </div>
 
@@ -95,7 +110,7 @@ export const CreateUserPage = () => {
 
             <div className="row ">
                 <div className="col-12 mt-5 d-flex justify-content-center mt-5">
-                    <button className="btn btn-primary btn-lg" onClick={() =>  createUser()}> Create user </button>
+                    <button className="btn btn-primary btn-lg w-100" onClick={() =>  createUser()}> Create user </button>
                 </div>
 
             </div>
