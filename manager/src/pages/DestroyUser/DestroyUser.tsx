@@ -25,7 +25,7 @@ export const DestroyUser = () => {
     } , [])
 
     const addUserToDeleteList = ( userId : string ) => {
-        if( deleteList.indexOf(userId) === -1 )
+        if( deleteList.includes(userId) )
         {
             deleteList.push( userId );
         }else{
@@ -41,7 +41,7 @@ export const DestroyUser = () => {
                     .then( data => {
                         if( data?.success )
                         {
-                            setUsers( prev => prev.filter( item  => deleteList.indexOf(item.uid) === -1) );
+                            setUsers( prev => prev.filter( item  => deleteList.includes(item.uid)) );
                         }
                     } );
         }

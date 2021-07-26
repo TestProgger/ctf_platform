@@ -3,7 +3,6 @@ import React from 'react';
 
 import {useRoutes} from "./hooks/useRoutes";
 import { useAuth} from "./hooks/useAuth";
-import {Header} from "./components/Header/Header";
 import LeftSideMenu   from './components/LeftSideMenu'
 import { AuthContext } from "./context/AuthContext";
 
@@ -23,7 +22,6 @@ function App() {
   return (
           <AuthContext.Provider value={{ apiEndpoint, login , ...auth , isAuthenticated}}>
             <div className="App">
-                {/*{ isAuthenticated ?  <Header /> : null}*/}
                 <div className="contaner main">
                     <div className="row">
                         <div className="col-2 lrmp0">

@@ -17,7 +17,7 @@ export const CreateTeamPage = () => {
     const [ userList , setUserList ] = useState<IUser[]>([]);
 
     const insertNewUser = (userId : string) => {
-        if( teamList.indexOf( userId ) === -1 )
+        if( teamList.includes(userId) )
         {
             setTeamList(prevState =>  [ ...prevState  , userId ] );
         }else
@@ -74,11 +74,11 @@ export const CreateTeamPage = () => {
                     </thead>
                     <tbody>
                     {userList.length ?
-                        userList.map( (item  , index : number) => {
+                        userList.map( (item) => {
                             return (
                                 <tr key={item.uid}>
                                     <td align='center' valign='middle'>
-                                        <input type="checkbox" className={"form-check-input"} onClick={() => insertNewUser(item.uid)} checked={ teamList.indexOf( item.uid )  !== -1}/>
+                                        <input type="checkbox" className={"form-check-input"} onChange={() => insertNewUser(item.uid)}/>
                                     </td>
                                     <td align='center' valign='middle' >{item.firstName}</td>
                                     <td align='center' valign='middle' >{item.lastName}</td>

@@ -25,7 +25,7 @@ export const DestroyTeam = () => {
     } , [])
 
     const addTeamToDeleteList = ( userId : string ) => {
-        if( deleteList.indexOf(userId) === -1 )
+        if( deleteList.includes(userId) )
         {
             deleteList.push( userId );
         }else{
@@ -41,7 +41,7 @@ export const DestroyTeam = () => {
                     .then( data => {
                         if( data?.success )
                         {
-                            setTeams( prev => prev.filter( item  => deleteList.indexOf(item.uid) === -1) );
+                            setTeams( prev => prev.filter( item  => deleteList.includes(item.uid)) );
                         }
                     } );
         }
@@ -55,7 +55,7 @@ export const DestroyTeam = () => {
                     <div className="col-4">
                         <div className="input-group">
                             <div className="input-group-text btn-danger">
-                                <input className="form-check-input mt-0" type="checkbox" />
+                                <input className="form-check-input mt-0" type="checkbox" onChange={ () => setFullDestroy(!fullDestroy) }/>
                             </div>
                             <input type="text" className="form-control btn-danger" value={"Full Destroy (Dangerous)"} disabled onChange={ () => setFullDestroy(!fullDestroy) }/>
                         </div>
