@@ -7,7 +7,7 @@ import {
     WrongAnswersDB,
     UserScoresDB,
     TeamDB,
-    UserToTeamLinkTable
+    UserToTeamLinkTable, TaskToTeamLinkTable, TeamScoresDB
 } from '../models';
 import {v4 as uuidv4 , v5 as uuidv5} from 'uuid'
 
@@ -291,20 +291,24 @@ managerRouter.post("/createUser" , checkAdminAuthMiddleware , async (request : R
         const { firstName  , lastName , gradeBookNumber  , password } = request.body;
 
 
+        const sha256 = crypto.createHash('sha256');
+        sha256.update( password );
+
         const [ user , created ] = await UserDB.findOrCreate(
             {
-                where : {gradeBookNumber},
+                where : {gradeBookNumber , deleted :  false},
                 defaults : {
                     uid : uuidv4(),
                     firstName,
                     lastName,
                     gradeBookNumber,
-                    password,
+                    password : sha256.digest('hex'),
                     uuid : uuidv4(),
                     secretToken : crypto.randomBytes(64).toString("base64")
                 }
             }
         );
+        sha256.end();
         response.json(
             created ? user.uid : { error : "A user with this grade book number already exists" }
         )
@@ -327,6 +331,15 @@ managerRouter.post("/destroyUsers" , checkAdminAuthMiddleware , async (request :
     }
 });
 
+
+managerRouter.get("/getUsers" , checkAdminAuthMiddleware , async (request : Request , response : Response ) => {
+    try{
+        const users = await UserDB.findAll( { where : { deleted :  false } , attributes : ["uid" , "firstName" , "lastName"] } );
+        response.json(users);
+    }catch (e) {
+        response.json([]);
+    }
+});
 
 
 managerRouter.post("/createTeam" , checkAdminAuthMiddleware , async (request : Request , response  : Response) => {
@@ -352,15 +365,34 @@ managerRouter.post("/createTeam" , checkAdminAuthMiddleware , async (request : R
 
 managerRouter.post("/destroyTeam" , checkAdminAuthMiddleware , async (request : Request , response  : Response) => {
     try{
-        const { uid } = request.body;
-        await  TeamDB.update( { deleted : true } , { where : {uid} } );
-        UserToTeamLinkTable.destroy({ where : { teamId : uid } });
-        response.json(uid)
+        const { uids , fullDestroy } = request.body;
+        for( const uid of uids){
+            if(fullDestroy){
+                await TeamDB.destroy({ where : {uid} });
+                await TaskToTeamLinkTable.destroy( { where : {teamId : uid }});
+                await TeamScoresDB.destroy({ where : { teamId: uid } });
+            }else
+            {
+                await  TeamDB.update( { deleted : true } , { where : {uid} } );
+            }
+            await UserToTeamLinkTable.destroy({ where : { teamId : uid } });
+        }
+
+        response.json(uids)
     }
     catch (e) {
         response.json(null);
     }
 });
+
+managerRouter.get("/getTeams" , checkAdminAuthMiddleware , async (request : Request , response  : Response) => {
+    try{
+        const teams  = await TeamDB.findAll({ where : { deleted : false } , attributes : ['uid' , 'title']});
+        response.json(teams);
+    }catch (e) {
+        response.json([]);
+    }
+})
 
 
 managerRouter.get( "/getFreeUsers" , checkAdminAuthMiddleware , async (request : Request , response : Response) => {

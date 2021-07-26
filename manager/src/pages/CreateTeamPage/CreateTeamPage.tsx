@@ -78,7 +78,7 @@ export const CreateTeamPage = () => {
                             return (
                                 <tr key={item.uid}>
                                     <td align='center' valign='middle'>
-                                        <input type="checkbox" onClick={() => insertNewUser(item.uid)} checked={ teamList.indexOf( item.uid )  !== -1}/>
+                                        <input type="checkbox" className={"form-check-input"} onClick={() => insertNewUser(item.uid)} checked={ teamList.indexOf( item.uid )  !== -1}/>
                                     </td>
                                     <td align='center' valign='middle' >{item.firstName}</td>
                                     <td align='center' valign='middle' >{item.lastName}</td>

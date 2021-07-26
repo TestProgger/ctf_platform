@@ -35,14 +35,12 @@ export const LeftSideMenu = () => {
             </nav>
 
             <div className="row left_side_title">
-                <h4> Destroing </h4>
+                <h4> Destroying </h4>
             </div>
 
             <nav className="nav flex-column">
-                <a className="nav-link" href="#">Active</a>
-                <a className="nav-link" href="#">Link</a>
-                <a className="nav-link" href="#">Link</a>
-                <a className="nav-link" href="#">Disabled</a>
+                <Link to = "/destroyUser" className={'nav-link'}> Destroy User </Link>
+                <Link to = "/destroyTeam" className={'nav-link'}> Destroy Teams </Link>
             </nav>
         </div>
 
