@@ -66,6 +66,13 @@ function TasksPage( { ...props }){
                     .then( ( response:any ) => response.data )
                     .then( (data) => setScore(data?.scores) )
                     .catch(console.debug);
+
+                    setTaskList( prev => {
+                        const ind  = prev.findIndex(item => item.uid === taskId);
+                        prev[ind].passed = true;
+                        return prev;
+                    } )
+
                 }else
                 {
                     setCorrectAnswer(false);

@@ -7,7 +7,7 @@ const LoggerDir = "./logging/";
 const getFormatedTime = () => {
     const date = new Date();
     return {
-        date : date.toLocaleString().split(',')[0].trim().replace(/:/gmi , '.'),
+        date : date.toLocaleString().split(',')[0].trim().replace(/[:\/]/gmi , '_'),
         time : date.toLocaleString().split(',')[1].trim()
     }
 }
@@ -26,7 +26,7 @@ export const Logger = () =>  ( request : Request , response : Response,
     if( !fs.existsSync( LoggerDir ) ){fs.mkdirSync( LoggerDir );}
 
     const formatedTime : { time : string , date : string } = getFormatedTime();
-    const  logFileName = `${LoggerDir}/log_${formatedTime.date}.json`
+    const  logFileName = `${LoggerDir}/log_${formatedTime.date}.json`;
     const timeStamp : string = formatedTime.date + "-" + formatedTime.time;
     const method : string = request.method;
     const ip : string = request.ip;
