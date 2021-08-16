@@ -6,7 +6,7 @@ const LoggerDir = "./logging/";
 const getFormatedTime = () => {
     const date = new Date();
     return {
-        date : date.toLocaleString().split(',')[0].trim().replace(/[:\/]/gmi , '_'),
+        date : date.toLocaleString().split(',')[0].trim().replace(/[:\/\-]/gmi , '_'),
         time : date.toLocaleString().split(',')[1].trim()
     }
 }
