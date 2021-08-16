@@ -17,10 +17,10 @@ interface IProps{
     showModalWindow : Function
     isShown  : boolean
     data : TaskInterface
+    apiEndpoint : string
 }
 
-export const TaskModalWindow = ( { checkAnswer, showModalWindow , isShown , data } : IProps ) =>{
-    const taskFilesEndpoint = "http://127.0.0.1:5000";
+export const TaskModalWindow = ( { checkAnswer, showModalWindow , isShown , data , apiEndpoint } : IProps ) =>{
     const [answer , setAnswer] = useState<string>('');
     
     return (
@@ -31,7 +31,7 @@ export const TaskModalWindow = ( { checkAnswer, showModalWindow , isShown , data
                      { data?.title ? <h3>{data?.title.slice(0 , 20)}</h3> : <h3>&nbsp;</h3> } 
                 </div>
                 <div className="modal_body">
-                    <img src={ taskFilesEndpoint +  data?.titleImage } className="mb-3 mt-3" alt="" />
+                    <img src={ apiEndpoint +  data?.titleImage } className="mb-3 mt-3" alt="" />
 
                     <pre className="mr-2 ml-2">{ data?.description }</pre>
 
@@ -59,7 +59,7 @@ export const TaskModalWindow = ( { checkAnswer, showModalWindow , isShown , data
                         </div>
                         <div className="col-9">
                             {data?.filePath ? 
-                            <a className="file_anchor" href={ taskFilesEndpoint +  data?.filePath} download>{ data?.filePath.split("/").pop() }</a>
+                            <a className="file_anchor" href={ apiEndpoint +  data?.filePath} download>{ data?.filePath.split("/").pop() }</a>
                             : <h3> НЕТУ :) </h3>
                         }
                             </div>
