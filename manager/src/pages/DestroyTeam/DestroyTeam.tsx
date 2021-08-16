@@ -27,9 +27,10 @@ export const DestroyTeam = () => {
     const addTeamToDeleteList = ( userId : string ) => {
         if( deleteList.includes(userId) )
         {
-            deleteList.push( userId );
-        }else{
             setDeleteList(prev => prev.filter( item => item !== userId ));
+        }else{
+            
+            setDeleteList( prev => [ ...prev , userId ] );
         }
     }
 

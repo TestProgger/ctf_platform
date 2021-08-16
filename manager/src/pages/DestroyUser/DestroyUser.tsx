@@ -27,9 +27,11 @@ export const DestroyUser = () => {
     const addUserToDeleteList = ( userId : string ) => {
         if( deleteList.includes(userId) )
         {
-            deleteList.push( userId );
-        }else{
             setDeleteList(prev => prev.filter( item => item !== userId ));
+
+        }else{
+            setDeleteList(prev =>  [...prev ,  userId] );
+            console.log(deleteList , userId);
         }
     }
 
