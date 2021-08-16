@@ -31,7 +31,6 @@ export const DestroyUser = () => {
 
         }else{
             setDeleteList(prev =>  [...prev ,  userId] );
-            console.log(deleteList , userId);
         }
     }
 

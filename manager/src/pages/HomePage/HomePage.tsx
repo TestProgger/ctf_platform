@@ -80,9 +80,6 @@ export const Home : React.FC  = () => {
                     }
                 ]
             } );
-
-            console.log( dataOnTaskByCategory , doughnutState );
-
        }
        startFetching();
     } , []);

@@ -56,7 +56,6 @@ export const AddTaskPage : React.FC = () => {
         http.post(apiEndpoint + "/addTask" , formData)
             .then(result => {
                 if( result){
-                    // console.log(result);
                     if( result.data?.success )
                     {
                         setSuccessfullySaved(true)
@@ -65,10 +64,6 @@ export const AddTaskPage : React.FC = () => {
                         setTitle('');
                         setAnswer('');
                         setScore(0);
-                        // setCategoryId('');
-                        // setCategoryList([]);
-                        // setTitleImage(undefined);
-                        // setTaskFile(undefined);
                     }else
                     {
                         setSaveError(true)

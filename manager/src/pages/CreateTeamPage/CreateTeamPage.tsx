@@ -41,7 +41,7 @@ export const CreateTeamPage = () => {
     const createTeam = () => {
         http.post(apiEndpoint + "/createTeam" , { teamName , users : teamList })
             .then( result => {
-                console.log(result);
+                // console.log(result);
             } )
     }
 

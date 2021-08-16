@@ -43,6 +43,6 @@ export const Logger = () =>  ( request : Request , response : Response,
                 gradeBookNumber: xAuthHeader?.gradeBookNumber ,
                 userAgent : request.headers["user-agent"]
 
-            } ) + "\n" , (err) => err ? console.log( err ) : null );
+            } ) + "\n" , (err) => err ? console.error( err ) : null );
     next();
 }
