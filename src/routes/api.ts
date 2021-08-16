@@ -19,9 +19,6 @@ import {
     RequestRegisterType,
     SessionUserAuthData
 } from "./@types/api";
-import TaskToTeam_lt from "../models/lt/TaskToTeam_lt";
-import TeamScores from "../models/TeamScores";
-
 
 
 export const TEMPORARY_KEY_STORAGE : Map<string, SessionUserAuthData> = new Map<string, SessionUserAuthData>();

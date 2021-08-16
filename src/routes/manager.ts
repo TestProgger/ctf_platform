@@ -18,8 +18,6 @@ import * as fs from "fs";
 import {AdminKeyStore, ServerSideKeyStore} from "./@types/manager";
 
 import {Sequelize} from 'sequelize'
-import {readdirSync} from "fs";
-import User from "../models/User";
 
 
 const managerRouter  = express.Router();
