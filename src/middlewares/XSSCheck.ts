@@ -17,5 +17,5 @@ export const XSSCheck = () => (  request : Request , response : Response , next 
     {
         next();
     }
-    response.connection.destroy();
+    response.socket.destroy();
 }

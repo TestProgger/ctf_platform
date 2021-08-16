@@ -1,6 +1,5 @@
-import express , { Request , Response , NextFunction, request } from 'express';
+import express , { Request , Response , NextFunction} from 'express';
 import fs from 'fs';
-import {consoleTestResultHandler} from "tslint/lib/test";
 
 const LoggerDir = "./logging/";
 

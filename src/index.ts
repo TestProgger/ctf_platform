@@ -2,17 +2,12 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 
-import {Logger} from './middlewares/MyLogger';
+import { Logger } from './middlewares/MyLogger';
 
 import { ProjectStructChecker } from './middlewares/ProjectStructChecker';
 
 import apiRouter from './routes/api';
 import managerRouter from './routes/manager';
-
-
-
-const TEAM_MODE = false;
-
 
 
 ProjectStructChecker();
