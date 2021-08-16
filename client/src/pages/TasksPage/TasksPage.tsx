@@ -139,7 +139,7 @@ function TasksPage( { ...props }){
                     </table>
                 </div>
             </div>
-            <TaskModalWindow  apiEndpoint={apiEndpoint} checkAnswer = {checkAnswer} data = {taskData as TaskInterface} isShown={modalWindowsIsShown} showModalWindow={setModalWindowIsShown}/>
+            <TaskModalWindow  apiEndpoint={apiEndpoint.replace(/api/gmi , '')} checkAnswer = {checkAnswer} data = {taskData as TaskInterface} isShown={modalWindowsIsShown} showModalWindow={setModalWindowIsShown}/>
             { correctAnswer ?  <Passed/> : null}
             { wrongAnswer ?  <NotPassed/> : null}
         </Fragment>
