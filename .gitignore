@@ -1,3 +1,5 @@
+*package-lock.json
+
 node_modules/
 manager/node_modules/
 client/node_modules/
@@ -22,5 +24,3 @@ public/files/categories/img/*
 public/files/tasks/img/*
 public/files/tasks/taskFiles/*
 public/files/tasks/tmp/*
-
-package-lock.json
