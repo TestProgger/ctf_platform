@@ -17,13 +17,14 @@ export const CreateTeamPage = () => {
     const [ userList , setUserList ] = useState<IUser[]>([]);
 
     const insertNewUser = (userId : string) => {
-        if( teamList.includes(userId) )
-        {
-            setTeamList(prevState =>  [ ...prevState  , userId ] );
-        }else
-        {
-            setTeamList( prevState => prevState.filter(item => item !== userId));
-        }
+	if( teamList.includes(userId) )
+	{
+		setTeamList(prev => prev.filter(item => item !== userId ));
+	}
+	else
+	{
+		setTeamList(prev => [...prev , userId]);
+	}
     }
     const http = useHttp();
     const { apiEndpoint } = useContext(AuthContext);
