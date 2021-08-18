@@ -18,8 +18,6 @@ app.use( helmet() );
 app.use( express.json() );
 app.use(express.urlencoded({ extended: true }));
 
-
-
 app.use( Logger() );
 
 app.use("/public" , express.static("public") );
