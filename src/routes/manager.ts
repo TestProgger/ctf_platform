@@ -431,7 +431,6 @@ managerRouter.get("/getReportForPassedTasks"  , async( request : Request , respo
 
         response.json(resp);
     } catch (e) {
-        console.log(e);
         response.json([]);
     }
 });
