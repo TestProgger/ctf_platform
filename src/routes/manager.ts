@@ -15,9 +15,10 @@ import multer from 'multer';
 
 import crypto from 'crypto';
 import * as fs from "fs";
-import {AdminKeyStore, ServerSideKeyStore} from "./@types/manager";
+import {AdminKeyStore, ReportPassedTasksInterface, ServerSideKeyStore, UserDataInterface} from "./@types/manager";
 
 import {Sequelize} from 'sequelize'
+import UserScores from "../models/UserScores";
 
 
 const managerRouter  = express.Router();
@@ -391,6 +392,48 @@ managerRouter.get("/getTeams" , checkAdminAuthMiddleware , async (request : Requ
         response.json([]);
     }
 })
+
+managerRouter.get("/getReportForPassedTasks" , checkAdminAuthMiddleware , async( request : Request , response :  Response ) => {
+    try{
+        const teams = await TeamDB.findAll({ attributes : ['uid' , 'title']  , where : {deleted :  false}});
+        let userToTeam = await  UserToTeamLinkTable.findAll({ attributes : ["teamId" , "userId"] });
+        let users = await UserDB.findAll( { attributes : [ "uid" , "firstName" , "lastName" ] } );
+        let usersScores = await  UserScoresDB.findAll();
+
+        const resp :  ReportPassedTasksInterface[] = [];
+
+        for(const team of teams){
+            const tmpUsersToTeam = userToTeam.filter(item  => item.teamId === team.uid ).map( item => item.userId );
+            const tmpUsers = users.filter(user  => tmpUsersToTeam.includes(user.uid));
+            const tmpUsersScores = usersScores.filter( score => tmpUsersToTeam.includes(score.userId) );
+
+            const mList : UserDataInterface[]  = [];
+
+            for( const user of tmpUsers ){
+                mList.push(
+                    {
+                        firstName : user.firstName,
+                        lastName : user.lastName,
+                        scores : tmpUsersScores.filter( score => score.userId === user.uid)[0].scores
+                    }
+                )
+            }
+            resp.push({
+                teamName : team.title,
+                sumScores : (await TeamScoresDB.findOne({ where: {  teamId : team.uid } , attributes : ["scores"] })).scores,
+                users : mList
+            });
+
+            usersScores = usersScores.filter( score => !tmpUsersToTeam.includes(score.userId) );
+            users = users.filter( user => !tmpUsersToTeam.includes(user.uid) );
+            userToTeam = userToTeam.filter( user => !tmpUsersToTeam.includes(user.userId) );
+        }
+
+        response.json(resp);
+    } catch (e) {
+        response.json([]);
+    }
+});
 
 
 managerRouter.get( "/getFreeUsers" , checkAdminAuthMiddleware , async (request : Request , response : Response) => {

@@ -19,3 +19,17 @@ export interface FingerprintInterface {
             pixelDepth : number
         }
 }
+
+export interface UserDataInterface {
+    uid ?: number
+    firstName : string
+    lastName : string
+    scores : number
+}
+
+export interface ReportPassedTasksInterface {
+    teamName : string
+    users : UserDataInterface[]
+    sumScores : number
+
+}

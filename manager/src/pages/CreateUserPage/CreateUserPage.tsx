@@ -19,6 +19,15 @@ export const CreateUserPage = () => {
         return Math.floor(Math.random() * (max - min) ) + min;
     }
 
+    const randSeq = ( length :  number = 6 , min : number  , max : number ) : number[] => {
+        const seq  = []
+        for( let i = 0; i < length ; i++ )
+        {
+            seq.push(  raindint(min , max) )
+        }
+        return seq;
+    }
+
     const generatePassword = (length : number = 10) => {
 
         const alphabet= 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz@#$&'
@@ -32,7 +41,7 @@ export const CreateUserPage = () => {
     }
 
     const generateGradeBookNumber = () => {
-        setGradeBookNumber( `100502${raindint(0,9)}${raindint(0,9)}${raindint(0,9)}${raindint(0,9)}`);
+        setGradeBookNumber( `100502${randSeq(6 , 0 , 9).join("")}`);
     }
 
     const createUser = () => {
