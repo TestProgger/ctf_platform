@@ -393,7 +393,7 @@ managerRouter.get("/getTeams" , checkAdminAuthMiddleware , async (request : Requ
     }
 })
 
-managerRouter.get("/getReportForPassedTasks" , checkAdminAuthMiddleware , async( request : Request , response :  Response ) => {
+managerRouter.get("/getReportForPassedTasks"  , async( request : Request , response :  Response ) => {
     try{
         const teams = await TeamDB.findAll({ attributes : ['uid' , 'title']  , where : {deleted :  false}});
         let userToTeam = await  UserToTeamLinkTable.findAll({ attributes : ["teamId" , "userId"] });
@@ -431,6 +431,7 @@ managerRouter.get("/getReportForPassedTasks" , checkAdminAuthMiddleware , async(
 
         response.json(resp);
     } catch (e) {
+        console.log(e);
         response.json([]);
     }
 });
