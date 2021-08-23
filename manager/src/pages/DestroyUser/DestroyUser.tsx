@@ -42,7 +42,7 @@ export const DestroyUser = () => {
                     .then( data => {
                         if( data?.success )
                         {
-                            setUsers( prev => prev.filter( item  => deleteList.includes(item.uid)) );
+                            setUsers( prev => prev.filter( item  => !deleteList.includes(item.uid)) );
                         }
                     } );
         }

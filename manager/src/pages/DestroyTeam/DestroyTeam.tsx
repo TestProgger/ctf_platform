@@ -42,7 +42,7 @@ export const DestroyTeam = () => {
                     .then( data => {
                         if( data?.success )
                         {
-                            setTeams( prev => prev.filter( item  => deleteList.includes(item.uid)) );
+                            setTeams( prev => prev.filter( item  => !deleteList.includes(item.uid)) );
                         }
                     } );
         }
