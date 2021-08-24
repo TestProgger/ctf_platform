@@ -215,47 +215,38 @@ apiRouter.post("/login" , async (request : Request , response : Response) => {
     
 });
 
-apiRouter.post("/taskCategories/:category" , checkAuthMiddleware , (request : Request , response:Response) => {
+apiRouter.post("/taskCategories/:category" , checkAuthMiddleware , async (request : Request , response:Response) => {
     try {
-        TaskCategoryDB.findOne(
-            {
-                where : { shortName : request.params.category }
-            }
-        )
-            .then( data => {
-                if( data?.uid ){
-                    TaskDB.findAll(
-                        {
-                            where : { categoryId : data.uid },
+
+        const taskCategory = await TaskCategoryDB.findOne({ where : { shortName : request.params.category }});
+
+        if( taskCategory !== null )
+        {
+            const tasks = await TaskDB.findAll({
+                            where : { categoryId : taskCategory.uid },
                             attributes : ['uid' , 'title' , "categoryId" , "description" , "filePath" , "titleImage" , "score"]
-
-                        }
-                    ).then( taskRows => {
-
-                        const { userId }  = TEMPORARY_KEY_STORAGE.get( response.locals.gradeBookNumber );
-
-                        UserTaskPassedDB.findAll( {
-                            where : { userId },
-                            attributes : ['taskId']
-                        } )
-                        .then(  userTaskPassed => {
-
-                            const tasks = taskRows.map( item => {
-                                for( const it of userTaskPassed )
-                                {
-                                    if ( it.taskId === item.uid )
-                                    {
-                                        return { ...item  , passed : true }
-                                    }
-                                }
-                                return { ...item  , passed : false }
-                            } );
-                            response.json( tasks );
-                        } )
-                        .catch( _ => response.json(  taskRows )  );
-                    } ).catch( _ => response.json([]));
-                }else{ response.json( []); }
             });
+            const { userId }  = TEMPORARY_KEY_STORAGE.get( response.locals.gradeBookNumber );
+
+            const passedTasks = ( await UserTaskPassedDB.findAll({ where : { userId },attributes : ['taskId']})).map( item  => item.taskId );
+            
+            const resp = []
+            for( const task of tasks )
+            {
+                const tmp = { ...task , passed : false }
+                if(  passedTasks.includes( task.uid )  )
+                {
+                    tmp.passed = true
+                }
+                resp.push( tmp );
+            }
+
+            response.json(resp);
+        
+        }else
+        {
+            response.json([]);
+        }
     }catch (ex)
     {
         response.json( [] );
