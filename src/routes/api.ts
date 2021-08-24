@@ -144,13 +144,13 @@ apiRouter.post( "/register" , async( request: Request , response:Response ) => {
                     firstName :  userData.firstName,
                     lastName : userData.lastName,
                     password : sha256.digest("hex"),
-                    secretToken  : crypto.randomBytes(64).toString("base64")  
+                    secretToken  : crypto.randomBytes(64).toString("base64")
             })
             sha256.end();
             response.json({ success : true });
         }else{
             response.json( { success : false , errorText : "The user is already registered" } )
-        } 
+        }
     }
     catch(e){
         response.json({ success : false  , errorText : "Save error"});
@@ -212,7 +212,7 @@ apiRouter.post("/login" , async (request : Request , response : Response) => {
         response.json({ authorized : false } );
     }
 
-    
+
 });
 
 apiRouter.post("/taskCategories/:category" , checkAuthMiddleware , async (request : Request , response:Response) => {
@@ -229,7 +229,7 @@ apiRouter.post("/taskCategories/:category" , checkAuthMiddleware , async (reques
             const { userId }  = TEMPORARY_KEY_STORAGE.get( response.locals.gradeBookNumber );
 
             const passedTasks = ( await UserTaskPassedDB.findAll({ where : { userId },attributes : ['taskId']})).map( item  => item.taskId );
-            
+
             const resp = []
             for( const task of tasks )
             {
@@ -242,7 +242,7 @@ apiRouter.post("/taskCategories/:category" , checkAuthMiddleware , async (reques
             }
 
             response.json(resp);
-        
+
         }else
         {
             response.json([]);
@@ -260,7 +260,7 @@ apiRouter.post("/taskCategories" , checkAuthMiddleware  ,  async ( request : Req
     }catch{
         response.json({});
     }
-    
+
 } );
 
 apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , async (request:Request , response:Response) => {
@@ -300,7 +300,7 @@ apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , async (request:Re
                         categoryId : task.categoryId,
                     }
                  );
-                
+
                  response.json({ success : true , score : task.score } )
 
                 const userToTeam = await UserToTeamLinkTable.findOne(
@@ -355,7 +355,7 @@ apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , async (request:Re
                     }
                 } ).catch(console.log);
 
-                
+
             }
         }else
         {

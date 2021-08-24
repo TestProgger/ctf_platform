@@ -147,57 +147,48 @@ interface MulterFileInterface{
 
 }
 
-managerRouter.post("/addTask" , checkAdminAuthMiddleware  ,taskUploader.fields([ { name : "titleImage" , maxCount : 1} , {name : "taskFile" , maxCount:1} ]) , ( request : Request , response : Response ) => {
+managerRouter.post("/addTask" , checkAdminAuthMiddleware  ,taskUploader.fields([ { name : "titleImage" , maxCount : 1} , {name : "taskFile" , maxCount:1} ]) , async ( request : Request , response : Response ) => {
 
     const { title , description , score , answer , categoryId }  = request.body;
     // @ts-ignore
-    if( request.files?.titleImage && request.files?.taskFile ) {
-         // @ts-ignore
-        const titleImage : MulterFileInterface = request.files.titleImage[0];
-         // @ts-ignore
-        const taskFile : MulterFileInterface = request.files?.taskFile[0];
+    const titleImage = request.files?.titleImage ? request.files.titleImage[0]  : null;
+    // @ts-ignore
+    const taskFile = request.files?.taskFile ? request.files?.taskFile[0] : null;
 
-        if( titleImage && taskFile ){
-            fs.writeFileSync( "."+TASK_UPLOAD_DIR + "/img/" + titleImage.filename , fs.readFileSync(titleImage.path ) );
-            fs.unlinkSync( titleImage.path );
-            fs.writeFileSync( "."+TASK_UPLOAD_DIR + "/taskFiles/" + taskFile.filename , fs.readFileSync(taskFile.path));
-            fs.unlinkSync( taskFile.path);
-
-            TaskDB.create(
-                {
-                    uid : uuidv4(),
-                    title,
-                    description ,
-                    score,
-                    answer,
-                    titleImage : TASK_UPLOAD_DIR + "/img/" + titleImage.filename,
-                    filePath : TASK_UPLOAD_DIR + "/taskFiles/" + taskFile.filename ,
-                    categoryId,
-                }
-            ).then( result => {  response.json({success : true}) } )
-                .catch((err) => response.json({success : false}))
-        }
-        else
-        {
-            response.json({success : false})
-        }
-    }
-    else
-    {
-        TaskDB.create(
+    try{
+        await TaskDB.create(
             {
                 uid : uuidv4(),
-                title,
-                description ,
-                score,
-                answer,
-                categoryId,
-                titleImage : null,
-                filePath : null ,
+                        title,
+                        description ,
+                        score,
+                        answer,
+                        titleImage : titleImage ? TASK_UPLOAD_DIR + "/img/" + titleImage.filename : null,
+                        filePath : taskFile ? TASK_UPLOAD_DIR + "/taskFiles/" +taskFile.filename  :  null,
+                        categoryId,
             }
-        ).then( result => {  response.json({success : true})} )
-            .catch((err) => response.json({success : false}))
+        )
+    
+        if( titleImage !== null )
+        {
+            fs.writeFileSync( "."+TASK_UPLOAD_DIR + "/img/" + titleImage.filename , fs.readFileSync(titleImage.path ) );
+            fs.unlinkSync( titleImage.path );
+        }
+    
+        if(taskFile !== null)
+        {
+            fs.writeFileSync( "."+TASK_UPLOAD_DIR + "/taskFiles/" + taskFile.filename , fs.readFileSync(taskFile.path));
+            fs.unlinkSync( taskFile.path);
+        }
+
+        response.json({success :  true});
     }
+    catch(e)
+    {
+        response.json({success :  false});
+    }
+    
+
 })
 
 managerRouter.get("/getTaskCategories" , checkAdminAuthMiddleware ,  (request : Request  , response: Response) => {
