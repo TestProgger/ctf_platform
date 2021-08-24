@@ -6,13 +6,12 @@ interface UserInterface{
     firstName : string,
     lastName : string,
     password : string,
-    uuid : string,
     secretToken : string,
     deleted ?: boolean
 };
 
 interface UserCreationAttributes
-    extends Optional<UserInterface, 'uuid'> {}
+    extends Optional<UserInterface, 'secretToken'> {}
 
 interface UserInstance
     extends Model<UserInterface, UserCreationAttributes>,
@@ -45,9 +44,6 @@ export default  (sequelize : Sequelize.Sequelize) => {
         password : {
             type : Sequelize.STRING(128),
             allowNull : false
-        },
-        uuid : {
-            type : Sequelize.STRING,
         },
         secretToken : {
             type : Sequelize.STRING(128),

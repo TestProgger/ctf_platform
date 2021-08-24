@@ -131,36 +131,31 @@ apiRouter.post( "/register" , async( request: Request , response:Response ) => {
             return;
         }
     }
-
-    UserDB.findAll( {
-        where : {
-            gradeBookNumber: userData.gradeBookNumber,
-            deleted :  false
-        }
-    }).then( (data : object[]) => {
-        if( !data.length )
+    try{
+        const users = await UserDB.findAll({where : { gradeBookNumber : userData.gradeBookNumber , deleted :  false }});
+        if( !users.length )
         {
-            const sha256 = crypto.createHash('sha256');
+            const sha256 = crypto.createHash("sha256");
             sha256.update( userData.password );
 
-            UserDB.create({
-                uid : uuidv4(),
-                gradeBookNumber : userData.gradeBookNumber,
-                firstName : userData.firstName,
-                lastName : userData.lastName,
-                password : sha256.digest("hex"),
-                uuid : uuidv4(),
-                secretToken :  crypto.randomBytes(64).toString("base64")
+            await UserDB.create( {
+                    uid :  uuidv4(),
+                    gradeBookNumber : userData.gradeBookNumber,
+                    firstName :  userData.firstName,
+                    lastName : userData.lastName,
+                    password : sha256.digest("hex"),
+                    secretToken  : crypto.randomBytes(64).toString("base64")  
             })
-            .then(() => response.json( { success : true } ))
-            .catch( () => response.json( { success : false  , errorText : "Save error"} ));
-            sha256.end();
+            response.json({ success : true });
         }else{
             response.json( { success : false , errorText : "The user is already registered" } )
-        }
+        } 
+    }
+    catch(e){
+        response.json({ success : false  , errorText : "Save error"});
+    }
 
-    } )
-    .catch( () => response.json( { success : false , errorText : "Server Error" } ) )
+
 });
 
 apiRouter.post("/login" ,(request : Request , response : Response) => {
