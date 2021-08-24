@@ -377,20 +377,11 @@ apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , async (request:Re
     }
 });
 
-apiRouter.post("/task/getScoresForCurrentUser" , checkAuthMiddleware , (request : Request , response : Response) => {
+apiRouter.post("/task/getScoresForCurrentUser" , checkAuthMiddleware , async (request : Request , response : Response) => {
     const {gradeBookNumber} = response.locals;
     const { userId }  = TEMPORARY_KEY_STORAGE.get( gradeBookNumber );
 
-    UserScoresDB.findOne( { where : {userId} } )
-        .then( userScoresResult => {
-            if( userScoresResult?.scores ){
-                response.json( {scores : userScoresResult.scores }  );
-            }
-            else {
-                response.json( {scores : 0 }  );
-            }
-        } )
-        .catch(console.log);
+    return await UserScoresDB.findOne( { where : {userId} } ) || 0;
 });
 
 
