@@ -302,7 +302,6 @@ managerRouter.post("/createUser" , checkAdminAuthMiddleware , async (request : R
                     lastName,
                     gradeBookNumber,
                     password : sha256.digest('hex'),
-                    uuid : uuidv4(),
                     secretToken : crypto.randomBytes(64).toString("base64")
                 }
             }

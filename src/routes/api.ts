@@ -263,7 +263,7 @@ apiRouter.post("/taskCategories" , checkAuthMiddleware  ,  async ( request : Req
     
 } );
 
-apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , (request:Request , response:Response) => {
+apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , async (request:Request , response:Response) => {
 
     interface AnswerDataInterface{
         answer : string,
@@ -271,94 +271,93 @@ apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , (request:Request 
     }
 
     const { answer  , taskId  } : AnswerDataInterface = request.body;
+    try{
+        const task = await TaskDB.findOne( {
+            where : {uid : taskId},
+            attributes : [ "answer" , "score" , "categoryId" ]
+        } );
 
-    TaskDB.findOne( {
-        where : {uid : taskId},
-        attributes : [ "answer" , "score" , "categoryId" ]
-    } )
-    .then( taskDBResult => {
         const { gradeBookNumber } = response.locals;
         const { userId } = TEMPORARY_KEY_STORAGE.get( gradeBookNumber );
-        if( taskDBResult.answer === answer )
+
+        if( task.answer === answer )
         {
-                UserTaskPassedDB.findAll( {
-                    where : { taskId  ,  userId } ,
-                    attributes : [ 'uid' ] }
-                )
-                .then( userTaskPassedResult => {
-                    if( userTaskPassedResult.length ){
-                        response.json(  { success : true , score : 0 }  );
+            const passedTasks = await UserTaskPassedDB.findAll( {
+                where : { taskId  ,  userId } ,
+                attributes : [ 'uid' ] }
+            );
+
+            if( passedTasks.length ){
+                response.json(  { success : true , score : 0 }  );
+            }
+            else
+            {
+                await UserTaskPassedDB.create(
+                    {
+                        uid : uuidv4(),
+                        taskId ,
+                        userId,
+                        categoryId : task.categoryId,
+                    }
+                 );
+                
+                 response.json({ success : true , score : task.score } )
+
+                const userToTeam = await UserToTeamLinkTable.findOne(
+                    {
+                        where : {userId},
+                        attributes: ['teamId']
+                    }
+                );
+
+                if( userToTeam !== null )
+                {
+                    TaskToTeamLinkTable.create( {
+                        uid : uuidv4(),
+                        teamId : userToTeam.teamId ,
+                        taskId
+                    } ).catch(console.log);
+
+                    TeamScoresDB.findOne( {
+                        where : {uid : userToTeam.teamId},
+                    } ).then( tsResult => {
+                        if( tsResult?.scores  )
+                        {
+                            tsResult.update({    scores : tsResult.scores +  task.score }).catch(console.log);
+                        }
+                        else
+                        {
+                            TeamScoresDB.create( { teamId : userToTeam.teamId , scores : task.score , uid : uuidv4() } ).catch(console.log);
+                        }
+                    }).catch(console.log);
+                }
+
+                UserScoresDB.findOne(
+                    {
+                        where : { userId }
+                    }
+                ).then( userScoresResult => {
+                    if ( userScoresResult?.userId )
+                    {
+                        UserScoresDB.update({ scores : userScoresResult.scores + task.score } , {
+                            where : {userId}
+                        }).catch(console.log);
                     }
                     else
                     {
-                        UserTaskPassedDB.create(
+                        UserScoresDB.create(
                             {
                                 uid : uuidv4(),
-                                taskId ,
-                                userId,
-                                categoryId : taskDBResult.categoryId,
+                                userId ,
+                                scores : task.score
                             }
-                         )
-                         .then( _ => { response.json( { success : true , score : taskDBResult.score }  ) } )
-                         .catch(console.log);
-
-                        UserToTeamLinkTable.findOne(
-                            {
-                                where : {userId},
-                                attributes: ['teamId']
-                            }
-                        ).then( result => {
-                            if( result?.teamId )
-                            {
-                                TaskToTeamLinkTable.create( {
-                                    uid : uuidv4(),
-                                    teamId : result.teamId ,
-                                    taskId
-                                } ).catch(console.log);
-
-                                TeamScoresDB.findOne( {
-                                    where : {uid : result.teamId},
-                                } ).then( tsResult => {
-                                    if( tsResult?.scores  )
-                                    {
-                                        tsResult.update({    scores : tsResult.scores +  taskDBResult.score }).catch(console.log);
-                                    }
-                                    else
-                                    {
-                                        TeamScoresDB.create( { teamId : result.teamId , scores : taskDBResult.score , uid : uuidv4() } ).catch(console.log);
-                                    }
-                                }).catch(console.log);
-                            }
-
-                        });
-
-                        UserScoresDB.findOne(
-                            {
-                                where : { userId }
-                            }
-                        ).then( userScoresResult => {
-                            if ( userScoresResult?.userId )
-                            {
-                                UserScoresDB.update({ scores : userScoresResult.scores + taskDBResult.score } , {
-                                    where : {userId}
-                                }).catch(console.log);
-                            }
-                            else
-                            {
-                                UserScoresDB.create(
-                                    {
-                                        uid : uuidv4(),
-                                        userId ,
-                                        scores : taskDBResult.score
-                                    }
-                                ).catch(console.log);
-                            }
-                        } ).catch(console.log);
-                        ;
+                        ).catch(console.log);
                     }
-                } )
-        }
-        else
+                } ).catch(console.log);
+
+                
+            }
+        }else
         {
             response.json(  {success : false}  )
             WrongAnswersDB.create(
@@ -366,14 +365,16 @@ apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , (request:Request 
                     uid : uuidv4(),
                     userId,
                     taskId ,
-                    categoryId : taskDBResult.categoryId,
+                    categoryId : task.categoryId,
                     answer
                 }
             )
                 .catch(console.log);
         }
-    })
-    .catch( () => response.json({success : false}) );
+
+    }catch(e){
+        response.json({success : false})
+    }
 });
 
 apiRouter.post("/task/getScoresForCurrentUser" , checkAuthMiddleware , (request : Request , response : Response) => {
