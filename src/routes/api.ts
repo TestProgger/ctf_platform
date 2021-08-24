@@ -146,6 +146,7 @@ apiRouter.post( "/register" , async( request: Request , response:Response ) => {
                     password : sha256.digest("hex"),
                     secretToken  : crypto.randomBytes(64).toString("base64")  
             })
+            sha256.end();
             response.json({ success : true });
         }else{
             response.json( { success : false , errorText : "The user is already registered" } )
@@ -158,33 +159,25 @@ apiRouter.post( "/register" , async( request: Request , response:Response ) => {
 
 });
 
-apiRouter.post("/login" ,(request : Request , response : Response) => {
+apiRouter.post("/login" , async (request : Request , response : Response) => {
     const userData : RequestLoginType = request.body;
 
     const browserFingerprint :BrowserFingerprintInterface = JSON.parse( Buffer.from( request.headers["x-finger-data"]  as string, "base64" ).toString("utf-8")  );
     const userAgent : string  = request.headers["user-agent"];
     const userIp : string = request.ip;
 
-    UserDB.findOne(
+    try{
+        const user = await UserDB.findOne( {  where : { gradeBookNumber : userData.gradeBookNumber , deleted : false }} );
+        if ( user !== null )
         {
-            where : { gradeBookNumber  : userData.gradeBookNumber  , deleted :  false}
-        })
-    .then( user => {
-
-        if( user )
-        {
-            const secretToken :string = user.getDataValue('secretToken');
-            const password :string = user.getDataValue('password');
-
             const sha256 = crypto.createHash('sha256');
-            sha256.update( userData.password );
+            sha256.update(userData.password);
 
-            if ( sha256.digest('hex') === password  )
-            {
+            if ( user.password === sha256.digest('hex') ){
                 const sessionData : SessionUserAuthData = { token : '' , uuid : '' , gradeBookNumber : userData.gradeBookNumber , userId : user.uid };
 
                 sessionData.token = crypto.randomBytes(32).toString("hex");
-                sessionData.uuid = uuidv5(secretToken , uuidv4() ) ;
+                sessionData.uuid = uuidv5(user.secretToken , uuidv4() ) ;
                 sessionData.fingerprint = {
                     browserFingerprint,
                     userAgent,
@@ -195,7 +188,6 @@ apiRouter.post("/login" ,(request : Request , response : Response) => {
                 {
                     TEMPORARY_KEY_STORAGE.delete( userData.gradeBookNumber );
                 }
-
                 TEMPORARY_KEY_STORAGE.set( userData.gradeBookNumber , sessionData );
 
                 setTimeout( ( gradeBookNumber : string ) => {
@@ -208,18 +200,19 @@ apiRouter.post("/login" ,(request : Request , response : Response) => {
                 );
                 const { uuid , gradeBookNumber , token }  = sessionData;
                 response.json(   { uuid , gradeBookNumber , token }  );
-            }
-            else
-            {
+            }else{
                 response.json( { authorized : false } );
             }
             sha256.end();
-        }
-        else
+        }else
         {
             response.json({ authorized : false } );
         }
-    }).catch(_ => response.json({ authorized : false }));
+    }catch(e){
+        response.json({ authorized : false } );
+    }
+
+    
 });
 
 apiRouter.post("/taskCategories/:category" , checkAuthMiddleware , (request : Request , response:Response) => {
