@@ -168,13 +168,13 @@ managerRouter.post("/addTask" , checkAdminAuthMiddleware  ,taskUploader.fields([
                         categoryId,
             }
         )
-    
+
         if( titleImage !== null )
         {
             fs.writeFileSync( "."+TASK_UPLOAD_DIR + "/img/" + titleImage.filename , fs.readFileSync(titleImage.path ) );
             fs.unlinkSync( titleImage.path );
         }
-    
+
         if(taskFile !== null)
         {
             fs.writeFileSync( "."+TASK_UPLOAD_DIR + "/taskFiles/" + taskFile.filename , fs.readFileSync(taskFile.path));
@@ -187,7 +187,6 @@ managerRouter.post("/addTask" , checkAdminAuthMiddleware  ,taskUploader.fields([
     {
         response.json({success :  false});
     }
-    
 
 })
 
