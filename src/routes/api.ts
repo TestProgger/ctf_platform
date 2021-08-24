@@ -381,7 +381,7 @@ apiRouter.post("/task/getScoresForCurrentUser" , checkAuthMiddleware , async (re
     const {gradeBookNumber} = response.locals;
     const { userId }  = TEMPORARY_KEY_STORAGE.get( gradeBookNumber );
 
-    return await UserScoresDB.findOne( { where : {userId} } ) || 0;
+    return ( await UserScoresDB.findOne( { where : {userId} } ) )|| 0;
 });
 
 
