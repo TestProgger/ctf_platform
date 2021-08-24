@@ -254,12 +254,13 @@ apiRouter.post("/taskCategories/:category" , checkAuthMiddleware , async (reques
 });
 
 
-apiRouter.post("/taskCategories" , checkAuthMiddleware  ,  ( request : Request , response : Response ) => {
-    TaskCategoryDB.findAll()
-        .then( data => {
-            response.json( data );
-        } )
-        .catch( _ => response.json({  }));
+apiRouter.post("/taskCategories" , checkAuthMiddleware  ,  async ( request : Request , response : Response ) => {
+    try{
+        response.json(await TaskCategoryDB.findAll());
+    }catch{
+        response.json({});
+    }
+    
 } );
 
 apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , (request:Request , response:Response) => {
