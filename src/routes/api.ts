@@ -88,7 +88,6 @@ export function checkAuthMiddleware( request : Request , response : Response , n
     if( authData?.gradeBookNumber ){
 
         response.locals.gradeBookNumber = authData?.gradeBookNumber;
-
         const serverSideAuthData : SessionUserAuthData = TEMPORARY_KEY_STORAGE.get( authData.gradeBookNumber );
         if( serverSideAuthData )
         {

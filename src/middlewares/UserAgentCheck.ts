@@ -1,4 +1,4 @@
-import express , { Request , Response , NextFunction } from 'express';
+import { Request , Response , NextFunction } from 'express';
 
 export const UserAgentCheck = () => ( request : Request , response : Response,
                                 next : NextFunction ) =>
@@ -16,7 +16,5 @@ export const UserAgentCheck = () => ( request : Request , response : Response,
             break;
         }
     }
-
     if( isPassed  ){    next();    }
-
 }

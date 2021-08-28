@@ -7,7 +7,7 @@ const date = new Date();
 
 const getFormatedTime = () => {
     return {
-        date : date.toLocaleString().split(',')[0].trim().replace(/[:\/\-]/gmi , '_'),
+        date : date.toLocaleString().split(',')[0].trim().replace(/[:\/\-]/gmi , '.'),
         time : date.toLocaleString().split(',')[1].trim()
     }
 }
@@ -44,8 +44,8 @@ export const Logger = () =>  ( request : Request , response : Response,
                         gradeBookNumber: xAuthHeader?.gradeBookNumber ,
                         userAgent : request.headers["user-agent"]
 
-                    } ) + "\n" , (err) => err ? console.error( err ) : null );
-        }
+                } ) + "\n" , console.error );
+    }
     )();
 
 
