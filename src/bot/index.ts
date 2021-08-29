@@ -12,13 +12,14 @@ const Op = Sequelize.Op;
 
 BOT.onText(/\/getTop (.+)/ , async ( msg : Message  , match: RegExpExecArray) => {
     if( msg.chat.id ===  CHAT_ID ){
-        const userScores = await UserScoresDB.findAll({ order : ["scores"] , limit : +match[1] });
+        const userScores = await UserScoresDB.findAll({ order : [["scores" , "DESC"]] , limit : +match[1] });
         const response = []
         for( let i = 0 ; i <  userScores.length ; i++ )
         {
             const user = await UserDB.findOne( { where : { uid : userScores[i].userId } } );
             response.push( `${i+1}. ${user.firstName} ${user.lastName} ${ userScores[i].scores }` );
         }
+
         BOT.sendMessage( CHAT_ID, response.join("\n") );
     }
 })
@@ -26,16 +27,14 @@ BOT.onText(/\/getTop (.+)/ , async ( msg : Message  , match: RegExpExecArray) =>
 BOT.onText( /\/teamStat (.+)/ , async ( msg : Message , match : RegExpExecArray ) => {
     if( msg.chat.id === CHAT_ID )
     {
-        const teams = await TeamDB.findAll();
+        const teamScores = await TeamScoresDB.findAll({ order : [["scores" , "DESC"]]});
         const response = []
 
-        for( let i = 0; i < teams.length ; i++ )
+        for( let i = 0; i < teamScores.length ; i++ )
         {
-            const teamScore = await TeamScoresDB.findOne( { where : { teamId : teams[i].uid } } );
-            response.push( `${i+1}. ${ teams[i].title } ${ teamScore.scores }` );
+            const team = await TeamDB.findOne( { where : { uid : teamScores[i].teamId } } );
+            response.push( `${i+1}. ${ team.title } ${ teamScores[i].scores }` );
         }
-
-        response.sort( ( a , b ) => +b.split(" ")[2] - +a.split(" ")[2] );
 
         BOT.sendMessage( CHAT_ID, response.join("\n") );
     }
