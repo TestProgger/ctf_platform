@@ -24,17 +24,13 @@ import {
 } from "./@types/api";
 
 import * as winston from 'winston';
-import TelegramBot from 'node-telegram-bot-api';
 
-import * as dotenv from 'dotenv'
-
-dotenv.config();
+import { BOT } from '../bot';
 
 
 export const TEMPORARY_KEY_STORAGE : Map<string, SessionUserAuthData> = new Map<string, SessionUserAuthData>();
 export const TEMPORARY_KEY_STORAGE_LIFETIME = 4 * 60 * 60 * 1000;
 
-const BOT = new TelegramBot(process.env.TG_TOKEN , {polling : true});
 
 
 export function validateRegisterRequest( data : RequestRegisterType  ) : RequestRegisterErrorType
