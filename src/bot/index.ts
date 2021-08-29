@@ -23,7 +23,7 @@ BOT.onText(/\/getTop (.+)/ , async ( msg : Message  , match: RegExpExecArray) =>
     }
 })
 
-BOT.onText( /\/teamStat/ , async ( msg : Message , match : RegExpExecArray ) => {
+BOT.onText( /\/teamStat (.+)/ , async ( msg : Message , match : RegExpExecArray ) => {
     if( msg.chat.id === CHAT_ID )
     {
         const teams = await TeamDB.findAll();
