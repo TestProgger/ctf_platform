@@ -334,8 +334,8 @@ managerRouter.post("/createTeam" , checkAdminAuthMiddleware , async (request : R
     try{
         const { teamName , users } = request.body;
         const team  = await  TeamDB.create( { uid : uuidv4() , title : teamName } );
-        
-        
+
+
 
         const userPassedTasks : any[] = []
 
@@ -358,14 +358,20 @@ managerRouter.post("/createTeam" , checkAdminAuthMiddleware , async (request : R
         const passedTasksSet = Array.from( new Set( userPassedTasks ) );
         let scores : number  = 0;
         passedTasksSet.forEach( async upt => {
-            const [tt , created] = await  TaskToTeamLinkTable.findOrCreate( { where : { taskId : upt.taskId  , teamId : team.uid}  }  );
+            const [tt , created] = await  TaskToTeamLinkTable.findOrCreate( {
+                where : { taskId : upt.taskId  , teamId : team.uid } ,
+                defaults : { taskId : upt.taskId , teamId : team.uid , uid : uuidv4() }  }  );
             if( created){
                 scores += ( await TaskDB.findOne( { where : {uid : upt.taskId} } ) ).score ;
             }
         } );
 
-        const [ ts , created ] = await TeamScoresDB.findOrCreate({where : { teamId : team.uid }});
-        if ( created ){ ts.update( { scores } ) }
+        const [ ts , created ] = await TeamScoresDB.findOrCreate(
+            {
+                where : { teamId : team.uid } ,
+                defaults : { uid : uuidv4() , teamId : team.uid , scores }
+            });
+        if ( !created ){ ts.update( { scores } ) }
     }
     catch (e) {
         response.json(null);
