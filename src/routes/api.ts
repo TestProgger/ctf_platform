@@ -328,9 +328,9 @@ apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , async (request:Re
                         teamId : userToTeam.teamId ,
                         taskId
                     } ).catch(winston.error);
-
+                    const team = await TeamDB.findOne({ where : { uid : userToTeam.userId} });
                     BOT.sendMessage(  process.env.CHAT_ID ,
-                        `🥳 Task Passed\n😇 User : ${response.user.firstName} ${response.user.lastName}\n👫 Team : ${userToTeam.teamId}\n👾 Task : ${task.title}`
+                        `🥳 Task Passed\n😇 User : ${response.user.firstName} ${response.user.lastName}\n👫 Team : ${team.title}\n👾 Task : ${task.title}`
                         );
 
                     TeamScoresDB.findOne( {
@@ -408,26 +408,56 @@ apiRouter.post("/task/getScoresForCurrentUser" , checkAuthMiddleware , async (re
 
 });
 
-
+const TEAMS_WHO_PASSED_TASKS : string[] = [];
+const USERS_WHO_PASSED_TASKS : string[] = [];
 apiRouter.get("/allRequiredTasksPassed"  , checkAuthMiddleware , async( request : Request , response : ExtendedResponse ) => {
     try{
+
+        console.log( TEAMS_WHO_PASSED_TASKS );
+
         const { user }  = response;
         const userToTeam = await UserToTeamLinkTable.findOne( { where : { userId : user.uid  } , attributes : ["teamId"] } );
-        const team = await TeamDB.findOne( { where : { uid : userToTeam.teamId } } );
+        const tasksCount = await TaskDB.count( { where : { required  : true } });
 
-        const teamTasksCount = await TaskToTeamLinkTable.count({ where : { teamId :  userToTeam.teamId} });
-        const tasksCount = await TaskDB.count();
+        if( userToTeam ){
 
-        if ( ( teamTasksCount === tasksCount && tasksCount !== 0 ) || true )
-        {
-            const date = new Date();
-            BOT.sendMessage(process.env.CHAT_ID ,
-                `✅ All Required Tasks Passed\n✅ Team : ${ team.title }\n✅ Time : ${date.toLocaleString('ru')}`
-            );
+            if ( !TEAMS_WHO_PASSED_TASKS.includes(userToTeam.teamId) ){
+                const team = await TeamDB.findOne( { where : { uid : userToTeam.teamId } } );
 
-            response.json( { allTasksPassed : true } );
+                const teamTasksCount = await TaskToTeamLinkTable.count({ where : { teamId :  userToTeam.teamId } });
+
+
+                if ( teamTasksCount === tasksCount && tasksCount !== 0 )
+                {
+                    TEAMS_WHO_PASSED_TASKS.push( team.uid )
+                    const date = new Date();
+                    BOT.sendMessage(process.env.CHAT_ID ,
+                        `✅ All Required Tasks Passed\n✅ Team : ${ team.title }\n✅ Time : ${date.toLocaleString('ru')}`
+                    );
+                }
+                response.json( { allTasksPassed : TEAMS_WHO_PASSED_TASKS.includes(team.uid) } );
+            }else{
+                response.json( { allTasksPassed : true } );
+            }
+
         }
-        response.json( { allTasksPassed : false } );
+        else
+        {
+            const userTaskCount = await UserTaskPassedDB.count( { where  : { userId : user.uid }} );
+            if ( !USERS_WHO_PASSED_TASKS.includes(user.uid) ){
+                if ( userTaskCount === tasksCount && tasksCount !== 0 )
+                {
+                    USERS_WHO_PASSED_TASKS.push( user.uid )
+                    const date = new Date();
+                    BOT.sendMessage(process.env.CHAT_ID ,
+                        `✅ All Required Tasks Passed\n✅ User : ${ user.firstname } ${user.lastName}\n✅ Time : ${date.toLocaleString('ru')}`
+                    );
+                }
+                response.json( { allTasksPassed : USERS_WHO_PASSED_TASKS.includes(user.uid) } );
+            }else{
+                response.json( { allTasksPassed : true } );
+            }
+        }
     }catch(ex)
     {
         response.json( { allTasksPassed : false } );

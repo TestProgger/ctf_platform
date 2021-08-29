@@ -12,13 +12,16 @@ interface TaskInterface{
     filePath : string
     categoryId : string,
     toDelete : boolean,
+    required : boolean
 };
 
 interface TaskCreationAttributes
     extends Optional<TaskInterface, 'toDelete'> {}
 
+interface TaskCreationAttributesDp extends Optional<TaskCreationAttributes, 'required'> {}
+
 interface TaskInstance
-    extends Model<TaskInterface, TaskCreationAttributes>,
+    extends Model<TaskInterface, TaskCreationAttributesDp>,
         TaskInterface {
     createdAt?: Date;
     updatedAt?: Date;
@@ -63,6 +66,10 @@ export default  ( sequelize : Sequelize.Sequelize ) => {
         categoryId : {
             type  : Sequelize.STRING,
             allowNull : false,
+        },
+        required : {
+            type : Sequelize.BOOLEAN,
+            defaultValue : true
         }
 
     }

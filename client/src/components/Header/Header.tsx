@@ -17,27 +17,54 @@ export const Header = () => {
 
     const {apiEndpoint , ...auth} : AuthContextInterface = useContext<AuthContextInterface>( AuthContext );
     const history = useHistory();
-    const logoutHandler = (event  : React.MouseEvent<HTMLButtonElement>) => {
-        event.preventDefault();
+    const logoutHandler = (event  : React.MouseEvent<HTMLButtonElement> | null = null) => {
+        if( event ){ event.preventDefault() }
         auth.logout();
         history.push("/auth");
     }
     const http = useHttp();
     const { score  , setScore  } : ScoreContextInterface = useContext<ScoreContextInterface>(ScoreContext);
 
-    useEffect( () => {
-        setInterval( () => {
-            http.post(apiEndpoint +  "/task/getScoresForCurrentUser")
-            .then( ( response:any ) => response.data )
-            .then( (data) => setScore(data?.scores) )
-            .catch(console.debug);
-        }  , 20000)
-    } , [] )
+    const checkPassedTasks = async () => {
+        try{
+            const response = await http.get( apiEndpoint + "/allRequiredTasksPassed" );
+            const data = response?.data;
 
+            if( data.allTasksPassed ) {
+                logoutHandler();
+                alert("All tasks passed");
+            }else
+            {
+                setTimeout( checkPassedTasks , 30000 );
+            }
+        }catch(ex){
+            console.debug(ex);
+            setTimeout( checkPassedTasks , 30000 );
+        }
+    }
+
+    const getScores = async () => {
+        try{
+            const response = await http.post(apiEndpoint +  "/task/getScoresForCurrentUser");
+            const data = response?.data;
+            setScore(data?.scores);
+            setTimeout( getScores , 20000 );
+        }catch(ex){
+            console.debug(ex);
+            setTimeout( getScores , 20000 );
+        }
+    }
 
     
 
 
+    useEffect( () => {
+        setTimeout( () => { getScores();
+            checkPassedTasks(); }   , 2000);
+        
+    } , [] );
+
+    
     return (
 
         <div className = "header__container" >
