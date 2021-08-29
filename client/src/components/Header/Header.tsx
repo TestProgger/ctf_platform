@@ -26,12 +26,12 @@ export const Header = () => {
     const { score  , setScore  } : ScoreContextInterface = useContext<ScoreContextInterface>(ScoreContext);
 
     useEffect( () => {
-        setTimeout( () => {
+        setInterval( () => {
             http.post(apiEndpoint +  "/task/getScoresForCurrentUser")
             .then( ( response:any ) => response.data )
             .then( (data) => setScore(data?.scores) )
             .catch(console.debug);
-        }  , 2000)
+        }  , 20000)
     } , [] )
 
 

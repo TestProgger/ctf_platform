@@ -137,7 +137,7 @@ export const UserStatPage = () => {
                         </div>
                     </div>
                 </div>  : null}
-            { userNotFound  ? <h1 className="h1" > User with this Grade Book Number was not found </h1> : null }
+            {/* { userNotFound  ? <h1 className="h1" > User with this Grade Book Number was not found </h1> : null }
                 <div className="container w-50 mt-5  mb-5 justify-content-center d-flex">
                     { !userNotFound && userData?.firstName !== null
                         ?
@@ -159,7 +159,7 @@ export const UserStatPage = () => {
                         :
                         null
                     }
-                </div>
+                </div> */}
 
         </div>
 

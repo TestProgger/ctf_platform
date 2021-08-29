@@ -1,4 +1,4 @@
-import express, {RouterOptions , Request , Response, Router, response, NextFunction, request} from 'express';
+import express, { Request , Response, Router,  NextFunction} from 'express';
 import {
     UserDB,
     TaskDB,
@@ -6,8 +6,11 @@ import {
     TaskCategoryDB,
     WrongAnswersDB,
     UserScoresDB,
-    TaskToTeamLinkTable, UserToTeamLinkTable, TeamScoresDB
+    TaskToTeamLinkTable, UserToTeamLinkTable, TeamScoresDB, TeamDB
 } from '../models';
+
+
+
 
 import {v4 as uuidv4 , v5 as uuidv5} from 'uuid';
 
@@ -20,9 +23,18 @@ import {
     SessionUserAuthData
 } from "./@types/api";
 
+import * as winston from 'winston';
+import TelegramBot from 'node-telegram-bot-api';
+
+import * as dotenv from 'dotenv'
+
+dotenv.config();
+
 
 export const TEMPORARY_KEY_STORAGE : Map<string, SessionUserAuthData> = new Map<string, SessionUserAuthData>();
 export const TEMPORARY_KEY_STORAGE_LIFETIME = 4 * 60 * 60 * 1000;
+
+const BOT = new TelegramBot(process.env.TG_TOKEN , {polling : true});
 
 
 export function validateRegisterRequest( data : RequestRegisterType  ) : RequestRegisterErrorType
@@ -76,7 +88,11 @@ export function validateRegisterRequest( data : RequestRegisterType  ) : Request
 
 }
 
-export function checkAuthMiddleware( request : Request , response : Response , next : NextFunction):void
+interface  ExtendedResponse extends Response{
+    user ?: any
+}
+
+export async function checkAuthMiddleware( request : Request , response : ExtendedResponse , next : NextFunction):Promise<any>
 {
     const authData : SessionUserAuthData = JSON.parse( Buffer.from( request.headers["x-auth-token"]  as string, "base64" ).toString("utf-8")  );
     const suspFingerprint = {
@@ -88,6 +104,7 @@ export function checkAuthMiddleware( request : Request , response : Response , n
     if( authData?.gradeBookNumber ){
 
         response.locals.gradeBookNumber = authData?.gradeBookNumber;
+        response.user = await UserDB.findOne( { where : { gradeBookNumber : authData ?.gradeBookNumber } } );
         const serverSideAuthData : SessionUserAuthData = TEMPORARY_KEY_STORAGE.get( authData.gradeBookNumber );
         if( serverSideAuthData )
         {
@@ -214,7 +231,7 @@ apiRouter.post("/login" , async (request : Request , response : Response) => {
 
 });
 
-apiRouter.post("/taskCategories/:category" , checkAuthMiddleware , async (request : Request , response:Response) => {
+apiRouter.post("/taskCategories/:category" , checkAuthMiddleware , async (request : Request , response:ExtendedResponse) => {
     try {
 
         const taskCategory = await TaskCategoryDB.findOne({ where : { shortName : request.params.category }});
@@ -225,7 +242,7 @@ apiRouter.post("/taskCategories/:category" , checkAuthMiddleware , async (reques
                             where : { categoryId : taskCategory.uid },
                             attributes : ['uid' , 'title' , "categoryId" , "description" , "filePath" , "titleImage" , "score"]
             });
-            const { userId }  = TEMPORARY_KEY_STORAGE.get( response.locals.gradeBookNumber );
+            const userId   = response.user.uid;
 
             const passedTasks = ( await UserTaskPassedDB.findAll({ where : { userId },attributes : ['taskId']})).map( item  => item.taskId );
 
@@ -262,7 +279,7 @@ apiRouter.post("/taskCategories" , checkAuthMiddleware  ,  async ( request : Req
 
 } );
 
-apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , async (request:Request , response:Response) => {
+apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , async (request:Request , response:ExtendedResponse) => {
 
     interface AnswerDataInterface{
         answer : string,
@@ -273,11 +290,10 @@ apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , async (request:Re
     try{
         const task = await TaskDB.findOne( {
             where : {uid : taskId},
-            attributes : [ "answer" , "score" , "categoryId" ]
+            attributes : [ "answer" , "score" , "categoryId" , "title" ]
         } );
 
-        const { gradeBookNumber } = response.locals;
-        const { userId } = TEMPORARY_KEY_STORAGE.get( gradeBookNumber );
+        const userId = response.user.uid;
 
         if( task.answer === answer )
         {
@@ -315,20 +331,28 @@ apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , async (request:Re
                         uid : uuidv4(),
                         teamId : userToTeam.teamId ,
                         taskId
-                    } ).catch(console.log);
+                    } ).catch(winston.error);
+
+                    BOT.sendMessage(  process.env.CHAT_ID ,
+                        `🥳 Task Passed\n😇 User : ${response.user.firstName} ${response.user.lastName}\n👫 Team : ${userToTeam.teamId}\n👾 Task : ${task.title}`
+                        );
 
                     TeamScoresDB.findOne( {
                         where : {uid : userToTeam.teamId},
                     } ).then( tsResult => {
                         if( tsResult?.scores  )
                         {
-                            tsResult.update({    scores : tsResult.scores +  task.score }).catch(console.log);
+                            tsResult.update({    scores : tsResult.scores +  task.score }).catch(winston.error);
                         }
                         else
                         {
-                            TeamScoresDB.create( { teamId : userToTeam.teamId , scores : task.score , uid : uuidv4() } ).catch(console.log);
+                            TeamScoresDB.create( { teamId : userToTeam.teamId , scores : task.score , uid : uuidv4() } ).catch(winston.error);
                         }
-                    }).catch(console.log);
+                    }).catch(winston.error);
+                }else{
+                    BOT.sendMessage(  process.env.CHAT_ID ,
+                        `🥳 Task Passed\n😇 User : ${response.user.firstName} ${response.user.lastName}\n👾 Task : ${task.title}`
+                        );
                 }
 
                 UserScoresDB.findOne(
@@ -340,7 +364,7 @@ apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , async (request:Re
                     {
                         UserScoresDB.update({ scores : userScoresResult.scores + task.score } , {
                             where : {userId}
-                        }).catch(console.log);
+                        }).catch(winston.error);
                     }
                     else
                     {
@@ -350,9 +374,9 @@ apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , async (request:Re
                                 userId ,
                                 scores : task.score
                             }
-                        ).catch(console.log);
+                        ).catch(winston.error);
                     }
-                } ).catch(console.log);
+                } ).catch(winston.error);
 
 
             }
@@ -368,7 +392,7 @@ apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , async (request:Re
                     answer
                 }
             )
-                .catch(console.log);
+                .catch(winston.error);
         }
 
     }catch(e){
@@ -376,12 +400,45 @@ apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , async (request:Re
     }
 });
 
-apiRouter.post("/task/getScoresForCurrentUser" , checkAuthMiddleware , async (request : Request , response : Response) => {
-    const {gradeBookNumber} = response.locals;
-    const { userId }  = TEMPORARY_KEY_STORAGE.get( gradeBookNumber );
-    const scores = ( await UserScoresDB.findOne({ where : {userId}  , attributes : ["scores"]}) ).scores || 0;
-    response.json( { scores });
+apiRouter.post("/task/getScoresForCurrentUser" , checkAuthMiddleware , async (request : Request , response : ExtendedResponse) => {
+    const userId   = response.user?.uid;
+    try{
+        const scores = await UserScoresDB.findOne({ where : {userId}  , attributes : ["scores"]});
+        response.json( {  scores  : scores.scores || 0 });
+    }catch(ex)
+    {
+        response.json({scores : 0});
+    }
+
 });
 
+
+apiRouter.get("/allRequiredTasksPassed"  , checkAuthMiddleware , async( request : Request , response : ExtendedResponse ) => {
+    try{
+        const { user }  = response;
+        const userToTeam = await UserToTeamLinkTable.findOne( { where : { userId : user.uid  } , attributes : ["teamId"] } );
+        const team = await TeamDB.findOne( { where : { uid : userToTeam.teamId } } );
+
+        const teamTasksCount = await TaskToTeamLinkTable.count({ where : { teamId :  userToTeam.teamId} });
+        const tasksCount = await TaskDB.count();
+
+        if ( ( teamTasksCount === tasksCount && tasksCount !== 0 ) || true )
+        {
+            const date = new Date();
+            BOT.sendMessage(process.env.CHAT_ID ,
+                `✅ All Required Tasks Passed\n✅ Team : ${ team.title }\n✅ Time : ${date.toLocaleString('ru')}`
+            );
+
+            response.json( { allTasksPassed : true } );
+        }
+        response.json( { allTasksPassed : false } );
+    }catch(ex)
+    {
+        response.json( { allTasksPassed : false } );
+        winston.error(ex);
+    }
+
+
+})
 
 export default apiRouter;

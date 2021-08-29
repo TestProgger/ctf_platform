@@ -117,7 +117,7 @@ export const Home : React.FC  = () => {
                 </table>
             </div>
 
-            <div className="container d-flex mt-5 w-25">
+            {/* <div className="container d-flex mt-5 w-25">
                 { doughnutState?.labels.length ?
                     <Doughnut
                         id='32423423'
@@ -133,8 +133,8 @@ export const Home : React.FC  = () => {
                                 position:'right'
                             }
                         }}
-                        type='pie'/> : null }
-            </div>
+                        type={'pie'}/> : null }
+            </div> */}
 
 
         </div>
