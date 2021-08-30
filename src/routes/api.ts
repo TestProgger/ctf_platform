@@ -323,17 +323,17 @@ apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , async (request:Re
 
                 if( userToTeam !== null )
                 {
-                    TaskToTeamLinkTable.create( {
+                    await TaskToTeamLinkTable.create( {
                         uid : uuidv4(),
                         teamId : userToTeam.teamId ,
                         taskId
                     } ).catch(winston.error);
-                    const team = await TeamDB.findOne({ where : { uid : userToTeam.userId} });
+                    const team = await TeamDB.findOne({ where : { uid : userToTeam.teamId} });
                     BOT.sendMessage(  process.env.CHAT_ID ,
                         `🥳 Task Passed\n😇 User : ${response.user.firstName} ${response.user.lastName}\n👫 Team : ${team.title}\n👾 Task : ${task.title}`
                         );
 
-                    TeamScoresDB.findOne( {
+                    await TeamScoresDB.findOne( {
                         where : {uid : userToTeam.teamId},
                     } ).then( tsResult => {
                         if( tsResult?.scores  )
@@ -392,6 +392,7 @@ apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , async (request:Re
         }
 
     }catch(e){
+        console.log(e);
         response.json({success : false})
     }
 });
