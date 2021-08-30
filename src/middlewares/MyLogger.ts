@@ -2,15 +2,8 @@ import express , { Request , Response , NextFunction} from 'express';
 import fs from 'fs';
 
 const LoggerDir = "./logging/";
-const date = new Date();
 
 
-const getFormatedTime = () => {
-    return {
-        date : date.toLocaleString().split(',')[0].trim().replace(/[:\/\-]/gmi , '.'),
-        time : date.toLocaleString().split(',')[1].trim()
-    }
-}
 
 const parseXAuthHeader = ( request :  Request ) => {
     const xAuthHeader = request.headers["x-auth-token"];
@@ -25,9 +18,11 @@ export const Logger = () =>  ( request : Request , response : Response,
     if( !fs.existsSync( LoggerDir ) ){fs.mkdirSync( LoggerDir );}
 
     (async () => {
-            const formatedTime : { time : string , date : string } = getFormatedTime();
-            const  logFileName = `${LoggerDir}/log_${formatedTime.date}.json`;
-            const timeStamp : string = formatedTime.date + "-" + formatedTime.time;
+
+            const date = new Date();
+
+            const  logFileName = `${LoggerDir}/log_${date.toLocaleString('ru').split(" ")[0].replace(/,/, '')}.json`;
+            const timeStamp : number = Date.now();
             const method : string = request.method;
             const ip : string = request.ip;
             const path : string =  request.path;

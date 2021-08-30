@@ -397,7 +397,7 @@ apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , async (request:Re
     }
 });
 
-apiRouter.post("/task/getScoresForCurrentUser" , checkAuthMiddleware , async (request : Request , response : ExtendedResponse) => {
+apiRouter.get("/task/getScoresForCurrentUser" , checkAuthMiddleware , async (request : Request , response : ExtendedResponse) => {
     const userId   = response.user?.uid;
     try{
         const scores = await UserScoresDB.findOne({ where : {userId}  , attributes : ["scores"]});

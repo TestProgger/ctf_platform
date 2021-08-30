@@ -45,7 +45,7 @@ export const Header = () => {
 
     const getScores = async () => {
         try{
-            const response = await http.post(apiEndpoint +  "/task/getScoresForCurrentUser");
+            const response = await http.get(apiEndpoint +  "/task/getScoresForCurrentUser");
             const data = response?.data;
             setScore(data?.scores);
             setTimeout( getScores , 20000 );
