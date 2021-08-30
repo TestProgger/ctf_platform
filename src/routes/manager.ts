@@ -18,7 +18,6 @@ import * as fs from "fs";
 import {AdminKeyStore, ReportPassedTasksInterface, ServerSideKeyStore, UserDataInterface} from "./@types/manager";
 
 import {Sequelize} from 'sequelize'
-import UserScores from "../models/UserScores";
 
 
 const managerRouter  = express.Router();

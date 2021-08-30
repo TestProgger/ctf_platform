@@ -21,6 +21,25 @@ export const sequelize  = new Sequelize("sqlite:./dbs/ctf_simple_db.db" ,
             max : 10
         }
     });
+
+/* Config for PostgreSQL
+export const sequelize = new Sequelize(
+    {
+        database : "database",
+        username : "username",
+        password : "password",
+        host : "host",
+        port : 5432,
+        dialect : 'postgres',
+        logging : false,
+        pool : {
+            max :  20
+        }
+    }
+)
+*/
+
+
 export const TaskDB = Task(sequelize);
 export const UserDB = User(sequelize);
 export const UserTaskPassedDB = UserTaskPassed(sequelize);

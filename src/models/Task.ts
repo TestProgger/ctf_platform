@@ -1,6 +1,5 @@
 import Sequelize, {Model, Optional} from 'sequelize';
 
-import TaskCategory from './TaskCategory';
 
 interface TaskInterface{
     uid : string
