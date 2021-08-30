@@ -48,10 +48,8 @@ export const Header = () => {
             const response = await http.get(apiEndpoint +  "/task/getScoresForCurrentUser");
             const data = response?.data;
             setScore(data?.scores);
-            setTimeout( getScores , 20000 );
         }catch(ex){
-            console.debug(ex);
-            setTimeout( getScores , 20000 );
+            setTimeout( getScores , 10000 );
         }
     }
 
