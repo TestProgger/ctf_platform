@@ -10,6 +10,11 @@ export const CHAT_ID = +process.env.CHAT_ID;
 
 const Op = Sequelize.Op;
 
+// BOT.onText(/\/chat_id (.+)/ , ( msg : Message , match : RegExpExecArray ) => {
+//     BOT.sendMessage(msg.chat.id , `${msg.chat.id}`);
+// })
+
+
 BOT.onText(/\/getTop (.+)/ , async ( msg : Message  , match: RegExpExecArray) => {
     if( msg.chat.id ===  CHAT_ID ){
         const userScores = await UserScoresDB.findAll({ order : [["scores" , "DESC"]] , limit : +match[1] });

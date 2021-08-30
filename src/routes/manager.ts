@@ -351,27 +351,15 @@ managerRouter.post("/createTeam" , checkAdminAuthMiddleware , async (request : R
                 }
             )
         }
-
-
         response.json(team.uid);
 
         const passedTasksSet = Array.from( new Set( userPassedTasks ) );
         let scores : number  = 0;
-        passedTasksSet.forEach( async upt => {
-            const [tt , created] = await  TaskToTeamLinkTable.findOrCreate( {
-                where : { taskId : upt.taskId  , teamId : team.uid } ,
-                defaults : { taskId : upt.taskId , teamId : team.uid , uid : uuidv4() }  }  );
-            if( created){
-                scores += ( await TaskDB.findOne( { where : {uid : upt.taskId} } ) ).score ;
-            }
-        } );
-
-        const [ ts , created ] = await TeamScoresDB.findOrCreate(
-            {
-                where : { teamId : team.uid } ,
-                defaults : { uid : uuidv4() , teamId : team.uid , scores }
-            });
-        if ( !created ){ ts.update( { scores } ) }
+        for( const upt of passedTasksSet ){
+            await  TaskToTeamLinkTable.create(  { taskId : upt.taskId , teamId : team.uid , uid : uuidv4() }  );
+            scores += ( await TaskDB.findOne( { where : {uid : upt.taskId} } ) ).score ;
+        }
+        await TeamScoresDB.create({ uid : uuidv4() , teamId : team.uid , scores });
     }
     catch (e) {
         response.json(null);
