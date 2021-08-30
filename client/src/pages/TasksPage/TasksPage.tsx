@@ -62,7 +62,7 @@ function TasksPage( { ...props }){
                     setCorrectAnswer(true);
                     setWrongAnswer(false);
                     setTimeout( () => setCorrectAnswer(false) , 2000 );
-                    http.post(apiEndpoint +  "/task/getScoresForCurrentUser")
+                    http.get(apiEndpoint +  "/task/getScoresForCurrentUser")
                     .then( ( response:any ) => response.data )
                     .then( (data) => setScore(data?.scores) )
                     .catch(console.debug);
