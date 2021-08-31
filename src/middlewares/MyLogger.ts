@@ -23,6 +23,7 @@ export const Logger = () =>  ( request : Request , response : Response,
 
             const  logFileName = `${LoggerDir}/log_${date.toLocaleString('ru').split(" ")[0].replace(/,/, '')}.json`;
             const timeStamp : number = Date.now();
+            const datetime : string = date.toLocaleString('ru');
             const method : string = request.method;
             const ip : string = request.ip;
             const path : string =  request.path;
@@ -32,6 +33,7 @@ export const Logger = () =>  ( request : Request , response : Response,
                 JSON.stringify(
                     {
                         timeStamp ,
+                        datetime ,
                         method  ,
                         ip ,
                         path ,
