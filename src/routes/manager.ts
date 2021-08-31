@@ -14,6 +14,9 @@ import {v4 as uuidv4 , v5 as uuidv5} from 'uuid'
 import multer from 'multer';
 
 import crypto from 'crypto';
+
+import * as bcrypt from 'bcrypt'
+
 import * as fs from "fs";
 import {AdminKeyStore, ReportPassedTasksInterface, ServerSideKeyStore, UserDataInterface} from "./@types/manager";
 
@@ -42,7 +45,7 @@ function checkAdminAuthMiddleware( request : Request  , response : Response , ne
     {
         const signUUID : string  =  uuidv5( serverSideAuthData.randomBytes , serverSideAuthData.uuid );
 
-        if( serverSideAuthData.token === authData?.token &&
+        if(serverSideAuthData.token === authData?.token &&
             serverSideAuthData.uuid === authData?.uuid &&
             signUUID === authData?.signUUID
         ){
@@ -278,10 +281,6 @@ managerRouter.post("/createUser" , checkAdminAuthMiddleware , async (request : R
     try{
         const { firstName  , lastName , gradeBookNumber  , password } = request.body;
 
-
-        const sha256 = crypto.createHash('sha256');
-        sha256.update( password );
-
         const [ user , created ] = await UserDB.findOrCreate(
             {
                 where : {gradeBookNumber , deleted :  false},
@@ -290,12 +289,11 @@ managerRouter.post("/createUser" , checkAdminAuthMiddleware , async (request : R
                     firstName,
                     lastName,
                     gradeBookNumber,
-                    password : sha256.digest('hex'),
+                    password : await bcrypt.hash(password , 10),
                     secretToken : crypto.randomBytes(64).toString("base64")
                 }
             }
         );
-        sha256.end();
         response.json(
             created ? user.uid : { error : "A user with this grade book number already exists" }
         )

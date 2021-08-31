@@ -15,6 +15,7 @@ import {
 import {v4 as uuidv4 , v5 as uuidv5} from 'uuid';
 
 import crypto  from 'crypto';
+import * as bcrypt from 'bcrypt';
 import {
     BrowserFingerprintInterface,
     RequestLoginType,
@@ -147,18 +148,15 @@ apiRouter.post( "/register" , async( request: Request , response:Response ) => {
         const users = await UserDB.findAll({where : { gradeBookNumber : userData.gradeBookNumber , deleted :  false }});
         if( !users.length )
         {
-            const sha256 = crypto.createHash("sha256");
-            sha256.update( userData.password );
 
             await UserDB.create( {
                     uid :  uuidv4(),
                     gradeBookNumber : userData.gradeBookNumber,
                     firstName :  userData.firstName,
                     lastName : userData.lastName,
-                    password : sha256.digest("hex"),
+                    password : await bcrypt.hash(userData.password , 10),
                     secretToken  : crypto.randomBytes(64).toString("base64")
-            })
-            sha256.end();
+            });
             response.json({ success : true });
         }else{
             response.json( { success : false , errorText : "The user is already registered" } )
@@ -182,10 +180,8 @@ apiRouter.post("/login" , async (request : Request , response : Response) => {
         const user = await UserDB.findOne( {  where : { gradeBookNumber : userData.gradeBookNumber , deleted : false }} );
         if ( user !== null )
         {
-            const sha256 = crypto.createHash('sha256');
-            sha256.update(userData.password);
-
-            if ( user.password === sha256.digest('hex') ){
+            const isValid = await bcrypt.compare( userData.password , user.password  );
+            if ( isValid ){
                 const sessionData : SessionUserAuthData = { token : '' , uuid : '' , gradeBookNumber : userData.gradeBookNumber , userId : user.uid };
 
                 sessionData.token = crypto.randomBytes(32).toString("hex");
@@ -215,7 +211,7 @@ apiRouter.post("/login" , async (request : Request , response : Response) => {
             }else{
                 response.json( { authorized : false } );
             }
-            sha256.end();
+
         }else
         {
             response.json({ authorized : false } );
@@ -413,9 +409,6 @@ const TEAMS_WHO_PASSED_TASKS : string[] = [];
 const USERS_WHO_PASSED_TASKS : string[] = [];
 apiRouter.get("/allRequiredTasksPassed"  , checkAuthMiddleware , async( request : Request , response : ExtendedResponse ) => {
     try{
-
-        console.log( TEAMS_WHO_PASSED_TASKS );
-
         const { user }  = response;
         const userToTeam = await UserToTeamLinkTable.findOne( { where : { userId : user.uid  } , attributes : ["teamId"] } );
         const tasksCount = await TaskDB.count( { where : { required  : true } });
