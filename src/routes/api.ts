@@ -287,7 +287,7 @@ apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , async (request:Re
 
         const userId = response.user.uid;
 
-        if( task.answer === answer )
+        if( task.answer.toLowerCase() === answer.toLowerCase() )
         {
             const passedTasks = await UserTaskPassedDB.findAll( {
                 where : { taskId  ,  userId } ,
