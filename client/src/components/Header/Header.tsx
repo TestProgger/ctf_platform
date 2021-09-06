@@ -35,11 +35,11 @@ export const Header = () => {
                 alert("All tasks passed");
             }else
             {
-                setTimeout( checkPassedTasks , 30000 );
+                setTimeout( checkPassedTasks , 20000 );
             }
         }catch(ex){
             console.debug(ex);
-            setTimeout( checkPassedTasks , 30000 );
+            setTimeout( checkPassedTasks , 10000 );
         }
     }
 
@@ -57,8 +57,9 @@ export const Header = () => {
 
 
     useEffect( () => {
-        setTimeout( () => { getScores();
-            checkPassedTasks(); }   , 2000);
+
+        setTimeout( getScores , 2000 );
+        setTimeout( checkPassedTasks , 2000 );
         
     } , [] );
 
