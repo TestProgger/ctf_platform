@@ -414,13 +414,9 @@ apiRouter.get("/allRequiredTasksPassed"  , checkAuthMiddleware , async( request 
         const tasksCount = await TaskDB.count( { where : { required  : true } });
 
         if( userToTeam ){
-
+            const team = await TeamDB.findOne( { where : { uid : userToTeam.teamId } } );
             if ( !TEAMS_WHO_PASSED_TASKS.includes(userToTeam.teamId) ){
-                const team = await TeamDB.findOne( { where : { uid : userToTeam.teamId } } );
-
                 const teamTasksCount = await TaskToTeamLinkTable.count({ where : { teamId :  userToTeam.teamId } });
-
-
                 if ( teamTasksCount === tasksCount && tasksCount !== 0 )
                 {
                     TEAMS_WHO_PASSED_TASKS.push( team.uid )
@@ -429,11 +425,8 @@ apiRouter.get("/allRequiredTasksPassed"  , checkAuthMiddleware , async( request 
                         `✅ All Required Tasks Passed\n✅ Team : ${ team.title }\n✅ Time : ${date.toLocaleString('ru')}`
                     );
                 }
-                response.json( { allTasksPassed : TEAMS_WHO_PASSED_TASKS.includes(team.uid) } );
-            }else{
-                response.json( { allTasksPassed : true } );
             }
-
+            response.json( { allTasksPassed : TEAMS_WHO_PASSED_TASKS.includes(team.uid) } );
         }
         else
         {
@@ -447,10 +440,8 @@ apiRouter.get("/allRequiredTasksPassed"  , checkAuthMiddleware , async( request 
                         `✅ All Required Tasks Passed\n✅ User : ${ user.firstname } ${user.lastName}\n✅ Time : ${date.toLocaleString('ru')}`
                     );
                 }
-                response.json( { allTasksPassed : USERS_WHO_PASSED_TASKS.includes(user.uid) } );
-            }else{
-                response.json( { allTasksPassed : true } );
             }
+            response.json( { allTasksPassed : USERS_WHO_PASSED_TASKS.includes(user.uid) } );
         }
     }catch(ex)
     {
