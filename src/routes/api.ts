@@ -411,19 +411,18 @@ let TEAMS_WHO_PASSED_TASKS : string[] = [];
 // let USERS_WHO_PASSED_TASKS : string[] = [];
 async function checkCTFComplete( response : ExtendedResponse )
 {
-    const isTeamComplete = await checkTeamCtfComplete( response );
-    const isUserComplete = await checkUserCtfComplete( response );
+    const { user } = response;
+
+    const isTeamComplete = await checkTeamCtfComplete( user );
+    const isUserComplete = await checkUserCtfComplete( user );
     return { allTasksPassed :  isUserComplete  || isTeamComplete };
 }
 
 
 let USERS_WHO_PASSED_TASKS : string[] = [];
-async function checkUserCtfComplete( response : ExtendedResponse )
+async function checkUserCtfComplete( user : any )
 {
-
     try{
-        const { user } = response;
-
         const passedTasksCount = await UserTaskPassedDB.count( { where  : { userId : user.uid }} );
         const tasksCount = await TaskDB.count( { where : { required  : true } });
 
@@ -449,14 +448,13 @@ async function checkUserCtfComplete( response : ExtendedResponse )
         winston.error( ex );
         return false;
     }
-    
+
 }
 
 
-async function checkTeamCtfComplete(response : ExtendedResponse)
+async function checkTeamCtfComplete(user : any)
 {
     try{
-        const { user } = response;
         const userToTeam = await UserToTeamLinkTable.findOne( { where : { userId : user.uid  } , attributes : ["teamId"] } );
         const tasksCount = await TaskDB.count( { where : { required  : true } });
         const team = await TeamDB.findOne( { where : { uid : userToTeam.teamId } } );
@@ -482,7 +480,7 @@ async function checkTeamCtfComplete(response : ExtendedResponse)
         winston.error(ex);
         return false;
     }
-    
+
 }
 
 
