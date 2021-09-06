@@ -407,8 +407,8 @@ apiRouter.get("/task/getScoresForCurrentUser" , checkAuthMiddleware , async (req
 
 });
 
-let TEAMS_WHO_PASSED_TASKS : string[] = [];
-// let USERS_WHO_PASSED_TASKS : string[] = [];
+
+
 async function checkCtfComplete( response : ExtendedResponse )
 {
     const { user } = response;
@@ -451,7 +451,7 @@ async function checkUserCtfComplete( user : any )
 
 }
 
-
+let TEAMS_WHO_PASSED_TASKS : string[] = [];
 async function checkTeamCtfComplete(user : any)
 {
     try{
