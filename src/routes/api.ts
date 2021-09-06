@@ -308,7 +308,7 @@ apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , async (request:Re
                     }
                  );
 
-                const {allTasksPassed}  = await checkCTFComplete(response);
+                const {allTasksPassed}  = await checkCtfComplete(response);
 
                 response.json({ success : true , score : task.score , allTasksPassed } );
 
@@ -409,7 +409,7 @@ apiRouter.get("/task/getScoresForCurrentUser" , checkAuthMiddleware , async (req
 
 let TEAMS_WHO_PASSED_TASKS : string[] = [];
 // let USERS_WHO_PASSED_TASKS : string[] = [];
-async function checkCTFComplete( response : ExtendedResponse )
+async function checkCtfComplete( response : ExtendedResponse )
 {
     const { user } = response;
 
@@ -486,7 +486,7 @@ async function checkTeamCtfComplete(user : any)
 
 
 apiRouter.get("/allRequiredTasksPassed"  , checkAuthMiddleware , async( request : Request , response : ExtendedResponse ) => {
-    response.json( await checkCTFComplete( response ) );
+    response.json( await checkCtfComplete( response ) );
 })
 
 export default apiRouter;
