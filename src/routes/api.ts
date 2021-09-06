@@ -319,7 +319,7 @@ apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , async (request:Re
 
                 if( userToTeam !== null )
                 {
-                    await TaskToTeamLinkTable.create( {
+                    TaskToTeamLinkTable.create( {
                         uid : uuidv4(),
                         teamId : userToTeam.teamId ,
                         taskId
@@ -329,7 +329,7 @@ apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , async (request:Re
                         `🥳 Task Passed\n😇 User : ${response.user.firstName} ${response.user.lastName}\n👫 Team : ${team.title}\n👾 Task : ${task.title}`
                         );
 
-                    await TeamScoresDB.findOne( {
+                    TeamScoresDB.findOne( {
                         where : {uid : userToTeam.teamId},
                     } ).then( tsResult => {
                         if( tsResult?.scores  )
