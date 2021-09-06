@@ -308,7 +308,7 @@ apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , async (request:Re
                     }
                  );
 
-                const allTasksPassed = await checkCTFComplete(response);
+                const {allTasksPassed}  = await checkCTFComplete(response);
 
                 response.json({ success : true , score : task.score , allTasksPassed } );
 
@@ -408,61 +408,81 @@ apiRouter.get("/task/getScoresForCurrentUser" , checkAuthMiddleware , async (req
 });
 
 let TEAMS_WHO_PASSED_TASKS : string[] = [];
-const USERS_WHO_PASSED_TASKS : string[] = [];
+// let USERS_WHO_PASSED_TASKS : string[] = [];
 async function checkCTFComplete( response : ExtendedResponse )
 {
+    const isTeamComplete = await checkTeamCtfComplete( response );
+    const isUserComplete = await checkUserCtfComplete( response );
+    return { allTasksPassed :  isUserComplete  || isTeamComplete };
+}
+
+
+let USERS_WHO_PASSED_TASKS : string[] = [];
+async function checkUserCtfComplete( response : ExtendedResponse )
+{
+
     try{
-        const { user }  = response;
-        const userToTeam = await UserToTeamLinkTable.findOne( { where : { userId : user.uid  } , attributes : ["teamId"] } );
+        const { user } = response;
+
+        const passedTasksCount = await UserTaskPassedDB.count( { where  : { userId : user.uid }} );
         const tasksCount = await TaskDB.count( { where : { required  : true } });
 
+        if( passedTasksCount === tasksCount && tasksCount !== 0 )
+        {
+            if( !USERS_WHO_PASSED_TASKS.includes( user.uid ) )
+            {
+                USERS_WHO_PASSED_TASKS.push( user.uid );
+                const date = new Date();
+                BOT.sendMessage(process.env.CHAT_ID ,
+                    `✅ All Required Tasks Passed\n✅ User : ${ user.firstname } ${user.lastName}\n✅ Time : ${date.toLocaleString('ru')}`
+                );
+            }
+        }
+        else if( USERS_WHO_PASSED_TASKS.includes( user.uid ) )
+        {
+                USERS_WHO_PASSED_TASKS = USERS_WHO_PASSED_TASKS.filter( uid => uid !== user.uid );
+        }
+
+        return USERS_WHO_PASSED_TASKS.includes(user.uid)  ;
+    }catch(ex)
+    {
+        winston.error( ex );
+        return false;
+    }
+    
+}
+
+
+async function checkTeamCtfComplete(response : ExtendedResponse)
+{
+    try{
+        const { user } = response;
+        const userToTeam = await UserToTeamLinkTable.findOne( { where : { userId : user.uid  } , attributes : ["teamId"] } );
+        const tasksCount = await TaskDB.count( { where : { required  : true } });
+        const team = await TeamDB.findOne( { where : { uid : userToTeam.teamId } } );
         if( userToTeam ){
-            const team = await TeamDB.findOne( { where : { uid : userToTeam.teamId } } );
             const teamTasksCount = await TaskToTeamLinkTable.count({ where : { teamId :  userToTeam.teamId } });
             if ( teamTasksCount === tasksCount && tasksCount !== 0 )
             {
-                    if ( !TEAMS_WHO_PASSED_TASKS.includes(userToTeam.teamId) ){
-                        TEAMS_WHO_PASSED_TASKS.push( team.uid )
-                        const date = new Date();
-                        BOT.sendMessage(process.env.CHAT_ID ,
-                            `✅ All Required Tasks Passed\n✅ Team : ${ team.title }\n✅ Time : ${date.toLocaleString('ru')}`
-                        );
-                    }
+                if ( !TEAMS_WHO_PASSED_TASKS.includes(userToTeam.teamId) ){
+                    TEAMS_WHO_PASSED_TASKS.push( team.uid )
+                    const date = new Date();
+                    BOT.sendMessage(process.env.CHAT_ID ,
+                        `✅ All Required Tasks Passed\n✅ Team : ${ team.title }\n✅ Time : ${date.toLocaleString('ru')}`
+                    );
+                }
             }
             else if( TEAMS_WHO_PASSED_TASKS.includes( team.uid ) ){
-                    TEAMS_WHO_PASSED_TASKS = TEAMS_WHO_PASSED_TASKS.filter( uid => uid !== team.uid  );
+                TEAMS_WHO_PASSED_TASKS = TEAMS_WHO_PASSED_TASKS.filter( uid => uid !== team.uid  );
             }
-
-            return  { allTasksPassed : TEAMS_WHO_PASSED_TASKS.includes(team.uid) } ;
         }
-        else
-        {
-            const userTaskCount = await UserTaskPassedDB.count( { where  : { userId : user.uid }} );
 
-            if ( userTaskCount === tasksCount && tasksCount !== 0 )
-            {
-                    if ( !USERS_WHO_PASSED_TASKS.includes(user.uid) ){
-                        USERS_WHO_PASSED_TASKS.push( user.uid )
-                        const date = new Date();
-                        BOT.sendMessage(process.env.CHAT_ID ,
-                            `✅ All Required Tasks Passed\n✅ User : ${ user.firstname } ${user.lastName}\n✅ Time : ${date.toLocaleString('ru')}`
-                        );
-                    }
-            }else if( TEAMS_WHO_PASSED_TASKS.includes( user.uid ) ){
-                    TEAMS_WHO_PASSED_TASKS = TEAMS_WHO_PASSED_TASKS.filter( uid => uid !== user.uid  );
-            }
-
-
-            return { allTasksPassed : USERS_WHO_PASSED_TASKS.includes(user.uid) } ;
-        }
-    }catch(ex)
-    {
+        return  TEAMS_WHO_PASSED_TASKS.includes(team.uid)  ;
+    }catch(ex){
         winston.error(ex);
-        return { allTasksPassed : false } ;
-
+        return false;
     }
-
-
+    
 }
 
 
