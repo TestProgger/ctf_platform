@@ -10,6 +10,7 @@ import { ScoreContext, ScoreContextInterface } from '../../context/ScoreContext'
 import passedIcon from '../../static/images/ok-icon.png';
 import notPassedIcon from '../../static/images/error-icon.png';
 import {AuthContext} from "../../context/AuthContext";
+import { useHistory } from 'react-router-dom';
 
 interface TaskInterface{
     uid : string
@@ -39,7 +40,14 @@ function TasksPage( { ...props }){
 
 
     const {setScore} :  ScoreContextInterface = useContext(ScoreContext);
-    const { apiEndpoint } = useContext(AuthContext);
+    const { apiEndpoint  , ...auth} = useContext(AuthContext);
+
+    const history = useHistory();
+    const logoutHandler = (event  : React.MouseEvent<HTMLButtonElement> | null = null) => {
+        if( event ){ event.preventDefault() }
+        auth.logout();
+        history.push("/auth");
+    }
 
 
     const openModalWindow = (ind : number  , uid : string ) => {
@@ -79,6 +87,11 @@ function TasksPage( { ...props }){
                     setWrongAnswer(true);
                     setTimeout( () => setWrongAnswer(false) , 2000 );
                 }
+            }
+
+            if( response.data?.allTasksPassed ){
+                logoutHandler();
+                alert("All tasks passed");
             }
 
 

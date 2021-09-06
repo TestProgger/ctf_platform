@@ -307,8 +307,10 @@ apiRouter.post("/task/checkTaskAnswer" , checkAuthMiddleware , async (request:Re
                         categoryId : task.categoryId,
                     }
                  );
+                
+                const allTasksPassed = await checkCTFComplete(response);
 
-                 response.json({ success : true , score : task.score } )
+                response.json({ success : true , score : task.score , allTasksPassed } );
 
                 const userToTeam = await UserToTeamLinkTable.findOne(
                     {
@@ -407,7 +409,10 @@ apiRouter.get("/task/getScoresForCurrentUser" , checkAuthMiddleware , async (req
 
 const TEAMS_WHO_PASSED_TASKS : string[] = [];
 const USERS_WHO_PASSED_TASKS : string[] = [];
-apiRouter.get("/allRequiredTasksPassed"  , checkAuthMiddleware , async( request : Request , response : ExtendedResponse ) => {
+
+
+async function checkCTFComplete( response : ExtendedResponse )
+{
     try{
         const { user }  = response;
         const userToTeam = await UserToTeamLinkTable.findOne( { where : { userId : user.uid  } , attributes : ["teamId"] } );
@@ -426,7 +431,7 @@ apiRouter.get("/allRequiredTasksPassed"  , checkAuthMiddleware , async( request 
                     );
                 }
             }
-            response.json( { allTasksPassed : TEAMS_WHO_PASSED_TASKS.includes(team.uid) } );
+            return  { allTasksPassed : TEAMS_WHO_PASSED_TASKS.includes(team.uid) } ;
         }
         else
         {
@@ -441,15 +446,22 @@ apiRouter.get("/allRequiredTasksPassed"  , checkAuthMiddleware , async( request 
                     );
                 }
             }
-            response.json( { allTasksPassed : USERS_WHO_PASSED_TASKS.includes(user.uid) } );
+            return { allTasksPassed : USERS_WHO_PASSED_TASKS.includes(user.uid) } ;
         }
     }catch(ex)
     {
-        response.json( { allTasksPassed : false } );
         winston.error(ex);
+        return { allTasksPassed : false } ;
+
     }
 
 
+}
+
+
+
+apiRouter.get("/allRequiredTasksPassed"  , checkAuthMiddleware , async( request : Request , response : ExtendedResponse ) => {
+    response.json( await checkCTFComplete( response ) );
 })
 
 export default apiRouter;
