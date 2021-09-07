@@ -418,7 +418,6 @@ async function checkCtfComplete( response : ExtendedResponse )
     return { allTasksPassed :  isUserComplete  || isTeamComplete };
 }
 
-
 let USERS_WHO_PASSED_TASKS : string[] = [];
 async function checkUserCtfComplete( user : any )
 {
