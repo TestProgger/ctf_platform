@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useContext, Fragment} from 'react';
+import React, {useState, useEffect, useContext, Fragment, useCallback} from 'react';
 import  { Passed , NotPassed}  from './AnswerState/AnswerState';
 
 import {TaskModalWindow} from "./TaskModalWindow";
@@ -49,8 +49,7 @@ function TasksPage( { ...props }){
         history.push("/auth");
     }
 
-
-    const openModalWindow = (ind : number  , uid : string ) => {
+    const openModalWindow =   (ind : number  , uid : string ) => {
         setTaskData( taskList[ind] );
         setModalWindowIsShown(true);
     }
@@ -114,7 +113,7 @@ function TasksPage( { ...props }){
             } );
         }
         startFetching();
-        
+
     }  , []);
 
 
@@ -145,7 +144,6 @@ function TasksPage( { ...props }){
 
                                         )
                                     } )
-                                
                             }
 
                         </tbody>
